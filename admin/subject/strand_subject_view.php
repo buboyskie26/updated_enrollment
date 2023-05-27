@@ -1,14 +1,17 @@
 <?php 
 
     include('../../enrollment/classes/Section.php');
-    include('../registrar_enrollment_header.php');
+    include('../admin_enrollment_header.php');
     include('../classes/Subject.php');
 
 
     $templateUrl = directoryPath . "template.php";
 
     // echo "im in subject enroll";
-
+    if(!AdminUser::IsAuthenticated()){
+        header("Location: /dcbt/adminLogin.php");
+        exit();
+    }
     if(isset($_GET['id'])){
 
         $program_id = $_GET['id'];
@@ -87,7 +90,6 @@
                                                         class='editSubjectStrandBtn btn btn-success btn-sm'>
 
                                                         Edit
-
                                                     </button>
                                                 </td>
                                             </tr>

@@ -15,16 +15,15 @@
             $base_url = 'http://localhost/dcbt/admin';
                 
             // Set the dynamic part of the URL using a global variable
-            $enrollees_url = $base_url . '/enrollees/index.php';
-            $transferee_url = $base_url . '/enrollees/transfee_enrollees.php';
-            $old_enrollees_url = $base_url . '/enrollees/old_enrollees.php';
-            $enrollees_schedule = $base_url . '/schedule/index.php';
+ 
             $enrollees_subject = $base_url . '/subject/index.php';
             $courses_url = $base_url . '/courses/course_list.php';   
 
             $student_creation_url = $base_url . '/student/index.php';
             $department_url = $base_url . '/department/index.php';
-            $unassigned_strand_section = $base_url . '/section/index.php';
+
+            $unassigned_strand_section = $base_url . '/section/admin_strand_sections.php';
+
             $teacher_url = $base_url . '/teacher/index.php';
             $enrollment_url = $base_url . '/enrollment/index.php';
             $school_year_url = $base_url . '/school_year/index.php';

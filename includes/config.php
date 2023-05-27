@@ -1,7 +1,7 @@
 <?php
     ob_start(); //Turns on output buffering 
     session_start();
-    date_default_timezone_set("Asia/Manila");
+    date_default_timezone_set('Asia/Manila');
 
     define('DB_HOST', 'localhost');
     define('DB_PORT', 3307); // Update with your specific port number

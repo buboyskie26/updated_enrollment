@@ -289,6 +289,51 @@
         return $sql->fetchColumn();
     }
 
+    function GetEnrollmenDate($student_id, $course_id, $school_year_id) {
+        // Check if the enrollment form ID already exists in the database
+        $sql = $this->con->prepare("SELECT enrollment_date FROM enrollment 
+            WHERE course_id = :course_id
+            AND student_id = :student_id
+            AND school_year_id = :school_year_id
+            
+            ");
+        $sql->bindValue(":course_id", $course_id);
+        $sql->bindValue(":student_id", $student_id);
+        $sql->bindValue(":school_year_id", $school_year_id);
+        $sql->execute();
+
+        return $sql->fetchColumn();
+    }
+
+    function GetStudentEnrollmentCourseId($student_id,
+        $school_year_id) {
+        // Check if the enrollment form ID already exists in the database
+        $sql = $this->con->prepare("SELECT course_id FROM enrollment 
+            WHERE student_id = :student_id
+            AND school_year_id = :school_year_id
+            
+            ");
+        $sql->bindValue(":student_id", $student_id);
+        $sql->bindValue(":school_year_id", $school_year_id);
+        $sql->execute();
+
+        return $sql->fetchColumn();
+    }
+
+    function GetEnrollmentProgram($student_program_id) {
+        
+
+        $program = $this->con->prepare("SELECT acronym FROM program
+            WHERE program_id=:program_id
+            LIMIT 1
+        ");
+        $program->bindValue(":program_id", $student_program_id);
+        $program->execute();
+
+        return $program->fetchColumn();
+
+    }
+
     function MarkAsRegistrarEvaluatedByEnrollmentId($enrollment_id) {
 
         $registrar_evaluated = "yes";
@@ -329,6 +374,7 @@
         
         return $sql->execute();
     }
+    
 }
 
 

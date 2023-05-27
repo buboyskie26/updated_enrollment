@@ -26,13 +26,13 @@
                     </div> -->
                     <?php echo $selectSubjectEdit;?>
 
-
+<!-- 
                     <div class='form-group mb-2 '>
                             <label for="" class="mb-2">Code</label>
                             <input class='form-control' type='text'
                                 placeholder='Subject Code' id="edit_subject_code"
                                 name='edit_subject_code'>
-                    </div>
+                    </div> -->
 
                     <div class='form-group mb-2'>
                         <label for="" class="mb-2">Grade Level</label>
@@ -73,7 +73,8 @@
 
         var subject_program_id = $(this).val();
 
-        $("#edit_subject_code").val("");
+        // $("#edit_subject_code").val("");
+        
         $("#edit_course_level").val("");
         $("#edit_semester").val("");
         $("#edit_subject_template_id").val("");
@@ -88,12 +89,11 @@
                 var res = JSON.parse(response)
 
                 // console.log(res)
-                $("#edit_subject_code").val(res.subject_code);
+                // $("#edit_subject_code").val(res.subject_code);
                 $("#edit_course_level").val(res.course_level);
                 $("#edit_semester").val(res.semester);
 
                 $("#edit_subject_template_id").val(res.subject_template_id);
-
 
                 $("#to_subject_program_id").val(res.subject_program_id);
 
@@ -114,8 +114,7 @@
         // var formData = new FormData(this);
         // formData.append("save_student", true);
 
-
-        var subject_code = $("#edit_subject_code").val();
+        // var subject_code = $("#edit_subject_code").val();
         var course_level = $("#edit_course_level").val();
         var semester = $("#edit_semester").val();
         var subject_program_id  = $("#to_subject_program_id").val();
@@ -125,8 +124,11 @@
             url: "../ajax/subject/strand_subject_edit_modal.php",
             type: "POST",
             data: {
-                subject_code, course_level, semester,
-                subject_program_id,edit_subject_template_id
+                // subject_code,
+                course_level,
+                semester,
+                subject_program_id,
+                edit_subject_template_id
 
             },
             // dataType: 'json',
@@ -141,7 +143,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Success',
-                        text: `Subject Code: ${subject_code} edited successfully!`,
+                        text: `Successfully edited successfully!`,
                     });
                 }
             }

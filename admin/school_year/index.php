@@ -3,6 +3,7 @@
     include('../classes/Department.php');
     include('../../enrollment/classes/StudentEnroll.php');
     include('../../enrollment/classes/Schedule.php');
+    include('../../enrollment/classes/SchoolYear.php');
     include('../classes/Course.php');
 
     include('../registrar_enrollment_header.php');
@@ -29,6 +30,7 @@
     //
     $studentEnroll = new StudentEnroll($con);
     $schedule = new Schedule($con, $studentEnroll);
+    $school_year = new SchoolYear($con);
   
     $course = new Course($con, $studentEnroll);
 
@@ -39,6 +41,8 @@
     $current_school_year_period = $school_year_obj['period'];
 
     $createUrl = base_url . "/create.php";
+
+    $check = $school_year->DoesEndPeriodIsOver($current_school_year_id);
 
     if(isset($_POST['populate_subject_btn']) && isset($_POST['course_id'])
         && isset($_POST['program_id']) && isset($_POST['course_level'])){

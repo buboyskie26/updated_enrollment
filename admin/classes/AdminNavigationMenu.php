@@ -23,7 +23,7 @@
             $schedule_url = $base_url . '/schedule/index.php';
 
             $teacher_url = $base_url . '/teacher/index.php';
-            $section_url = $base_url . '/section/index.php';   
+            $section_url = $base_url . '/section/admin_strand_sections.php';   
             $courses_url = $base_url . '/courses/course_list.php';   
             $enrollees_subject = $base_url . '/subject/index.php';
 

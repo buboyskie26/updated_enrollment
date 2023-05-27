@@ -93,6 +93,7 @@ include('../../enrollment/classes/StudentSubject.php');
         $subject_code = $row['subject_code'];
         $course_id = $row['course_id'];
         $subject_title = $row['subject_title'];
+        $pre_requisite = $row['pre_requisite'];
         $subject_code = $row['subject_code'];
         $subject_type = $row['subject_type'];
         $semester = $row['semester'];
@@ -116,7 +117,7 @@ include('../../enrollment/classes/StudentSubject.php');
             "subject_code"=> $row['subject_code'],
             "subject_title"=> $row['subject_title'],
             "unit"=> $row['unit'],
-            "pre_requisite"=> $row['subject_title'],
+            "pre_requisite"=> $row['pre_requisite'],
             "subject_type"=> $row['subject_type'],
             "actions1" => "
                 <input name='normal_selected_subject[]' 

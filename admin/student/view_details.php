@@ -435,7 +435,20 @@
                             $isFinished = $old_enroll->CheckIfGradeLevelSemesterSubjectWereAllPassed(
                                 $student_id, $GRADE_ELEVEN, $SECOND_SEMESTER);
 
-                                // echo "wee";
+                            if($isFinished == true && $student_course_level != $GRADE_TWELVE){
+
+
+                                $wasSuccess = $old_enroll->StudentMoveUpToGrade12($student_username);
+
+                                if($wasSuccess){
+
+                                    AdminUser::success("$student_username has been Move Up to Grade 12"
+                                        , "view_details.php?subject=show&id=$student_id");
+                                    exit();
+
+                                }
+                            }
+
                             ?>
                                 <div class="row col-md-12 table-responsive"
                                     style="margin-top:5%;">
@@ -465,17 +478,16 @@
                                             }
                                         
                                         ?> 	
-
                                         <?php 
         
-                                            $moveUpBtn = "moveUpAction(\"$student_username\")";
+                                            $moveUpBtn = "moveUpAction(\"$student_username\", $student_id)";
                                             
                                             if($isFinished == true && $student_course_level != $GRADE_TWELVE){
-                                                echo "
-                                                    <button type='button' onclick='$moveUpBtn' class='btn btn-success'>
-                                                        Move Up
-                                                    </button>				
-                                                ";
+                                                // echo "
+                                                //     <button type='button' onclick='$moveUpBtn' class='btn btn-success'>
+                                                //         Move Up
+                                                //     </button>				
+                                                // ";
                                             }
                                         ?>
                                         <table style=" font-weight: 200;" class="table table-striped table-bordered table-hover "  style="font-size:12px" cellspacing="0"  > 
@@ -594,7 +606,7 @@
                             <?php
                         } 
                     ?>
-
+                    
                     <!-- GRADE 11 1st SEM -->
                     <div class="row col-md-12 table-responsive"
                         style="margin-top:5%;">
@@ -617,7 +629,6 @@
                                     $school_year_id = $enrollment_school_year['school_year_id'];
                                     $enrollment_course_id = $enrollment_school_year['course_id'];
 
-
                                     $enrollment_section_name = $enroll->GetStudentCourseNameByCourseId($enrollment_course_id);
 
                                     echo "
@@ -631,22 +642,7 @@
                                     ";
                                 }
                             ?>	
-                            
-                            <?php 
-                                # ONLY FOR GRADE 11 2nd BECAUSE OF MOVING UP.
-                                $isFinished = $old_enroll->CheckIfGradeLevelSemesterSubjectWereAllPassed(
-                                    $student_id, $GRADE_ELEVEN, $SECOND_SEMESTER);
-                                
-                                $moveUpBtn = "moveUpAction(\"$student_username\")";
-                                
-                                if($isFinished == true && $student_course_level != $GRADE_TWELVE){
-                                    echo "
-                                        <button type='button' onclick='$moveUpBtn' class='btn btn-success'>
-                                            Move Up
-                                        </button>				
-                                    ";
-                                }
-                            ?>
+
                             <table style="font-weight: 200;" class="table table-striped table-bordered table-hover "  style="font-size:12px" cellspacing="0"  > 
                                 <thead>
                                     <tr class="text-center"> 
@@ -793,7 +789,39 @@
                                         <h3>Grade 11 Second Semester</h3>	
                                     ";
                                 }
-                            ?>		
+                            ?>	
+                            
+                            <?php 
+                                # ONLY FOR GRADE 11 2nd BECAUSE OF MOVING UP.
+                                $isFinished = $old_enroll->CheckIfGradeLevelSemesterSubjectWereAllPassed(
+                                    $student_id, $GRADE_ELEVEN, $SECOND_SEMESTER);
+                                
+                                $moveUpBtn = "moveUpAction(\"$student_username\", $student_id)";
+                                
+
+                                if($isFinished == true && $student_course_level != $GRADE_TWELVE){
+
+                                    // echo "qwe";
+                                    
+                                    $wasSuccess = $old_enroll->StudentMoveUpToGrade12($student_username);
+
+                                    if($wasSuccess){
+
+                                        AdminUser::success("$student_username has been Move Up to Grade 12"
+                                            , "view_details.php?subject=show&id=$student_id");
+                                        exit();
+
+                                    }
+                                }
+                                
+                                if($isFinished == true && $student_course_level != $GRADE_TWELVE){
+                                    // echo "
+                                    //     <button type='button' onclick='$moveUpBtn' class='btn btn-success'>
+                                    //         Move Up
+                                    //     </button>				
+                                    // ";
+                                }
+                            ?>
 
                             <table style="font-weight: 200;" class="table table-striped table-bordered table-hover "  style="font-size:12px" cellspacing="0"  > 
                                 <thead>
@@ -906,7 +934,6 @@
                             </table>
                         </div>
                     </div>
-
 
                     <!-- GRADE 12 1st SEM -->
                     <div class="row col-md-12 table-responsive"

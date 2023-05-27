@@ -24,85 +24,182 @@
 
 <div class="row col-md-12">
 
-     <h3 class="mb-2 text-center text-primary">Non-Evaluated</h3>
-     <table id="courseTable" class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
-        <thead>
-            <tr class="text-center"> 
-                <th rowspan="2">Name</th>
-                <th rowspan="2">Type</th>
-                <th rowspan="2">Strand</th>
-                <th rowspan="2">Date Submitted</th>
-                <th rowspan="2">Status</th>
-                <th rowspan="2">Action</th>
-            </tr>	
-        </thead> 	
+    <h3 class="mb-2 text-center text-primary">Non-Evaluated</h3>
+    <table id="courseTable" class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
+    <thead>
+        <tr class="text-center"> 
+            <th rowspan="2">Name</th>
+            <th rowspan="2">Type</th>
+            <th rowspan="2">Strand</th>
+            <th rowspan="2">Date Submitted</th>
+            <th rowspan="2">Status</th>
+            <th rowspan="2">Action</th>
+        </tr>	
+    </thead> 	
 
-         <tbody>
-            <?php 
-                $sql = $con->prepare("SELECT t1.*, t2.acronym 
-                FROM pending_enrollees as t1
+        <tbody>
+        <?php 
+            $sql = $con->prepare("SELECT t1.*, t2.acronym 
+            FROM pending_enrollees as t1
 
-                LEFT JOIN program as t2 ON t2.program_id = t1.program_id
-                WHERE t1.student_status !='APPROVED'
-                ");
-                $sql->execute();
+            LEFT JOIN program as t2 ON t2.program_id = t1.program_id
+            WHERE t1.student_status !='APPROVED'
+            AND t1.is_finished = 1
+            ");
+            $sql->execute();
 
-                if($sql->rowCount() > 0){
+            if($sql->rowCount() > 0){
 
-                    // echo "we";
-                    while($row = $sql->fetch(PDO::FETCH_ASSOC)){
+                // echo "we";
+                while($row = $sql->fetch(PDO::FETCH_ASSOC)){
 
-                        $fullname = $row['firstname'] . " " . $row['lastname'];
-                        $date_creation = $row['date_creation'];
-                        $acronym = $row['acronym'];
-                        $pending_enrollees_id = $row['pending_enrollees_id'];
-                        $student_unique_id = "N/A";
+                    $fullname = $row['firstname'] . " " . $row['lastname'];
+                    $date_creation = $row['date_creation'];
+                    $acronym = $row['acronym'];
+                    $pending_enrollees_id = $row['pending_enrollees_id'];
+                    $student_unique_id = "N/A";
 
-                        $type = "";
-                        $url = "";
-                        $status = "Evaluation";
-                        $button_output = "";
-                        $process_url = "process_enrollment.php?step1=true&id=$pending_enrollees_id";
+                    $type = "";
+                    $url = "";
+                    $status = "Evaluation";
+                    $button_output = "";
+                    $process_url = "process_enrollment.php?step1=true&id=$pending_enrollees_id";
 
-                        if($row['student_status'] == "Regular"){
-                            $type = "New Regular";
-                            // $url = "../enrollees/view_student_new_enrollment.php?id=$pending_enrollees_id";
-                            $button_output = "
-                                <a href='$process_url'>
-                                    <button class='btn btn-primary btn-sm'>View</button>
-                                </a>
-                            ";
-                            
-                        }else  if($row['student_status'] == "Transferee"){
-                            $type = "New Transferee";
-                            // $url = "../enrollees/view_student_transferee_enrollment.php?id=$pending_enrollees_id";
-                            $url_trans = "transferee_process_enrollment.php?step1=true&id=$pending_enrollees_id";
+                    if($row['student_status'] == "Regular"){
+                        $type = "New Regular";
+                        // $url = "../enrollees/view_student_new_enrollment.php?id=$pending_enrollees_id";
+                        $button_output = "
+                            <a href='$process_url'>
+                                <button class='btn btn-primary btn-sm'>View</button>
+                            </a>
+                        ";
+                        
+                    }else  if($row['student_status'] == "Transferee"){
+                        $type = "New Transferee";
+                        // $url = "../enrollees/view_student_transferee_enrollment.php?id=$pending_enrollees_id";
+                        $url_trans = "transferee_process_enrollment.php?step1=true&id=$pending_enrollees_id";
 
-                            $button_output = "
-                                <a href='$url_trans'>
-                                    <button class='btn btn-outline-primary btn-sm'>View</button>
-                                </a>
-                            ";
-                        }
-
-                        echo "
-                            <tr class='text-center'>
-                                <td>$fullname</td>
-                                <td>$type</td>
-                                <td>$acronym</td>
-                                <td>$date_creation</td>
-                                <td>$status</td>
-                                <td>
-                                   $button_output
-                                </td>
-                            </tr>
+                        $button_output = "
+                            <a href='$url_trans'>
+                                <button class='btn btn-outline-primary btn-sm'>View</button>
+                            </a>
                         ";
                     }
-                }
-            ?>
-         </tbody>
 
-     </table>
+                    echo "
+                        <tr class='text-center'>
+                            <td>$fullname</td>
+                            <td>$type</td>
+                            <td>$acronym</td>
+                            <td>$date_creation</td>
+                            <td>$status</td>
+                            <td>
+                                $button_output
+                            </td>
+                        </tr>
+                    ";
+                }
+            }
+        ?>
+        </tbody>
+
+    </table>
+
+   <hr>
+   <hr>
+
+    <h3 class="mb-2 text-center text-primary">Transferee O.S</h3>
+    <table id="courseTable" class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
+    <thead>
+        <tr class="text-center"> 
+            <th rowspan="2">Name</th>
+            <th rowspan="2">Type</th>
+            <th rowspan="2">Strand</th>
+            <th rowspan="2">Date Submitted</th>
+            <th rowspan="2">Status</th>
+            <th rowspan="2">Action</th>
+        </tr>	
+    </thead> 	
+
+        <tbody>
+        <?php 
+            // $sql = $con->prepare("SELECT t1.*, t2.acronym 
+            // FROM pending_enrollees as t1
+
+            // LEFT JOIN program as t2 ON t2.program_id = t1.program_id
+            // WHERE t1.student_status !='APPROVED'
+            // AND t1.is_finished = 1
+            // ");
+
+            
+            $sql = $con->prepare("SELECT t1.*, t4.*, t2.* 
+            
+                FROM student as t1
+
+                INNER JOIN enrollment as t2 ON t2.student_id = t1.student_id
+                AND t2.course_id=t1.course_id
+
+
+
+                LEFT JOIN course as t3 ON t3.course_id = t1.course_id
+                LEFT JOIN program as t4 ON t4.program_id = t3.program_id
+
+                WHERE t1.student_status='Transferee'
+                AND t2.registrar_evaluated='no'
+                AND t2.enrollment_status='tentative'
+                AND t2.is_new_enrollee='no'
+            ");
+
+            $sql->execute();
+
+            if($sql->rowCount() > 0){
+
+                // echo "we";
+                while($row = $sql->fetch(PDO::FETCH_ASSOC)){
+
+                    $fullname = $row['firstname'] . " " . $row['lastname'];
+                    $enrollment_date = $row['enrollment_date'];
+                    $student_id = $row['student_id'];
+                    $student_course_id = $row['course_id'];
+                    $acronym = $row['acronym'];
+                    // $pending_enrollees_id = $row['pending_enrollees_id'];
+                    $student_unique_id = "N/A";
+
+                    $type = "Ongoing Transferee (SHS)";
+                    $url = "";
+                    $status = "Evaluation";
+                    $button_output = "";
+
+                    // $process_url = "process_enrollment.php?step1=true&id=$pending_enrollees_id";
+                    $process_url = "";
+                    $trans_url = "transferee_process_enrollment.php?step3=true&st_id=$student_id&selected_course_id=$student_course_id";
+                    
+
+                    $evaluateBtn = "
+                        <a href='$trans_url'>
+                            <button class='btn btn-outline-success btn-sm'>
+                                Evaluate
+                            </button>
+                        </a>
+                    ";
+                    echo "
+                        <tr class='text-center'>
+                            <td>$fullname</td>
+                            <td>$type</td>
+                            <td>$acronym</td>
+                            <td>$enrollment_date</td>
+                            <td>$status</td>
+                            <td>
+                                $evaluateBtn
+                            </td>
+                        </tr>
+                    ";
+                }
+            }
+        ?>
+        </tbody>
+
+    </table>
 
 
     <h3 class="mb-2 text-center text-success">Evaluated</h3>
@@ -216,42 +313,7 @@
                                 ";
 
                                 $evaluateBtn = "";
-
-                                // # SHS
-                                // if($cashier_evaluated == "yes"
-                                //     && $registrar_evaluated == "yes"
-                                //     && $student_status == "Transferee"
-                                //     ){
-                                //     $evaluateBtn = "
-                                //         <a href='$transferee_insertion_url'>
-                                //             <button class='btn btn-outline-success btn-sm'>
-                                //                 Evaluate
-                                //             </button>
-                                //         </a>
-                                //     ";
-                                // }else if($cashier_evaluated == "yes"
-                                //     && $registrar_evaluated == "yes"
-                                //     && $student_status == "Regular"
-                                //     ){
-                                //     $evaluateBtn = "
-                                //         <a href='$regular_insertion_url'>
-                                //             <button class='btn btn-success btn-sm'>
-                                //                 Evaluate
-                                //             </button>
-                                //         </a>
-                                //     ";
-                                // }
-                                
-                                // if($cashier_evaluated == "no"
-                                //     && $registrar_evaluated == "yes"
-                                // ){
-                                //     $evaluateBtn = "
-                                //         <button class='btn btn-secondary btn-sm'>
-                                //             Wait for Cashier
-                                //         </button>
-                                //     ";
-                                // }
-
+ 
                                 $student_type_status = "";
                                 if($cashier_evaluated == "yes"
                                     && $registrar_evaluated == "yes"){
@@ -302,8 +364,15 @@
                                             //     </a>
                                             // ";
 
+                                            // $asd = $course_id;
+
+                                            // $trans_url = "transferee_process_enrollment.php?step3=true&id=$student_id&selected_course_id=$course_id";
+
+                                            # PREVIOUS URL
+                                            $trans_url = "transferee_process_enrollment.php?step3=true&st_id=$student_id&selected_course_id=$course_id";
+
                                             $evaluateBtn = "
-                                                <a href='$regular_insertion_url'>
+                                                <a href='$transferee_insertion_url'>
                                                     <button class='btn btn-outline-success btn-sm'>
                                                         Evaluate
                                                     </button>

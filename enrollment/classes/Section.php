@@ -37,6 +37,7 @@
             return isset($this->sqlData['guardian_contact_number']) ? $this->sqlData["guardian_contact_number"] : ""; 
         }
 
+ 
 
         // public function GetSectionPeriod() {
         //     return isset($this->sqlData['program_section']) ? $this->sqlData["program_section"] : ""; 
@@ -259,24 +260,22 @@
                 INNER JOIN course as t2 ON t2.course_id = t1.course_id
 
                 WHERE t1.course_id=:course_id
-                AND (t1.enrollment_status=:enrollment_status
-                    OR t1.enrollment_status=:enrollment_status2)
+                -- AND (t1.enrollment_status=:enrollment_status
+                --     OR t1.enrollment_status=:enrollment_status2)
 
+                AND t1.enrollment_status=:enrollment_status
                 AND t1.school_year_id=:school_year_id
+                AND t2.active=:active
                 ");
 
             $query->bindValue(":course_id", $course_id);
-            $query->bindValue(":enrollment_status", "tentative");
-            $query->bindValue(":enrollment_status2", "enrolled");
+            $query->bindValue(":enrollment_status", "enrolled");
+            // $query->bindValue(":enrollment_status2", "enrolled");
             $query->bindValue(":school_year_id", $current_school_year_id);
+            $query->bindValue(":active", "yes");
             $query->execute();
 
             return $query->rowCount();
-            // if($query->rowCount() > 0){
-            //     $asd = $query->fetchAll(PDO::FETCH_ASSOC);
-            //     print_r($asd);
-            //     echo "<br>";
-            // }
         }
 
         public function GetSectionTotalSubjects($course_id){
@@ -288,6 +287,24 @@
             $query->execute();
             return $query->rowCount();
         }
+
+        public function GetSectionObj($course_id){
+
+            $query = $this->con->prepare("SELECT capacity, course_id,
+                program_id, course_level, school_year_term, program_section
+                
+                FROM course
+                WHERE course_id=:course_id");
+
+            $query->bindValue(":course_id", $course_id);
+            $query->execute();
+
+            if($query->rowCount() > 0){
+                return $query->fetch();
+            }
+        }
+
+
         public function GetSectionTotalScheduleSubjects($course_id){
 
             $query = $this->con->prepare("SELECT * FROM subject as t1
@@ -373,6 +390,48 @@
             return "N/A";
         }
 
+        public function GetSectionCapacity($course_id){
+
+            $sql = $this->con->prepare("SELECT capacity FROM course
+                WHERE course_id=:course_id");
+                
+            $sql->bindValue(":course_id", $course_id);
+            $sql->execute();
+
+            if($sql->rowCount() > 0)
+                return $sql->fetchColumn();
+            
+            return null;
+        }
+
+        public function GetSectionNameByCourseId($course_id){
+
+            $sql = $this->con->prepare("SELECT program_section FROM course
+                WHERE course_id=:course_id");
+                
+            $sql->bindValue(":course_id", $course_id);
+            $sql->execute();
+
+            if($sql->rowCount() > 0)
+                return $sql->fetchColumn();
+            
+            return "N/A";
+        }
+
+        public function CheckSetionExistsWithinCurrentSY($program_section, $school_year_term){
+
+            $sql = $this->con->prepare("SELECT program_section FROM course
+                WHERE program_section=:program_section
+                AND school_year_term=:school_year_term
+                ");
+                
+            $sql->bindValue(":program_section", $program_section);
+            $sql->bindValue(":school_year_term", $school_year_term);
+            $sql->execute();
+
+            return $sql->rowCount() > 0;
+        }
+
         public function GetAcronymByProgramId($program_id){
 
             $sql = $this->con->prepare("SELECT acronym FROM program
@@ -386,5 +445,97 @@
             
             return "N/A";
         }
+
+        public function CreateNewSection($new_section_name, 
+            $program_id, $course_level, $current_school_year_term){
+            
+            // $sql = $this->con->prepare("INSERT INTO course
+            //     (program_section, program_id, creationDate)
+            //     WHERE program_id=:program_id");
+
+            $active = "yes";
+            $is_full = "no";
+
+
+            $defaultGrade11StemStrand = $this->con->prepare("INSERT INTO course
+
+                (program_section, program_id, course_level, capacity,
+                    school_year_term, active, is_full)
+
+                VALUES(:program_section, :program_id, :course_level, :capacity,
+                    :school_year_term, :active, :is_full)");
+
+            $defaultGrade11StemStrand->bindValue(":program_section", $new_section_name);
+
+            $defaultGrade11StemStrand->bindValue(":program_id", $program_id, PDO::PARAM_INT);
+            $defaultGrade11StemStrand->bindValue(":course_level", $course_level, PDO::PARAM_INT);
+            $defaultGrade11StemStrand->bindValue(":capacity", 2);
+            $defaultGrade11StemStrand->bindValue(":school_year_term", $current_school_year_term);
+            $defaultGrade11StemStrand->bindValue(":active", $active);
+            $defaultGrade11StemStrand->bindValue(":is_full", $is_full);
+
+            // Check and handle duplication entry of
+            // same program_section and school_year_term
+           
+            return $defaultGrade11StemStrand->execute();
+
+        }
+
+        public function SetSectionIsFull($course_id){
+
+            $is_full = "yes";
+            
+            $update = $this->con->prepare("UPDATE course
+                SET is_full=:is_full
+                WHERE course_id=:course_id");
+            
+            $update->bindValue(":is_full", $is_full);
+            $update->bindValue(":course_id", $course_id);
+
+            return $update->execute();
+
+        }
+
+
+        public function CheckSectionIsFull($course_id){
+
+            $sql = $this->con->prepare("SELECT is_full FROM course
+                WHERE course_id=:course_id
+                AND is_full='yes'");
+                
+            $sql->bindValue(":course_id", $course_id);
+            $sql->execute();
+
+            return $sql->rowCount() > 0;
+        }
+
+        public function CheckShiftedCourseIsFull($course_id,
+            $current_school_year_id){
+
+            $isFull = false;
+
+            $totalStudentInSection = $this->GetTotalNumberOfStudentInSection($course_id,
+                $current_school_year_id);
+
+            $totalCurrentSectionCapacity = $this->GetSectionCapacity($course_id);
+
+            if($totalStudentInSection >= $totalCurrentSectionCapacity){
+                $isFull = true;
+            }
+
+            // $sql = $this->con->prepare("SELECT program_section FROM course
+            //     WHERE course_id=:course_id
+            //     AND is_full=:is_full
+            //     ");
+                
+            // $sql->bindValue(":course_id", $course_id);
+            // $sql->bindValue(":is_full", "yes");
+            // $sql->execute();
+
+            // return $sql->rowCount() > 0;
+            
+            return $isFull;
+        }
+
     }
 ?>

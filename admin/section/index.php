@@ -91,16 +91,7 @@
     }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
  
-<body>
-
     <div class="row col-md-12">
         <div class="col-lg-12">
             <div class="row">
@@ -223,10 +214,79 @@
                 </tbody>
             </table>
 
+            <hr>
+            <hr>
 
-            <hr>
-            <hr>
-            <table id="sectionTable"
+            <h4 class="text-center">Section Details</h4>
+
+            <table id="courseTable" 
+                class="table table-striped table-bordered table-hover " 
+                style="font-size:13px" cellspacing="0"  > 
+                <thead>
+                    <tr class="text-center"> 
+                        <th rowspan="2">Subject Id</th>
+                        <th rowspan="2">Section Code</th>
+                        <th rowspan="2">School Year</th>  
+                        <th rowspan="2">Level</th>
+                        <th rowspan="2">Strand</th>
+                        <th rowspan="2">Students</th>
+                        <th rowspan="2">Action</th>
+                    </tr>	
+                </thead> 	
+                <tbody>
+                    <?php 
+                        $username = "";
+                        // $sectionScheduleGradeElevenFirst = $schedule->GetSectionScheduleGradeElevenFirst($username, $student_id, 11, "First");
+
+                        $query = $con->query("SELECT t1.*, t2.acronym FROM course as t1
+
+                            LEFT JOIN program as t2 ON t2.program_id = t1.program_id
+                            ");
+
+                        // $query->bindValue("");
+                        $query->execute();
+
+                        if($query->rowCount() > 0){
+                            while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+
+                                $course_id = $row['course_id'];
+                                $program_section = $row['program_section'];
+                                $course_level = $row['course_level'];
+                                $program_section = $row['program_section'];
+                                $acronym = $row['acronym'];
+                                $school_year_term = $row['school_year_term'];
+
+                                $totalStudent = $section->GetTotalNumberOfStudentInSection($course_id,
+                                    $current_school_year_id);
+
+
+                                $url = "strand_showv2.php?id=$course_id";
+                                echo "
+                                    <tr class='text-center'>
+                                        <td>$course_id</td>
+                                        <td>$program_section</td>
+                                        <td>$school_year_term</td>
+                                        <td>$course_level</td>
+                                        <td>$acronym</td>
+                                        <td>$totalStudent</td>
+                                        <td>
+                                            <a href='$url'>
+                                                <button class='btn btn-sm btn-primary'>
+                                                    View
+                                                </button>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                "; 
+
+                            }
+                        }
+                    ?>
+                </tbody>
+            </table>
+
+
+            <!-- <table id="sectionTable"
                  class="table table-bordered table-hover " 
                  style="font-size:15px" cellspacing="0"> 
                     <thead>
@@ -241,11 +301,11 @@
                             <th></th>
                         </tr>
                     </thead>
-            </table>
+            </table> -->
         </div>
+
+
     </div>
-</body>
-</html>
 
 <script>
     $(document).ready(function(){

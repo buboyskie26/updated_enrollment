@@ -225,18 +225,27 @@
             $subject_title = $_POST['subject_title'];
             $subject_type = $_POST['subject_type'];
             $unit = $_POST['unit'];
+            $description = $_POST['description'];
+            $subject_code = $_POST['subject_code'];
 
             $create = $this->con->prepare("INSERT INTO subject_template
-                (subject_title, unit, subject_type, pre_requisite_title)
+                (subject_title, unit, subject_type,
+                pre_requisite_title, description, subject_code)
 
-                VALUES(:subject_title, :unit, :subject_type, :pre_requisite_title)");
+                VALUES(:subject_title, :unit, :subject_type,
+                :pre_requisite_title, :description, :subject_code)");
                 
             $create->bindParam(':subject_title', $subject_title);
             $create->bindParam(':pre_requisite_title', $pre_requisite_title);
             $create->bindParam(':subject_type', $subject_type);
             $create->bindParam(':unit', $unit);
+            $create->bindParam(':description', $description);
+            $create->bindParam(':subject_code', $subject_code);
+
             if($create->execute()){
-                echo "success";
+
+                AdminUser::success("New Template Added", "list.php");
+                exit();
             }
 
         }
@@ -246,8 +255,18 @@
                 <form method='POST'>
 
                     <div class='form-group mb-2'>
+                        <input class='form-control' type='text' placeholder='Subject Code' name='subject_code'>
+                    </div>
+
+                    <div class='form-group mb-2'>
                         <input class='form-control' type='text' placeholder='Subject Title' name='subject_title'>
                     </div>
+
+                    <div class='form-group mb-2'>
+                        <textarea class='form-control' placeholder='Subject Description' name='description'></textarea>
+                    </div>
+
+
                
                     <div class='form-group mb-2'>
                         <input class='form-control' type='text' placeholder='Pre-Requisite' name='pre_requisite_title'>
@@ -264,6 +283,8 @@
                     <div class='form-group mb-2'>
                         <input class='form-control' value='3' type='text' placeholder='Unit' name='unit'>
                     </div>
+
+       
   
 
                     <button type='submit' class='btn btn-primary'
@@ -707,6 +728,80 @@
         return "";
 
     }
+
+    public function GetNewTransfereeAddedSubject($student_id, 
+        $current_school_year_id, $selected_course_id) : array{
+
+        $addedSubjects = $this->con->prepare("SELECT 
+            t1.is_transferee, t1.is_final,
+            t1.student_subject_id as t2_student_subject_id, 
+            t3.student_subject_id as t3_student_subject_id,
+
+            t4.program_section,
+            t2.* FROM student_subject as t1
+
+            INNER JOIN subject as t2 ON t2.subject_id = t1.subject_id
+            LEFT JOIN course as t4 ON t4.course_id = t2.course_id
+            LEFT JOIN student_subject_grade as t3 ON t3.student_subject_id = t1.student_subject_id
+
+            WHERE t1.student_id=:student_id
+            AND t1.is_final=0
+            AND t1.school_year_id=:school_year_id
+            AND t2.course_id!=:course_id
+
+            ");
+
+        $addedSubjects->bindValue(":student_id", $student_id);
+        $addedSubjects->bindValue(":school_year_id", $current_school_year_id);
+        $addedSubjects->bindValue(":course_id", $selected_course_id);
+        $addedSubjects->execute();
+
+        if($addedSubjects->rowCount() > 0){
+            
+            return $addedSubjects->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return [];
+
+    }
+
+
+    public function GetOSransfereeAddedSubject($student_id, 
+        $current_school_year_id, $selected_course_id) : array{
+
+        $addedSubjects = $this->con->prepare("SELECT 
+            t1.is_transferee, t1.is_final,
+            t1.student_subject_id as t2_student_subject_id, 
+            t3.student_subject_id as t3_student_subject_id,
+
+            t4.program_section,
+            t2.* FROM student_subject as t1
+
+            INNER JOIN subject as t2 ON t2.subject_id = t1.subject_id
+            LEFT JOIN course as t4 ON t4.course_id = t2.course_id
+            LEFT JOIN student_subject_grade as t3 ON t3.student_subject_id = t1.student_subject_id
+
+            WHERE t1.student_id=:student_id
+            AND t1.is_final=0
+            AND t1.school_year_id=:school_year_id
+            AND t2.course_id!=:course_id
+
+            ");
+
+        $addedSubjects->bindValue(":student_id", $student_id);
+        $addedSubjects->bindValue(":school_year_id", $current_school_year_id);
+        $addedSubjects->bindValue(":course_id", $selected_course_id);
+        $addedSubjects->execute();
+
+        if($addedSubjects->rowCount() > 0){
+            
+            return $addedSubjects->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return [];
+
+    }
+
 }
 
 ?>

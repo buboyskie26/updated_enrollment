@@ -126,15 +126,23 @@ function tertiaryInsertGrade(
   });
 }
 
-function moveUpAction(student_username) {
-
-
+function moveUpAction(student_username, student_id) {
   $.post('../ajax/student/move_up_student.php', {
-    student_username
+    student_username,
   }).done(function (data) {
     //
 
-    alert(data);
+    // alert(data);
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: data, // Use the returned data as the message
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Redirect the user
+        window.location.href = 'view_details.php?subject=show&id=' + student_id;
+      }
+    });
     
   });
 }

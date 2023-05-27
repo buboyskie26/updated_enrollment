@@ -6,11 +6,16 @@
     require_once('./classes/StudentEnroll.php');
     require_once('./classes/OldEnrollees.php');
     require_once('./classes/Enrollment.php');
+    require_once('./classes/StudentSubject.php');
+    require_once('./classes/Section.php');
     require_once('./classes/SectionTertiary.php');
     // require_once('../includes/config.php');
     require_once('../includes/studentEnrollHeader.php');
     require_once('../includes/studentHeader.php');
     require_once('../admin/classes/AdminUser.php');
+
+
+
 
     if(isset($_SESSION['username'])
         && isset($_SESSION['status']) 
@@ -23,8 +28,11 @@
 
             $enroll = new StudentEnroll($con);
             $enrollment = new Enrollment($con, $enroll);
+            $student_subject = new StudentSubject($con);
 
             $enrollment_form_id = $enrollment->GenerateEnrollmentFormId();
+
+
 
             if (!isset($_SESSION['enrollment_form_id'])) {
 
@@ -45,6 +53,8 @@
             $is_tertiary = $student_obj['is_tertiary'];
 
             $course_id = $enroll->GetStudentCourseId($username);
+
+            $section = new Section($con, $course_id);
             
             $student_course_tertiary_id = $enroll->GetStudentCourseTertiaryId($username);
 
@@ -60,8 +70,16 @@
             $current_semester = $school_year_obj['period'];
             $current_term = $school_year_obj['term'];
 
-            $student_current_course_term = $course_tertiary->GetCourseTertiaryTerm();
+            $checkIfStudentAlreadyApplied = $old_enroll
+                ->CheckIfStudentAlreadyApplied($username, $active_school_year_id);
 
+            $prev_sy_id = $student_subject->GetPrevSYID($current_semester, $current_term);
+
+
+            $checkIfPrevSemesterSubjectsRemarked = $student_subject->CheckIfPrevSemesterSubjectsRemarked($student_id,
+                $course_id, $prev_sy_id);
+
+            $student_current_course_term = $course_tertiary->GetCourseTertiaryTerm();
             
             $totalUnits = 0;
 
@@ -73,31 +91,29 @@
 
             if($is_tertiary == 0){
 
-                $checkAlignedSectionGr12 = $old_enroll->CheckGrade12AlignedSections($student_id);
+                $checkAlignedSectionGr12 = $old_enroll->
+                    CheckGrade12AlignedSections($student_id);
 
-                if(isset($_POST['apply_next_semester'])){
+                $enroll_tentative = $con->prepare("INSERT INTO enrollment 
+                    (student_id, course_id, school_year_id, enrollment_status,
+                        registrar_evaluated, enrollment_form_id)
+                    VALUES (:student_id,:course_id, :school_year_id, :enrollment_status,
+                        :registrar_evaluated, :enrollment_form_id)");
+
+
+                if(isset($_POST['apply_next_semester_os_reg'])){
 
                     // echo "wee";
                     $tentative_status = "tentative";
                     $registrar_evaluated = "yes";
                     $registrar_not_evaluated = "no";
 
-
-
                     // echo $generate_form_id;
-
-                    $enroll_tentative = $con->prepare("INSERT INTO enrollment 
-                        (student_id, course_id, school_year_id, enrollment_status,
-                            registrar_evaluated, enrollment_form_id)
-                        VALUES (:student_id,:course_id, :school_year_id, :enrollment_status,
-                            :registrar_evaluated, :enrollment_form_id)");
 
                     if($student_course_level == $GRADE_ELEVEN && $semester == $SECOND_SEMESTER){
 
                         # Check if student_id and school_year_id is the same
                         // Each student can only be assigned to a unique school year.
-
-
                         
                         $enroll_tentative->bindValue(":student_id", $student_id);
                         # Course id will changed based
@@ -109,7 +125,16 @@
                         $enroll_tentative->bindValue(":enrollment_status", $tentative_status);
                         $enroll_tentative->bindValue(":registrar_evaluated", $registrar_evaluated);
                         $enroll_tentative->bindValue(":enrollment_form_id", $enrollment_form_id);
-                        $enroll_tentative->execute();
+
+
+                        if($enroll_tentative->execute()){
+                            
+                            AdminUser::success("Successfully Applied for upcoming $current_semester Semester",
+                                "current_semester_subject.php");
+                           exit();
+                        }
+
+                        
                     } 
                     
                     else if($student_course_level == $GRADE_TWELVE 
@@ -157,8 +182,13 @@
                                 $update_student_course->bindValue(":student_id", $student_id);
                                 $update_student_course->execute();
 
+
+                               
                                 if($update_student_course->execute()){
-                                    
+
+                                    $new_section_name = $section->GetSectionNameByCourseId($moveUpCourseId);
+                                    AdminUser::success("Applied. You`re moved up to section: $new_section_name", "current_semester_subject.php");
+                                    exit();
                                     // echo "success registrar evaluated this ongoing enrollee";
                                     # MOVE UP
                                     echo "Applied. You`re moved up in course_id $moveUpCourseId";
@@ -172,7 +202,8 @@
                         }
                     }
 
-                    else if($student_course_level == $GRADE_TWELVE && $semester === $SECOND_SEMESTER){
+                    else if($student_course_level == $GRADE_TWELVE 
+                        && $semester === $SECOND_SEMESTER){
 
                         $enroll_tentative->bindValue(":student_id", $student_id);
                         # Course id will changed based
@@ -185,9 +216,139 @@
                         $enroll_tentative->bindValue(":registrar_evaluated", $registrar_evaluated);
                         $enroll_tentative->bindValue(":enrollment_form_id", $enrollment_form_id);
 
-                        $enroll_tentative->execute();
+                        if($enroll_tentative->execute()){
+                            $new_section_name = $section->GetSectionNameByCourseId($course_id);
+                            AdminUser::success("You have successfully applied for Incoming Second Semester in section: $new_section_name",
+                                "current_semester_subject.php");
+                            exit();
+                        }
+                    }
+
+                }
+
+                if(isset($_POST['apply_next_semester_os_trans'])){
+
+                    // echo "wee";
+                    $tentative_status = "tentative";
+                    $registrar_evaluated = "yes";
+                    $registrar_not_evaluated = "no";
+
+                    // echo $generate_form_id;
+
+                    if($student_course_level == $GRADE_ELEVEN 
+                        && $semester == $SECOND_SEMESTER){
+
+                        # Check if student_id and school_year_id is the same
+                        // Each student can only be assigned to a unique school year.
+                        
+                        $enroll_tentative->bindValue(":student_id", $student_id);
+                        # Course id will changed based
+                        # Grade 11 Section 101 
+                        # Grade 12 Section 101 will change depend on the capacity of the room.
+                        # and student volume inside.
+                        $enroll_tentative->bindValue(":course_id", $course_id);
+                        $enroll_tentative->bindValue(":school_year_id", $active_school_year_id);
+                        $enroll_tentative->bindValue(":enrollment_status", $tentative_status);
+                        $enroll_tentative->bindValue(":registrar_evaluated", "no");
+                        $enroll_tentative->bindValue(":enrollment_form_id", $enrollment_form_id);
+                        if($enroll_tentative->execute()){
+                            AdminUser::success("Successfully Applied as O.S Transferee for this upcoming $current_semester semester.", "current_semester_subject.php");
+                            exit();
+                        }
+
+                    } 
+                    
+                    else if($student_course_level == $GRADE_TWELVE 
+                        && $semester === $FIRST_SEMESTER
+                        && $checkAlignedSectionGr12 == false
+                        ){
+
+                        $get_student_course = $con->prepare("SELECT course_id 
+                        
+                            FROM course
+                            WHERE previous_course_id=:previous_course_id
+                            AND active=:active");
+
+                        $get_student_course->bindValue(":previous_course_id", $course_id);
+                        $get_student_course->bindValue(":active", "yes");
+                        $get_student_course->execute();
+                        
+                        if($get_student_course->rowCount() > 0){
+
+                            $moveUpCourseId = $get_student_course->fetchColumn();
+
+                            // echo $moveUpCourseId;
+                            $enroll_tentative->bindValue(":student_id", $student_id);
+                            # Course id will changed based
+                            # Grade 11 Section 101 
+                            # Grade 12 Section 101 will change depend on the capacity of the room.
+                            # and student volume inside.
+                            $enroll_tentative->bindValue(":course_id", $moveUpCourseId);
+                            $enroll_tentative->bindValue(":school_year_id", $active_school_year_id);
+                            $enroll_tentative->bindValue(":enrollment_status", $tentative_status);
+                            $enroll_tentative->bindValue(":registrar_evaluated", "no");
+                            $enroll_tentative->bindValue(":enrollment_form_id", $enrollment_form_id);
+                            // $enroll_tentative->execute();
+
+                            if($enroll_tentative->execute()){
+                                // echo "Able to apply (Process & Move Up)";
+                                // Update Move_Up in Student Course_Id
+                                // echo $moveUpCourseId;
+                                $update_student_course = $con->prepare("UPDATE student
+                                    SET course_id=:move_up_course_id
+                                    WHERE course_id=:course_id
+                                    AND student_id=:student_id
+                                    ");
+                                
+                                $update_student_course->bindValue(":move_up_course_id", $moveUpCourseId);
+                                $update_student_course->bindValue(":course_id", $course_id);
+                                $update_student_course->bindValue(":student_id", $student_id);
+                                $update_student_course->execute();
+
+                                if($update_student_course->execute()){
+
+                                    $new_section_name = $section->GetSectionNameByCourseId($moveUpCourseId);
+                                    AdminUser::success("Applied. You`re moved up to section: $new_section_name", "current_semester_subject.php");
+                                    exit();
+
+                                    // echo "success registrar evaluated this ongoing enrollee";
+                                    # MOVE UP
+                                    echo "Applied. You`re moved up in course_id $moveUpCourseId";
+                                    echo "<br>";
+                                    echo "Successfully Applied for $current_semester";
+                                    echo "<br>";
+                                    // AdminUser::success("Successfully Applied for $current_semester", "current_semester_subject.php");
+                                    // exit();
+                                }
+                            }
+                        }
+                    }
+
+                    else if($student_course_level == $GRADE_TWELVE 
+                        && $semester === $SECOND_SEMESTER){
+
+                        $enroll_tentative->bindValue(":student_id", $student_id);
+                        # Course id will changed based
+                        # Grade 11 Section 101 
+                        # Grade 12 Section 101 will change depend on the capacity of the room.
+                        # and student volume inside.
+                        $enroll_tentative->bindValue(":course_id", $course_id);
+                        $enroll_tentative->bindValue(":school_year_id", $active_school_year_id);
+                        $enroll_tentative->bindValue(":enrollment_status", $tentative_status);
+                        $enroll_tentative->bindValue(":registrar_evaluated", "no");
+                        $enroll_tentative->bindValue(":enrollment_form_id", $enrollment_form_id);
+
+
+                        if($enroll_tentative->execute()){
+
+                            $new_section_name = $section->GetSectionNameByCourseId($course_id);
+                            AdminUser::success("You have successfully applied for Incoming Second Semester in section: $new_section_name",
+                                "current_semester_subject.php");
+                            exit();
+                        }
 
                     }
+
                 }
 
                 if($student_status == "Regular" || $student_status == "Transferee" ){
@@ -239,20 +400,65 @@
                             </table>
                     
                             <?php
+
+                                # If OS TRANSFEREE
+                                if($student_status == "Transferee"
+                                    ){
+
+                                    if($checkIfPrevSemesterSubjectsRemarked == true
+                                        && $checkIfStudentAlreadyApplied == false){
+
+                                        ?>
+                                            <form method="POST">
+                                                <button name='apply_next_semester_os_trans'
+                                                class="btn btn-outline-success">Apply for Next Sem</button>
+                                            </form>
+                                        <?php  
+                                    }else{
+                                        echo "
+                                            <button class='btn btn-outline-primary'>Already Applied</button>
+                                        ";
+                                    }
+
+
+                                }
+                                
+                                # If OS Regular, Returnee
+                                if($student_status == "Regular" 
+                                    ){
+
+                                    if($checkIfPrevSemesterSubjectsRemarked == true
+                                        && $checkIfStudentAlreadyApplied == false){
+
+                                        ?>
+                                            <form method="POST">
+                                                <button name='apply_next_semester_os_reg'
+                                                class="btn btn-success">Apply for Next Sem</button>
+                                            </form>
+                                        <?php  
+                                    }else{
+                                        echo "
+                                            <button class='btn btn-primary'>Already Applied</button>
+                                        ";
+                                    }
+                                }
+
                                 // In the backend, it doesnt have a validation yet.
                                 // if($enroll->CheckStudentYearIdAndCurrentYearId($username) == false){
+                                # ORIGINAL BUT DONT HAVE ANY VALIDATION FOR DIFFERNT TYPE OF STUDENT.
+                                
                                 if($applyTabIsAvailable == true){
 
                                     $checkIfEligibleToApply = $old_enroll->CheckIfStudentApplicableToApplyNextSemester($username, $active_school_year_id);
-                                    $checkIfStudentAlreadyApplied = $old_enroll->checkIfStudentAlreadyApplied($username, $active_school_year_id);
                                     
-                                    if($checkIfEligibleToApply == true & $checkIfStudentAlreadyApplied == false){
+                                    if($checkIfEligibleToApply == true 
+                                        && $checkIfStudentAlreadyApplied == false){
                                         // echo "eligibnle";
                                         ?>
-                                            <form method="POST">
+                                            <!-- <form method="POST">
                                                 <button name='apply_next_semester'
                                                 class="btn btn-success">Apply for Next Sem</button>
-                                            </form>
+                                            </form> -->
                                         <?php
                                     }else{
                                         // echo "not eligible.";
@@ -262,6 +468,9 @@
                     <?php
                 }
             }
+
+
+            # TODO AFTER COMPLETELY FINISH THE SHS.
 
             if($is_tertiary == 1){
 
@@ -360,7 +569,7 @@
                         $result = $enroll_tentative->execute();
 
                         if($result && $enroll_tentative->rowCount() > 0){
-                            echo "Student has been applied for enrollment this S.Y $current_term $current_semester semester";
+                            echo "Student has been applied already for enrollment this S.Y $current_term $current_semester semester";
                         } else {
                             echo "You have issued already. Please wait to confirm by the registrar.";
                         }
@@ -532,7 +741,8 @@
                     $check_filled_up->bindValue(":address", "");
                     $check_filled_up->bindValue(":program_id", 0);
                     $check_filled_up->bindValue(":user_firstname", $username);
-                $check_filled_up->execute();
+                    $check_filled_up->execute();
+
                     if($check_filled_up->rowCount() == 0){
                         // Disabled.
                         echo "

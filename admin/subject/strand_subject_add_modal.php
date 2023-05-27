@@ -33,13 +33,13 @@
 
                         <?php echo $selectSubjectTitle;?>
                         <div id="errorMessage" class="alert alert-warning d-none"></div>
-
+<!-- 
                         <div class='form-group mb-2 '>
                             <label for="" class="mb-2">Code</label>
                             <input class='form-control' type='text'
                             placeholder='Subject Code' id="subject_code"
                             name='subject_code'>
-                        </div>
+                        </div> -->
 
                         <div class='form-group mb-2'>
                             <label for="" class="mb-2">Grade Level</label>
@@ -91,7 +91,7 @@
             url: "../ajax/subject/strand_subject_add_modal.php",
             type: "POST",
             data: {
-                subject_code: subject_code,
+                // subject_code: subject_code,
                 semester: semester,
                 course_level: course_level,
                 subject_template_id: subject_template_id,

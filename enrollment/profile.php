@@ -91,10 +91,9 @@
                         <div class="row col-md-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="text-center text-primary">Submitted Form</h3>
+                                    <h3 class="text-center text-primary">My Submission Form</h3>
                                 </div>
                                 <div class="card-body">
-                                        <h4 class="text-center">STEP 3 ~ Validating Details<h4>
                                         <div class="container mb-4">
                                                 <div class="form-group">
                                                     <label for="firstname">First Name</label>

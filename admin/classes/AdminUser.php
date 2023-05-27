@@ -27,7 +27,9 @@ class AdminUser{
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
-                text: '$text'
+                text: '$text',
+                allowEscapeKey: false,
+                backdrop: false
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = '$redirectUrl';
@@ -717,6 +719,7 @@ class AdminUser{
                     $humms_program_section = "HUMSS11-A";
 
                     if(true){
+                        
                         $defaultGrade11StemStrand = $this->con->prepare("INSERT INTO course
                             (program_section, program_id, course_level, capacity, school_year_term, active, is_full)
                             VALUES(:program_section, :program_id, :course_level, :capacity, :school_year_term, :active, :is_full)");
@@ -1266,7 +1269,7 @@ class AdminUser{
                         <tr class='text-center'>
                             <th>Year</th>
                             <th>Semester</th>
-                            <th>Action</th>
+                            <th style='width:250px;'>Action</th>
                         </tr>
                     </thead>
         ";
@@ -1297,6 +1300,16 @@ class AdminUser{
         $school_year_term = $row['term'];
         $isActive = $row['statuses'];
 
+        $maintenance_button = "
+            <a href='sy_maintenance.php?id=$school_year_id'>
+                <button name='school_year_maintenance_btn' 
+                    type='submit' class='btn btn-outline-sm btn-success'>
+                    <i class='fas fa-plus'></i>
+                </button>
+            </a>
+
+        ";
+
         // Todo for changing the school year semester.
         $button = "
             <form method='POST' name='set_year_semester'>
@@ -1325,7 +1338,12 @@ class AdminUser{
                     <td>$school_year_term</td>
                     <td>$period</td>
                     <td>
-                        $button
+                        <div class='col-md-12 row'>
+                            <div class='col-md-4'>$button</div>
+                            <div class='col-md-4'>$maintenance_button</div>
+                        </div>
+                        
+                        
                     </td>
                 </tr>
             </tbody>

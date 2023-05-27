@@ -7,15 +7,17 @@
     // echo "yehey";
 
     
-    if (isset($_POST['subject_code']) 
-        && isset($_POST['subject_template_id']) 
+    if (
+        // isset($_POST['subject_code']) && 
+        isset($_POST['subject_template_id']) 
         && isset($_POST['course_level']) 
         && isset($_POST['program_id'])
         && isset($_POST['semester'])
         ) {
+
         $program_id = $_POST['program_id'];
         $subject_template_id = $_POST['subject_template_id'];
-        $subject_code = $_POST['subject_code'];
+        // $subject_code = $_POST['subject_code'];
         $course_level = $_POST['course_level'];
         $semester = $_POST['semester'];
 
@@ -33,6 +35,8 @@
             $row = $get_subject_template->fetch(PDO::FETCH_ASSOC);
 
             $subject_title = $row['subject_title'];
+            $subject_code = $row['subject_code'];
+
             $description = $row['description'];
             $unit = $row['unit'];
             $subject_type = $row['subject_type'];

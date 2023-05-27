@@ -606,7 +606,8 @@
         return $checkIfInTheEnrollmentDb->rowCount();
     }
 
-    public function CheckIfStudentAlreadyApplied($username){
+    public function CheckIfStudentAlreadyApplied($username,
+        $current_school_year_id){
         
         $student_obj = $this->studentEnroll->GetStudentCourseLevelYearIdCourseId($username);
 
@@ -619,19 +620,26 @@
 
             WHERE student_id=:student_id
             AND course_id=:course_id
-            AND enrollment_status=:enrollment_status
+            AND (enrollment_status=:enrollment_status
+                OR
+                enrollment_status=:enrollment_statusv2
+                )
             AND is_new_enrollee=:is_new_enrollee
+            AND school_year_id=:school_year_id
             LIMIT 1");
 
         $sql->bindValue(":student_id", $student_id);
         $sql->bindValue(":course_id", $current_course_id);
         $sql->bindValue(":enrollment_status", $enrollment_status);
+        $sql->bindValue(":enrollment_statusv2", "enrolled");
+
         $sql->bindValue(":is_new_enrollee", $is_new_enrollee);
+        $sql->bindValue(":school_year_id", $current_school_year_id);
         $sql->execute();
 
         return $sql->rowCount() > 0;
-    }   
-
+    }  
+    
     public function CheckIfStudentApplicableToApplyNextSemester($username,
         $current_school_year_id){
 
@@ -666,7 +674,6 @@
         if($sql->rowCount() > 0){
 
             // echo "qwe";
-
             $school_year_id = $sql->fetchColumn();
 
             if($school_year_id == $current_school_year_id){
@@ -693,7 +700,8 @@
             $myFirstSemSubject->execute();
             $myFirstSemSubjects = $myFirstSemSubject->fetchAll(PDO::FETCH_ASSOC);
 
-            $student_subject_arr = array_column($myFirstSemSubjects, 'student_subject_id');
+            $student_subject_arr = array_column($myFirstSemSubjects,
+                'student_subject_id');
 
             // $student_subject_grade_arr = array_column(array_filter($myFirstSemSubjects, function($myFirstSemSubject){
             //     return !empty($myFirstSemSubject['marked_student_subject_id']);
@@ -782,6 +790,11 @@
         // True or False
         return empty($array_error);
     }
+
+
+
+
+
 
 
     public function CheckStudentGrade11PassedSecondSem($username){

@@ -23,11 +23,10 @@
 
 
 <div class="row col-md-12">
-            <h2 class="text-center page-header">Strand List</h2>
-            <!-- <a href="<?php echo $createUrl?>">
-                <button class="btn btn-sm btn-success">Add Schedule</button>
-            </a>     -->
 
+        <h2 class="text-center page-header">Strand List</h2>
+        <span>*Should be in the Section</span>
+         
         <div class="col-md-10 offset-md-1">
             <div class="table-responsive" style="margin-top:2%;"> 
                 <div class="mb-3">
@@ -89,6 +88,83 @@
                                             </a>
                                             <a href='course_subject.php?id=$program_id'>
                                                 <button class='btn btn-sm btn-success'>Subjects</button>
+                                            </a>
+                                        </td>";
+                                    echo "</tr>";
+                                }
+                            }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <hr>
+        <hr>
+
+        <div class="col-md-10 offset-md-1">
+            <div class="table-responsive" style="margin-top:2%;"> 
+                <div class="mb-3">
+              
+                    <a href="<?php echo $createUrl?>">
+                        <button class="btn btn-success">Add Strand</button>
+                    </a>  
+                </div>
+                <h5>Grade 11</h5>
+                <table  class="table table-bordered table-hover " 
+                    style="font-size:14px" cellspacing="0"  > 
+                    <thead>
+                        <tr class="text-center"> 
+                            <th rowspan="2">Id</th>  
+                            <th rowspan="2">Track</th>  
+                            <th rowspan="2">Strand</th>  
+                            <th rowspan="2">Total Enrolled</th> 
+                            <th rowspan="2">Action</th>  
+                        </tr>	
+                    </thead> 	
+                    <tbody>
+
+                        <?php 
+                            // $sectionScheduleGradeElevenFirst = $schedule->GetSectionScheduleGradeElevenFirst($username, $student_id, 11, "First");
+                            $GRADE_ELEVEN = 11;
+                            $SHS_Department_ID = 4;
+                            $query = $con->prepare("SELECT * FROM program
+                                WHERE department_id=:department_id
+                                ");
+
+                            $query->bindValue(":department_id", $SHS_Department_ID);
+                            $query->execute();
+
+                            if($query->rowCount() > 0){
+                                while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+
+                                    $acronym = $row['program_name'];
+                                    $program_id = $row['program_id'];
+                                    $program_name = $row['program_name'];
+                                    $track = $row['track'];
+                                    $grade11Sections = 2;
+                                    $grade11Student = 4;
+                                    $grade12Sections = 3;
+                                    $grade12Student = 7;
+
+                                    $edit_courses = "";
+
+                                    echo "<tr class='text-center'>";
+                                        echo "<td>$program_id</td>";
+                                        echo "<td>$track</td>";
+                                        echo "<td>$program_name</td>";
+                                        echo "<td>0</td>";
+                                        echo "<td>
+                                            <a href=''>
+                                                <button class='btn btn-sm btn-primary'>
+                                                    <i class='fas fa-edit'></i>
+                                                </button>
+                                            </a>
+                                            <a href=''>
+                                                <button class='btn btn-sm btn-danger'>
+                                                    X
+                                                </button>
                                             </a>
                                         </td>";
                                     echo "</tr>";

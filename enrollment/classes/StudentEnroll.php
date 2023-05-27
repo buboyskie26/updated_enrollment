@@ -2182,6 +2182,46 @@
 
     }
 
+    public function GetStudentTransCurriculumBasedOnSemesterSubject($username,
+    
+        $student_id, $GRADE_ELEVEN, $SELECTED_SEMESTER, $enrollment_id){
+            
+        //. Student course_id
+        $course_id = $this->GetStudentCourseId($username);
+        $program_id = $this->GetStudentProgramId($course_id);
+
+        $within_subject_program_ids = [];
+        $allSubjectProgramIds = [];
+
+        $student_enrollment_query = $this->con->prepare("SELECT t1.* 
+        
+            FROM subject as t1
+            INNER JOIN student_subject as t2
+            
+            WHERE t2.enrollment_id=:enrollment_id
+            AND t2.student_id=:student_id
+            AND t1.semester=:semester
+            AND t1.subject_id = t2.subject_id
+            ");
+
+        $student_enrollment_query->bindValue(":enrollment_id", $enrollment_id); 
+        $student_enrollment_query->bindValue(":student_id", $student_id); 
+        $student_enrollment_query->bindValue(":semester", $SELECTED_SEMESTER); 
+        
+        $student_enrollment_query->execute();
+        if($student_enrollment_query->rowCount() > 0){
+
+            $output = $student_enrollment_query->fetchAll(PDO::FETCH_ASSOC);
+
+            return $output;
+            // print_r($d);
+
+        }
+ 
+        return null;
+
+    }
+
     public function GetSHSTransfereeEnrolledSubjectSemester($username,
         $student_id, $GRADE_LEVEL, $SEMESTER){
 
@@ -2197,7 +2237,8 @@
 
         $query = $this->con->prepare("SELECT 
 
-            t1.student_id, t1.course_id, t2.school_year_id, t2.period 
+            t1.student_id, t1.course_id, t2.school_year_id, t2.period
+
             FROM enrollment as t1
 
             INNER JOIN school_year as t2 ON t1.school_year_id = t2.school_year_id
@@ -2220,9 +2261,10 @@
         if($query->rowCount() > 0){
 
             // echo "wee";
-
             $result = $query->fetch(PDO::FETCH_ASSOC);
             $enrollment_student_course_id = $result['course_id'];
+
+            // echo $enrollment_student_course_id;
         }
 
         // Enrollment student course_id
@@ -2389,7 +2431,8 @@
 
         $query = $this->con->prepare("SELECT 
 
-            e.student_id, e.course_id, sy.school_year_id, sy.period, sy.term
+            e.student_id, e.course_id, sy.school_year_id, sy.period, sy.term,
+            e.enrollment_id
 
             FROM enrollment e
 

@@ -14,6 +14,10 @@
         $course_id = $_GET['course_id'];
         $school_year_id = $_GET['sy_id'];
 
+        // echo $course_id;
+        // echo "<br>";
+        // echo $school_year_id;
+
         ?>
             <div class="row col-md-10">
                 <div class="offset-md-1">
@@ -29,6 +33,7 @@
                     <tbody>
                         <?php 
 
+                            $enrollment_status = "enrolled";
                             $sql = $con->prepare("SELECT 
                             
                                     t3.program_id, t2.student_id,
@@ -38,13 +43,16 @@
                             
                                     LEFT JOIN student as t2 ON t2.student_id=t1.student_id
                                     LEFT JOIN course as t3 ON t3.course_id=t1.course_id
+
+
                                     WHERE t1.course_id=:course_id
                                     AND t1.school_year_id=:school_year_id
-
+                                    AND t1.enrollment_status=:enrollment_status
                             ");
 
                             $sql->bindValue(":course_id", $course_id);
                             $sql->bindValue(":school_year_id", $school_year_id);
+                            $sql->bindValue(":enrollment_status", $enrollment_status);
                             $sql->execute();
                             if($sql->rowCount() > 0){
 

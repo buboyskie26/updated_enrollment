@@ -1,28 +1,26 @@
 <?php
     include('../registrar_enrollment_header.php');
     include('../../enrollment/classes/StudentEnroll.php');
+    include('../../enrollment/classes/Enrollment.php');
     include('../../enrollment/classes/StudentSubject.php');
     include('../../enrollment/classes/Section.php');
     include('../../admin/classes/Subject.php');
 
  if(isset($_GET['inserted'])){
 
-    if(
-        isset($_GET['id']) 
-        && isset($_GET['p_id'])
+    if(isset($_GET['id']) 
         && isset($_GET['e_id'])
-        && isset($_SESSION['selected_course_id'])
-    
-    ){
+        && isset($_SESSION['selected_course_id'])){
 
         $selected_course_id = $_SESSION['selected_course_id'];
         $student_id = $_GET['id'];
-        $pending_enrollees_id = $_GET['p_id'];
+        // $pending_enrollees_id = $_GET['p_id'];
         $enrollment_id = $_GET['e_id'];
 
         // echo $student_id;
         $section = new Section($con, $selected_course_id);
         $studentSubject = new StudentSubject($con);
+
         $subject = new Subject($con, $registrarLoggedIn);
 
         $section_name = $section->GetSectionName();
@@ -35,7 +33,7 @@
         $current_school_year_term = $school_year_obj['term'];
         $current_school_year_period = $school_year_obj['period'];
 
-        if(isset($_POST['change_status'])){
+        if(isset($_POST['change_status_os'])){
 
             $subject_id = $_POST['subject_id'];
             $student_id = $_POST['student_id'];
@@ -76,9 +74,8 @@
 
                     if($remove_passed->execute()){
                        
-                        AdminUser::success("Non-Credited subject #$subject_id has changed into Credited", "view_student_transferee_enrollment_review.php?inserted=true&id=$student_id&p_id=$pending_enrollees_id&e_id=$enrollment_id");
-
-                        // header("Location: view_student_transferee_enrollment_review.php?inserted=true&id=$student_id");
+                        AdminUser::success("Non-Credited subject #$subject_id has changed into Credited", "view_student_transferee_enrollment_review_student.php?inserted=true&id=$student_id&e_id=$enrollment_id");
+                        // header("Location: view_student_transferee_enrollment_review_student.php?inserted=true&id=$student_id");
                         exit();
                     }
                 }
@@ -124,19 +121,18 @@
 
                     if($add->execute()){
                       
-                        AdminUser::success("Non-Credited subject #$subject_id has changed into Credited", "view_student_transferee_enrollment_review.php?inserted=true&id=$student_id&p_id=$pending_enrollees_id&e_id=$enrollment_id");
+                        AdminUser::success("Non-Credited subject #$subject_id has changed into Credited", "view_student_transferee_enrollment_review_student.php?inserted=true&id=$student_id&e_id=$enrollment_id");
                         exit();
                     }
 
                 }
 
 
-
              
             }
             # Update
         }
-        if(isset($_POST['remove_status'])){
+        if(isset($_POST['remove_status_os'])){
 
             $subject_id = $_POST['subject_id'];
             $student_id = $_POST['student_id'];
@@ -171,14 +167,10 @@
                     $delete->bindValue(":school_year_id", $current_school_year_id);
                     if($delete->execute()){
 
-                        AdminUser::remove("Subject Id #$subject_id has been removed", "view_student_transferee_enrollment_review.php?inserted=true&id=$student_id&p_id=$pending_enrollees_id&e_id=$enrollment_id");
+                        AdminUser::remove("Subject Id #$subject_id has been removed", "view_student_transferee_enrollment_review_student.php?inserted=true&id=$student_id&e_id=$enrollment_id");
                         exit();
                     }
                 }
-
-
-
-                
             }
 
             # Non credited Subject
@@ -193,14 +185,15 @@
                 $delete->bindValue(":school_year_id", $current_school_year_id);
                 if($delete->execute()){
 
-                    AdminUser::remove("Subject Id #$subject_id has been removed", "view_student_transferee_enrollment_review.php?inserted=true&id=$student_id&p_id=$pending_enrollees_id&e_id=$enrollment_id");
+                    AdminUser::remove("Subject Id #$subject_id has been removed",
+                        "view_student_transferee_enrollment_review_student.php?inserted=true&id=$student_id&e_id=$enrollment_id");
                     exit();
                 }
             }
 
         }
 
-        if(isset($_POST['remove_added_btn'])){
+        if(isset($_POST['remove_added_btn_os'])){
 
             $student_subject_id = $_POST['student_subject_id'];
             $subject_id = $_POST['subject_id'];
@@ -216,7 +209,8 @@
 
             if($delete->execute()){
 
-                AdminUser::remove("Subject Id #$subject_id has been removed", "view_student_transferee_enrollment_review.php?inserted=true&id=$student_id&p_id=$pending_enrollees_id&e_id=$enrollment_id");
+                AdminUser::remove("Subject Id #$subject_id has been removed",
+                    "view_student_transferee_enrollment_review_student.php?inserted=true&id=$student_id&e_id=$enrollment_id");
                 exit();
             }
         }
@@ -224,6 +218,20 @@
         if($studentSubject->CheckIfStudentInsertedSubject($student_id,
             $enrollment_id, $current_school_year_id) == true){
 
+            if(isset($_POST['mark_as_final_os'])){
+
+                $enrollment = new Enrollment($con, null);
+                $url = "../admission/index.php";
+                
+                // $enrollment_id = $_POST['enrollment_id'];
+                $wasSuccess = $enrollment->MarkAsRegistrarEvaluatedByEnrollmentId($enrollment_id);
+
+                if($wasSuccess == true){
+
+                    AdminUser::success("Student has been given subjects", "$url");
+                    exit();
+                }
+            }
             ?>
                 <div class="row col-md-12">
                     <h4>Student Selected Section: <?php echo $section_name; ?> Subjects</h4>
@@ -324,10 +332,10 @@
                                                             <input type='hidden' name='student_subject_id' value='$student_subject_id'>
                                                             <input type='hidden' name='subject_title' value='$subject_title'>
                                                             <input type='hidden' name='course_id' value='$course_id'>
-                                                            <button type='submit' name='change_status' class='btn btn-outline-success'>Change</button>
+                                                            <button type='submit' name='change_status_os' class='btn btn-outline-success'>Change</button>
                                                             <button 
                                                                 type='submit'
-                                                                name='remove_status' class='btn btn-danger'
+                                                                name='remove_status_os' class='btn btn-danger'
                                                                 onclick=\"return confirm('Are you sure you want to remove?');\"
                                                                 >Remove
                                                             </button>
@@ -348,120 +356,126 @@
                         <?php 
                             if(count($subject->GetNewTransfereeAddedSubject($student_id,
                                 $current_school_year_id, $selected_course_id)) > 0){
-                                    
-                                    ?>
-                                        <table class="table table-bordered table-hover "  style="font-size:15px" cellspacing="0"> 
-                                            <thead>
-                                                <tr class="text-center"">
-                                                    <th>Id</th>
-                                                    <th>Section</th>
-                                                    <th>Code</th>
-                                                    <th>Description</th>
-                                                    <th>Unit</th>
-                                                    <th>Pre-Requisite</th>
-                                                    <th>Type</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
+                                ?>
+                                    <table class="table table-bordered table-hover "  style="font-size:15px" cellspacing="0"> 
+                                        <thead>
+                                            <tr class="text-center"">
+                                                <th>Id</th>
+                                                <th>Section</th>
+                                                <th>Code</th>
+                                                <th>Description</th>
+                                                <th>Unit</th>
+                                                <th>Pre-Requisite</th>
+                                                <th>Type</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
 
-                                            <tbody>
-                                                <?php 
+                                        <tbody>
+                                            <?php 
 
-                                                    // $addedSubjects = $subject->GetTransfereeAddedSubject($student_id,
-                                                    //     $current_school_year_id, $selected_course_id);
+                                                $addedSubjects = $con->prepare("SELECT 
+                                                    t1.is_transferee, t1.is_final,
+                                                    t1.student_subject_id as t2_student_subject_id, 
+                                                    t3.student_subject_id as t3_student_subject_id,
 
-                                                    $addedSubjects = $con->prepare("SELECT 
-                                                        t1.is_transferee, t1.is_final,
-                                                        t1.student_subject_id as t2_student_subject_id, 
-                                                        t3.student_subject_id as t3_student_subject_id,
+                                                    t4.program_section,
+                                                    t2.* FROM student_subject as t1
 
-                                                        t4.program_section,
-                                                        t2.* FROM student_subject as t1
+                                                    INNER JOIN subject as t2 ON t2.subject_id = t1.subject_id
+                                                    LEFT JOIN course as t4 ON t4.course_id = t2.course_id
+                                                    LEFT JOIN student_subject_grade as t3 ON t3.student_subject_id = t1.student_subject_id
 
-                                                        INNER JOIN subject as t2 ON t2.subject_id = t1.subject_id
-                                                        LEFT JOIN course as t4 ON t4.course_id = t2.course_id
-                                                        LEFT JOIN student_subject_grade as t3 ON t3.student_subject_id = t1.student_subject_id
+                                                    WHERE t1.student_id=:student_id
+                                                    AND t1.is_final=0
+                                                    AND t1.school_year_id=:school_year_id
+                                                    AND t2.course_id!=:course_id
 
-                                                        WHERE t1.student_id=:student_id
-                                                        AND t1.is_final=0
-                                                        AND t1.school_year_id=:school_year_id
-                                                        AND t2.course_id!=:course_id
+                                                    ");
 
-                                                        ");
-
-                                                    $addedSubjects->bindValue(":student_id", $student_id);
-                                                    $addedSubjects->bindValue(":school_year_id", $current_school_year_id);
-                                                    $addedSubjects->bindValue(":course_id", $selected_course_id);
-                                                    $addedSubjects->execute();
-
-                                                    if($addedSubjects->rowCount() > 0){
-
-                                                        while($row = $addedSubjects->fetch(PDO::FETCH_ASSOC)){
-
-                                                            $subject_id = $row['subject_id'];
-                                                            $subject_code = $row['subject_code'];
-                                                            $subject_title = $row['subject_title'];
-                                                            $pre_requisite = $row['pre_requisite'];
-                                                            $subject_type = $row['subject_type'];
-                                                            $unit = $row['unit'];
-                                                            $course_level = $row['course_level'];
-                                                            $program_section = $row['program_section'];
-                                                            $program_section = $row['program_section'];
-                                                            $student_subject_id = $row['t2_student_subject_id'];
-
-                                                            echo "
-                                                                <tr class='text-center'>
-                                                                    <td>$subject_id</td>
-                                                                    <td>$program_section</td>
-                                                                    <td>$subject_code</td>
-                                                                    <td>$subject_title</td>
-                                                                    <td>$unit</td>
-                                                                    <td>$pre_requisite</td>
-                                                                    <td>$subject_type</td>
-                                                                    <td>
-                                                                        <form method='POST'>
-
-                                                                            <input type='hidden' name='student_subject_id' value='$student_subject_id'>
-                                                                            <input type='hidden' name='subject_id' value='$subject_id'>
-                                                                            <button 
-                                                                                type='submit'
-                                                                                name='remove_added_btn' class='btn btn-danger'
-                                                                                onclick=\"return confirm('Are you sure you want to remove?');\"
-                                                                                >Remove
-                                                                            </button>
-                                                                        </form>
-                                                                    </td>
-                                                                </tr>
-                                                            ";
-                                                        }
-
-                                                    }
-                                                ?>
-
-                                            </tbody>
-
+                                                $addedSubjects->bindValue(":student_id", $student_id);
+                                                $addedSubjects->bindValue(":school_year_id", $current_school_year_id);
+                                                $addedSubjects->bindValue(":course_id", $selected_course_id);
+                                                $addedSubjects->execute();
                                             
-                                        </table>
+                                                if($addedSubjects->rowCount() > 0){
+
+                                                    while($row = $addedSubjects->fetch(PDO::FETCH_ASSOC)){
+
+                                                        $subject_id = $row['subject_id'];
+                                                        $subject_code = $row['subject_code'];
+                                                        $subject_title = $row['subject_title'];
+                                                        $pre_requisite = $row['pre_requisite'];
+                                                        $subject_type = $row['subject_type'];
+                                                        $unit = $row['unit'];
+                                                        $course_level = $row['course_level'];
+                                                        $program_section = $row['program_section'];
+                                                        $program_section = $row['program_section'];
+                                                        $student_subject_id = $row['t2_student_subject_id'];
+
+                                                        echo "
+                                                            <tr class='text-center'>
+                                                                <td>$subject_id</td>
+                                                                <td>$program_section</td>
+                                                                <td>$subject_code</td>
+                                                                <td>$subject_title</td>
+                                                                <td>$unit</td>
+                                                                <td>$pre_requisite</td>
+                                                                <td>$subject_type</td>
+                                                                <td>
+                                                                    <form method='POST'>
+
+                                                                        <input type='hidden' name='student_subject_id' value='$student_subject_id'>
+                                                                        <input type='hidden' name='subject_id' value='$subject_id'>
+                                                                        <button 
+                                                                            type='submit'
+                                                                            name='remove_added_btn_os' class='btn btn-danger'
+                                                                            onclick=\"return confirm('Are you sure you want to remove?');\"
+                                                                            >Remove
+                                                                        </button>
+                                                                    </form>
+                                                                </td>
+                                                            </tr>
+                                                        ";
+                                                    }
+
+                                                }
+                                            ?>
+
+                                        </tbody>
 
                                         
-                                    <?php
+                                    </table>
+                                <?php
                             }else{
                                 echo "
                                     <h3 class='text-center text-info'>No Added Data Found.</h3>
-
                                 ";
                             }
                         ?>
 
-                        <button type="button" onclick="confirmUpdate(<?php echo $pending_enrollees_id; ?>,
+
+
+                        <!-- <button type="button" onclick="confirmUpdate(<?php echo $pending_enrollees_id; ?>,
                             <?php echo $student_id; ?>, <?php echo $enrollment_id; ?>)" 
                             name=""
-                            class="btn btn btn-success">
-                            Mark as Final
-                        </button>
-                        <a href="../admission/transferee_process_enrollment.php?step3=true&id=<?php echo $pending_enrollees_id;?>&selected_course_id=<?php echo $selected_course_id?>">
-                            <button class="btn btn-sm btn-primary">Go back</button>
-                        </a>
+                        class="btn btn-sm btn-success">Mark as final</button> -->
+
+                        <div class="row col-md-12">
+                            <div class="col-md-2">
+                                <form method="POST">
+                                    <button type="submit" name="mark_as_final_os" class="btn btn-sm btn-success">Mark as Final</button>
+                                </form>
+                            </div>
+                            <div class="col-md-2">
+                                    <a href="../admission/transferee_process_enrollment.php?step3=true&st_id=<?php echo $student_id;?>&selected_course_id=<?php echo $selected_course_id?>">
+                                        <button class="btn btn-sm btn-primary">Go back</button>
+                                    </a>
+                            </div>
+                        </div>
+                  
+
+
                     </div>
                 </div>
             <?php
@@ -479,37 +493,38 @@
 
 <script>
 
-    function confirmUpdate(pending_enrollees_id, student_id, enrollment_id) {
-        Swal.fire({
-            icon: 'question',
-            title: 'Are you sure',
-            showCancelButton: true,
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // console.log("nice")
-                $.ajax({
-                    url: '../ajax/pending/update_pending.php',
-                    type: 'POST',
-                    data: {
-                       pending_enrollees_id, student_id, enrollment_id
-                    },
-                    success: function(response) {
-                        if(response == "success"){
-                            window.location.href = '../admission/index.php';
-                        }
+    // function confirmUpdate(pending_enrollees_id, student_id, enrollment_id) {
+    //     Swal.fire({
+    //         icon: 'question',
+    //         title: 'Are you sure',
+    //         showCancelButton: true,
+    //         confirmButtonText: 'Yes',
+    //         cancelButtonText: 'No'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             // console.log("nice")
+    //             $.ajax({
+    //                 url: '../ajax/pending/update_pending.php',
+    //                 type: 'POST',
+    //                 data: {
+    //                    pending_enrollees_id, student_id, enrollment_id
+    //                 },
+    //                 success: function(response) {
+    //                     if(response == "success"){
+    //                         window.location.href = '../admission/index.php';
+    //                     }
 
-                        // console.log(response)
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle any errors here
-                        console.log(error);
-                    }
-                });
-            } else {
-                // User clicked "No," perform alternative action or do nothing
-            }
-        });
-    }
+    //                     // console.log(response)
+    //                 },
+    //                 error: function(xhr, status, error) {
+    //                     // Handle any errors here
+    //                     console.log(error);
+    //                 }
+    //             });
+    //         } else {
+    //             // User clicked "No," perform alternative action or do nothing
+    //         }
+    //     });
+    // }
+
 </script>

@@ -12,6 +12,11 @@
 
     $studentEnroll = new StudentEnroll($con);
 
+    $school_year_obj = $studentEnroll->GetActiveSchoolYearAndSemester();
+
+    $current_school_year_id = $school_year_obj['school_year_id'];
+    $current_school_year_term = $school_year_obj['term'];
+    $current_school_year_period = $school_year_obj['period'];
 
     if(isset($_GET['id'])){
         $program_id = $_GET['id'];
@@ -71,7 +76,8 @@
                                     $school_year_term = $row['school_year_term'];
 
                                     $section = new Section($con, $course_id);
-                                    $totalStudent = $section->GetTotalNumberOfStudentInSection($course_id);
+                                    $totalStudent = $section->GetTotalNumberOfStudentInSection($course_id,
+                                        $current_school_year_id);
 
                                     $scheduleSubject = $section->GetSectionTotalScheduleSubjects($course_id);
                                     $totalSectionSubject = $section->GetSectionTotalSubjects($course_id);

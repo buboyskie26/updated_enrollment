@@ -57,8 +57,8 @@
             $result .= $this->createNavigation("$strand_section",
                 "../assets/images/icons/home.png", "Sections");
             
-            $result .= $this->createNavigation("$subject_url",
-                "../assets/images/icons/home.png", "Subject");
+            // $result .= $this->createNavigation("$subject_url",
+            //     "../assets/images/icons/home.png", "Subject");
 
             $result .= $this->createNavigation("$account_url",
                 "../assets/images/icons/home.png", "Account");

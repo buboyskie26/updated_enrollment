@@ -16,7 +16,7 @@
     // var_dump($adminLoggedInObj);
 
     if (!isset($_SESSION['adminLoggedIn']) || $_SESSION['adminLoggedIn'] == '') {
-        header("location: /dcbt/adminLogin.php");
+        header("Location: /dcbt/adminLogin.php");
         exit();
     }
 ?>

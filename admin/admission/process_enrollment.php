@@ -254,17 +254,15 @@
                     <div class="container mt-4 mb-2">
 
                         <h3 class="text-center text-success">Available Section</h3>
-                        <a href="../section/create.php">
+                        <!-- <a href="../section/create.php">
                             <button class="mb-2 btn btn-sm btn-success" onclick="<?php 
                                 $_SESSION['pending_enrollees_id'] = $pending_enrollees_id; 
                                 $_SESSION['process_enrollment'] = 'non_transferee';
-                                
                                 ?>">
-                                
                                 Create Section
                             </button>
 
-                        </a>
+                        </a> -->
 
                         <form method="POST">
                             <table id="availableTransfereeSectionTable" class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
@@ -273,6 +271,7 @@
                                         <th rowspan="2">Section Id</th>
                                         <th rowspan="2">Section Name</th>
                                         <th rowspan="2">Student</th>
+                                        <th rowspan="2">Capacity</th>
                                         <th rowspan="2">Term</th>
                                         <th rowspan="2"></th>
                                     </tr>	
@@ -299,18 +298,36 @@
 
                                                 $course_id = $get_course['course_id'];
                                                 $program_section = $get_course['program_section'];
+                                                $capacity = $get_course['capacity'];
                                                 $school_year_term = $get_course['school_year_term'];
                                                 $section = new Section($con, $course_id);
 
+                                                $section_obj = $section->GetSectionObj($course_id);
+
                                                 $totalStudent = $section->GetTotalNumberOfStudentInSection($course_id, $current_school_year_id);
+                                                $capacity = $section_obj['capacity'];
+
+                                                $program_id = $section_obj['program_id'];
+                                                $course_level = $section_obj['course_level'];
 
                                                 $removeSection = "removeSection($course_id, \"$program_section\")";
+
+                                                // echo $totalStudent;
+                                                // echo $program_id;
+
+
+                                                $new_program_section = $section->AutoCreateAnotherSection($program_section);
+
+                                                // echo $program_section;
+                                                // echo "<br>";
+                                                // echo $new_program_section;
 
                                                 echo "
                                                 <tr class='text-center'>
                                                     <td>$course_id</td>
                                                     <td>$program_section</td>
                                                     <td>$totalStudent</td>
+                                                    <td>$capacity</td>
                                                     <td>$school_year_term</td>
                                                     <td>
                                                         <input name='selected_course_id' class='radio' value='$course_id' type='radio'>
@@ -327,7 +344,8 @@
                                 </tbody>
                             </table>
 
-                            <button type="submit" name="pending_choose_section" class="btn btn-primary">Proceed to Step 3</button>
+                            <button type="submit" name="pending_choose_section"
+                                class="btn btn-primary">Proceed to Step 3</button>
 
                         </form>
                     </div> 
@@ -380,7 +398,9 @@
                 $section = new Section($con, $selected_course_id);
 
                 $section_name = $section->GetSectionName();
-
+                $section_course_level = $section->GetSectionGradeLevel();
+                
+                // echo $section_course_level;
                 
                 ?>
                     <div class="row col-md-12">
@@ -425,9 +445,11 @@
                                             LEFT JOIN teacher as t4 ON t4.teacher_id = t3.teacher_id
 
                                             WHERE t1.course_id=:course_id
+                                            AND t1.semester=:semester
                                             ");
 
                                         $sql->bindValue(":course_id", $selected_course_id);
+                                        $sql->bindValue(":semester", $current_school_year_period);
                                         // $sql->bindValue(":course_level", $course_level);
 
                                         $sql->execute();
@@ -471,7 +493,7 @@
                             </table>
                             <!-- <button type="button" name="pending_choose_section" class="btn btn-primary">Confirm</button> -->
                             <button onclick='confirmPendingValidation("<?php echo $firstname ?>", "<?php echo $lastname ?>", "<?php echo $middle_name ?>", "<?php echo $password ?>", "<?php echo $program_id ?>", "<?php echo $civil_status ?>", "<?php echo $nationality ?>", "<?php echo $contact_number ?>", "<?php echo $birthday ?>", "<?php echo $age ?>", "<?php echo $guardian_name ?>", "<?php echo $guardian_contact_number ?>", "<?php echo $sex ?>", "<?php echo $student_status ?>", "<?php echo $pending_enrollees_id ?>", "<?php echo $address; ?>", "<?php echo $lrn; ?>", "<?php echo $selected_course_id; ?>", "<?php echo $enrollment_form_id; ?>", "<?php echo $religion; ?>", "<?php echo $birthplace; ?>", "<?php echo $email; ?>")' name='confirm_validation_btn' class='btn btn-success btn-sm'>Confirm</button>
-
+                            
                         </div> 
                     </div>
 

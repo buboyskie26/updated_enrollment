@@ -10,6 +10,12 @@
     $old_enrollee = new OldEnrollees($con, $enroll);
     
     // echo "im in subject enroll";
+
+    if(!AdminUser::IsRegistrarAuthenticated()){
+
+        header("Location: /dcbt/adminLogin.php");
+        exit();
+    }
 ?>
 
     <div class="row col-md-12">

@@ -1,10 +1,15 @@
 <?php 
 
-    include('../registrar_enrollment_header.php');
+    include('../admin_enrollment_header.php');
     $createUrl = directoryPath . "create.php";
     $templateUrl = directoryPath . "template.php";
 
     // echo "im in subject enroll";
+
+    if(!AdminUser::IsAuthenticated()){
+        header("Location: /dcbt/adminLogin.php");
+        exit();
+    }
 ?>
 
 

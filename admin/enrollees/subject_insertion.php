@@ -6,6 +6,7 @@
     require_once('../../enrollment/classes/OldEnrollees.php');
     require_once('../../enrollment/classes/Pending.php');
     require_once('../../enrollment/classes/Enrollment.php');
+    require_once('../../enrollment/classes/Section.php');
     include('../../includes/classes/Student.php');
 
     require_once('../classes/Course.php');
@@ -59,7 +60,6 @@
         $student_course_id = $studentEnroll->GetStudentCourseId($student_username);
         $student_program_id = $studentEnroll->GetStudentProgramId($student_course_id);
 
-
         // echo $student_id;
         $student_program_section = $studentEnroll->GetStudentProgramSection($student_course_id);
 
@@ -77,12 +77,79 @@
         
       
         $enrollment = new Enrollment($con, $studentEnroll);
+        $section = new Section($con, $student_course_id);
+
+
+        $isSectionFull = $section->CheckSectionIsFull($student_course_id);
+
 
         $unique_form_id = $enrollment->GenerateEnrollmentFormId();
 
         $get_student_enrollment_form_id = $enrollment->GetEnrollmentFormId($student_id, $student_course_id, $school_year_id);
 
-        $enrollment_id = $enrollment->GetEnrollmentId($student_id, $student_course_id, $school_year_id);
+        $enrollment_id = $enrollment->GetEnrollmentId($student_id,
+            $student_course_id, $school_year_id);
+
+        // echo "enrollment_id: $enrollment_id";
+
+        $student_section_obj = $section->GetSectionObj($student_course_id);
+
+        $student_curren_course_program_id = $student_section_obj['program_id'];
+        $student_current_course_level = $student_section_obj['course_level'];
+        $student_current_capacity = $student_section_obj['capacity'];
+
+
+        $updatedTotalStudent = $section->GetTotalNumberOfStudentInSection($student_course_id,
+            $school_year_id);
+
+        // echo $updatedTotalStudent . " school ear";
+
+        if(isset($_POST['section_full_btn'])){
+
+            # Get Aaailable section next to the recently full section.
+            $get_prev_section = $con->prepare("SELECT course_id FROM course
+                WHERE program_id=:program_id
+                AND active=:active
+                AND course_level=:course_level
+                AND school_year_term=:school_year_term
+                ORDER BY course_id DESC
+                LIMIT 1");
+            
+            $get_prev_section->bindValue(":program_id", $student_program_id);
+            $get_prev_section->bindValue(":active", "yes");
+            $get_prev_section->bindValue(":course_level", $student_course_level);
+            $get_prev_section->bindValue(":school_year_term", $current_school_year_term);
+            $get_prev_section->execute();
+
+            if($get_prev_section->rowCount() > 0){
+
+                $available_course_id = $get_prev_section->fetchColumn();
+
+                $available_section_obj = $section->GetSectionObj($available_course_id);
+
+                $available_section_name = $available_section_obj['program_section'];
+
+                $update_enrollment_success = $enrollment->UpdateSHSStudentEnrollmentCourseId(
+                    $enrollment_id, $available_course_id);
+                
+                $update_student_course_id = $student->UpdateStudentCourseId(
+                    $student_course_id, $student_id, $available_course_id);
+
+                if($update_enrollment_success == true && $update_student_course_id){
+
+                    AdminUser::success("Student section moved to: $available_section_name",
+                        "subject_insertion.php?username=$student_username&id=$student_id");
+                    exit();
+                }
+
+            }                
+
+            # Update enrollment student course_id
+
+
+
+
+        }
 
         // Student who click the apply for next semester as new semester had established
         if($old_student_status == "Regular" || $old_student_status == "Returnee" || $old_student_status == "Transferee"){
@@ -90,7 +157,7 @@
             if(isset($_POST['subject_load_btn']) 
                 && isset($_POST['unique_enrollment_form_id']) 
                 ){
-
+                
                 // $subject_ids = $_POST['subject_ids'];
                 
                 // $pre_subject_ids = $_POST['pre_subject_ids'];
@@ -113,114 +180,6 @@
                     VALUES(:student_id, :subject_id, :school_year_id,
                         :course_level, :enrollment_id, :subject_program_id)");
 
-
-                // foreach ($subject_ids as $key => $value) {
-                
-                //     $subject_id = $value;
-                //     $query_sub = $con->prepare("SELECT pre_subject_id 
-                //         FROM subject
-                //         WHERE subject_id=:subject_id
-                //         LIMIT 1");
-
-                //     $query_sub->bindValue(":subject_id", $subject_id);
-                //     $query_sub->execute();
-
-                //     $pre_subject_id = $query_sub->rowCount() > 0 ? $query_sub->fetchColumn() : -1;
-
-                //     $array_error = [];
-
-                //     # Validation of <prerequisite
-                //     // TODO: FIX THE BUG.
-                //     $validSemesterScope = $studentEnroll->CheckPreRequisiteSubject($student_username, $subject_id);
-
-                //     if($validSemesterScope == false){
-                //         $errorMessage = "Not within the semester scope";
-                //         echo $errorMessage;
-                //         array_push($array_error, $errorMessage);
-                //         // echo "<script>alert('$errorMessage');</script>";
-                //     }
-
-                //     if($pre_subject_id != 0){
-                //         // echo $pre_subject_id;
-
-                //         $failedSubjects = $studentEnroll->GetSHSStudentFailedSubject($student_username);
-                //         $unavailable_array = [];
-
-                //         foreach ($failedSubjects as $key => $val) {
-                //             //
-                //             if($val['subject_id'] == $pre_subject_id){
-                //                 // Subject id that are unavailable.
-                //                 array_push($unavailable_array, $subject_id);
-                //             }
-                //         }
-                //         // print_r($unavailable_array);
-                //         // Better performance validation.
-                //         $unAvailableArray = array();
-
-                //         foreach ($unavailable_array as $key => $subject_id_failed) {
-                //             // subject_id_failed as a key and true is a value
-                //             $unAvailableArray[$subject_id_failed] = true;
-                //         }
-
-                //         if(isset($unAvailableArray[$subject_id])){
-                //             array_push($array_error, $subject_id);
-                //             echo "subject_id $subject_id is not available to take";
-                //             echo "<br>";
-                //         }
-                //     }
-                //     # 2. If subject_id is already in the student_subject (doubled enrolled).
-                //     # 3. Check if the subject is within only the scoped of 
-                //     # what subject should be included in the subject loads.
-                //     # 4. If the subject that registrar wanted to enroll must be marked first.
-                //     $shsStudentSubject = $oldEnroll->GetSHSStudentEnrolledSubjects($student_username, $subject_id);
-                
-                //     $subjectLoadsIds = array();
-                //     // Loop through the results and add the subject IDs to the array
-                //     foreach ($shsStudentSubject as $key => $students_enrolled_subject) {
-                //         // subject_id as a key and true is a value
-                //         $subjectLoadsIds[$students_enrolled_subject['subject_id']] = true;
-                //     }
-
-                //     // Check if the subject ID exists in the array
-                //     # 2. If subject_id is already in the student_subject (doubled enrolled).
-                //     if (isset($subjectLoadsIds[$subject_id])) {
-                //         echo $subject_id . " is already in the subject loads";
-                //         array_push($array_error, $subject_id);
-                //         echo "<br>";
-                //     }
-                    
-                //     if(empty($array_error))
-                //     {
-                //         // $sql_insert = $con->prepare("INSERT INTO student_subject 
-                //         //     (student_id, subject_id, school_year_id, course_level)
-                //         //     VALUES(:student_id, :subject_id, :school_year_id, :course_level)");
-
-                //         $sql_insert->bindValue(":student_id", $student_id);
-                //         $sql_insert->bindValue(":subject_id", $subject_id);
-                //         $sql_insert->bindValue(":school_year_id", $school_year_id);
-                //         $sql_insert->bindValue(":course_level", $student_course_level);
-
-                //         if($sql_insert->execute()){
-                //         // if($sql_insert->execute()){
-
-                //             $successInsertingSubjectLoad = true;
-                //             array_push($array_success, $subject_id);
-                //         }
-                //         // If new enrollee Update into Old
-                        
-                //         // $newIntoOldSuccess = $oldEnroll->UpdateSHSStudentNewToOld($student_id);
-                //     }
-                // }
-                // if($isSectionFull == true){
-                //     echo "
-                //         <script>
-                //             alert('Section is full. It should validated at registering the student.!')
-                //         </script>
-                //     ";
-                //     array_push($array_error, "Full section");
-                // }
-                
-                // 
                 if($successInsertingSubjectLoad == true 
                     ){
                     // echo "hitt";
@@ -301,6 +260,8 @@
            
                 if($is_inserted_all == true){
 
+                    $isSubjectCreated = false;
+
                     # Enrolled Student.
 
                     $wasSuccess = $oldEnroll->EnrolledStudentInTheEnrollmentv2($school_year_id,
@@ -308,19 +269,121 @@
 
                     if($wasSuccess){
 
+                        $section_obj = $section->GetSectionObj($student_course_id);
+
+                        $sectionTotalStudent = $section->GetTotalNumberOfStudentInSection($student_course_id,
+                            $school_year_id);
+
+                        $capacity = $section_obj['capacity'];
+                        $program_section = $section_obj['program_section'];
+                        $course_program_id = $section_obj['program_id'];
+                        $course_level = $section_obj['course_level'];
+                        # Check if section is full
+
+                        if($sectionTotalStudent >= $capacity 
+                            && $current_school_year_semester == "First"){
+
+                            # yes mark as full
+                            # Update Previous Section into Is FULL.
+                            $update_isfull = $section->SetSectionIsFull($student_course_id);
+                            
+                            $new_program_section = $section->AutoCreateAnotherSection($program_section);
+
+                            $createNewSection = $section->CreateNewSection($new_program_section, 
+                                $course_program_id, $course_level,
+                                $current_school_year_term);
+
+                            # Create Subject In that section
+                            
+                            if($createNewSection == true && $update_isfull == true){
+
+                                $createNewSection_Id = $con->lastInsertId();
+
+                                $get_subject_program = $con->prepare("SELECT * 
+                                
+                                    FROM subject_program
+
+                                    WHERE program_id=:program_id
+                                    AND course_level=:course_level
+                                    ");
+
+                                $get_subject_program->bindValue(":program_id", $course_program_id);
+                                $get_subject_program->bindValue(":course_level", $course_level);
+                                $get_subject_program->execute();
+
+                                if($get_subject_program->rowCount() > 0){
+
+                                    $insert_section_subject = $con->prepare("INSERT INTO subject
+                                        (subject_title, description, subject_program_id, unit, semester, program_id, course_level, course_id, subject_type, subject_code, pre_requisite)
+                                        VALUES(:subject_title, :description, :subject_program_id, :unit, :semester, :program_id, :course_level, :course_id, :subject_type, :subject_code, :pre_requisite)");
+
+                                    while($row = $get_subject_program->fetch(PDO::FETCH_ASSOC)){
+
+                                        $program_program_id = $row['subject_program_id'];
+                                        $program_course_level = $row['course_level'];
+                                        $program_semester = $row['semester'];
+                                        $program_subject_type = $row['subject_type'];
+                                        $program_subject_title = $row['subject_title'];
+                                        $program_subject_description = $row['description'];
+                                        $program_subject_unit = $row['unit'];
+                                        $program_subject_pre_requisite = $row['pre_req_subject_title'];
+
+                                        $program_subject_code = $row['subject_code'] ."-". $new_program_section; 
+                                        // $program_subject_code = $row['subject_code'];
+
+                                        $insert_section_subject->bindValue(":subject_title", $program_subject_title);
+                                        $insert_section_subject->bindValue(":description", $program_subject_description);
+                                        $insert_section_subject->bindValue(":subject_program_id", $program_program_id);
+                                        $insert_section_subject->bindValue(":unit", $program_subject_unit);
+                                        $insert_section_subject->bindValue(":semester", $program_semester);
+                                        $insert_section_subject->bindValue(":program_id", $course_program_id);
+                                        $insert_section_subject->bindValue(":course_level", $program_course_level);
+                                        $insert_section_subject->bindValue(":course_id", $createNewSection_Id);
+                                        $insert_section_subject->bindValue(":subject_type", $program_subject_type);
+                                        $insert_section_subject->bindValue(":subject_code", $program_subject_code);
+                                        $insert_section_subject->bindValue(":pre_requisite", $program_subject_pre_requisite);
+
+                                        // $insert_section_subject->execute();
+                                        if($insert_section_subject->execute()){
+                                            $isSubjectCreated = true;
+                                            // echo "New Section $new_program_section is created and student has confirmed.";
+                                        }
+                                    }
+                                    // if($isSubjectCreated == true){
+                                    //     // echo "Successfully populated subjects in course_id $course_id";
+                                    // }
+                                }
+                            }
+
+                            
+                        }
+                   
+
                         # Update student table
                         $newToOldSuccess = $oldEnroll->UpdateSHSStudentNewToOld($student_id);
 
-                        if($newToOldSuccess){
+                        if($newToOldSuccess && $isSubjectCreated == false){
 
                             # redirect to the receipt page.
                             if($subjectInitialized == true){
-
+                                // echo "truee";
                                 AdminUser::success("Successfully inserted the subjects, Student has been officially enrolled", "subject_insertion.php?inserted=success&id=$student_id");
                                 // header("Location: ");
                                 exit();
                             }
                         }
+
+                        if($newToOldSuccess && $isSubjectCreated == true){
+
+                            # redirect to the receipt page.
+                            if($subjectInitialized == true){
+                                AdminUser::success("Successfully inserted the subjects, Student has been officially enrolled & Section is $program_section now full",
+                                    "subject_insertion.php?inserted=success&id=$student_id");
+                                // header("Location: ");
+                                exit();
+                            }
+                        }
+
                     }
                 }
             }
@@ -376,6 +439,25 @@
                     <div class="table-responsive" style="margin-top:5%;"> 
                         <form action="" method="POST">
                             <h4 style="font-weight: bold;" class="mb-3 mt-4 text-primary text-center"><?php echo $student_program_section; ?> Subjects Curriculum</h4>
+                            <span>
+                                Section Capacity:
+                                <?php 
+                                    echo $updatedTotalStudent;
+                                ?> / <?php echo $student_current_capacity;?>
+                            </span>
+                            <?php
+
+                                if($isSectionFull == true){
+                                    echo "
+                                        <form method='POST'>
+                                            <button type='submit' name='section_full_btn' class='btn btn-primary btn-sm'>
+                                                Move to Available Section
+                                            </button>
+                                        </form>
+
+                                    ";
+                                }
+                            ?>
 
                             <table class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
                                 <thead>
@@ -467,11 +549,24 @@
                                 // }
                             ?>
                             <input type="hidden" name="unique_enrollment_form_id" value="<?php echo $unique_form_id;?>">
-                            <button type="submit" name="subject_load_btn" class="btn btn-success btn-sm"
-                            onclick="return confirm('Are you sure you want to insert & enroll??')"
-                            >
-                                Enroll Subject
-                            </button>
+
+                            <?php 
+                                if($isSectionFull == true){
+
+                                    echo "
+                                        <button disabled class='btn btn-outline-success'>Enroll Subject</button>
+                                    ";
+                                }else{
+                                    ?>
+                                        <button type="submit" name="subject_load_btn" class="btn btn-success btn-sm"
+                                        onclick="return confirm('Are you sure you want to insert & enroll??')"
+                                        >
+                                            Enroll Subject
+                                        </button>
+                                    <?php
+                                }
+                            ?>
+
                             <!-- <button type="submit" name="unload_subject_btn" class="btn btn-danger btn-sm">Unload Subject</button> -->
                         </form>
                     </div>

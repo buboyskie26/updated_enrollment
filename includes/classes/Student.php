@@ -89,24 +89,40 @@ class Student{
         }
         return $array;
     }
-    private function generate_random_password($length = 8) {
-    $password = '';
 
-    try {
-        // Generate a string of random bytes
-        $bytes = random_bytes($length);
-        // Convert the random bytes to a string of ASCII characters
-        $password = bin2hex($bytes);
-    } catch (Exception $e) {
-        // Handle the exception if the random_bytes() function fails
-        // For example, you can fallback to using the original function
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        for ($i = 0; $i < $length; $i++) {
-            $password .= $characters[rand(0, strlen($characters) - 1)];
+    private function generate_random_password($length = 8) {
+        $password = '';
+
+        try {
+            // Generate a string of random bytes
+            $bytes = random_bytes($length);
+            // Convert the random bytes to a string of ASCII characters
+            $password = bin2hex($bytes);
+        } catch (Exception $e) {
+            // Handle the exception if the random_bytes() function fails
+            // For example, you can fallback to using the original function
+            $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            for ($i = 0; $i < $length; $i++) {
+                $password .= $characters[rand(0, strlen($characters) - 1)];
+            }
         }
+
+        return $password;
     }
 
-    return $password;
-}
+    public function UpdateStudentCourseId($course_id, $student_id, $update_course_id){
+        $sql = $this->con->prepare("UPDATE student 
+            SET course_id=:update_course_id
+            WHERE student_id = :student_id
+            AND course_id = :current_course_id
+            "
+            );
+
+        $sql->bindValue(":update_course_id", $update_course_id);
+        $sql->bindValue(":student_id", $student_id);
+        $sql->bindValue(":current_course_id", $course_id);
+        
+        return $sql->execute();
+    }
 }
 ?>

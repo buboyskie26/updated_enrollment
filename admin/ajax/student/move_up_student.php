@@ -14,8 +14,10 @@
         $old_enrol = new OldEnrollees($con, null);
 
         $wasSuccess = $old_enrol->StudentMoveUpToGrade12($student_username);
+
         if($wasSuccess){
-            echo "$student_username wassuccessfully moved up";
+            echo "$student_username has been Move Up to Grade 12";
+
         }
     }
 ?>

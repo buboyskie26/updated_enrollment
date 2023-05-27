@@ -1,9 +1,14 @@
 <?php
 
-    include('../registrar_enrollment_header.php');
+    include('../admin_enrollment_header.php');
     include('../../enrollment/classes/StudentEnroll.php');
     include('../classes/Subject.php');
 
+
+    if(!AdminUser::IsAuthenticated()){
+        header("Location: /dcbt/adminLogin.php");
+        exit();
+    }
 
     $subject = new Subject($con, $registrarLoggedIn);
 
