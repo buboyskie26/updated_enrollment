@@ -44,13 +44,13 @@
             $is_active = "yes";
             $not_full = "no";
 
-
             # CONTROLLER.
             #                               | POPULATE |
             #  GRADE 11 Section Subjects -> 1st && 2nd Semester Subjects
             #  GRADE 12 Section Subjects -> 2nd Semester Subjects
 
             # Check if Section Name is already exists in the DB.
+
             if($section->CheckSetionExistsWithinCurrentSY($program_section,
                 $current_school_year_term) == true){
                 AdminUser::error("$program_section already exists within $current_school_year_term term", "create.php");
@@ -70,9 +70,6 @@
             $insert->bindValue(":active", $is_active);
             $insert->bindValue(":is_full", $not_full);
             $insert->bindValue(":course_level", $course_level, PDO::PARAM_INT);
-
- 
-
 
             if($insert->execute()){
             // if(false){
@@ -163,7 +160,6 @@
                             }
                         }
                     }
-
 
                 }else if($current_school_year_period == "Second" 
                     && $course_level == 11){
@@ -321,17 +317,90 @@
                 }
 
 
-
-
-
-
               
             }
             else{
                 AdminUser::error("Something went wrong on creation section.", "create.php");
                 exit();
             }
+
+            // if($moveupCourseId != null){
+
+            //     $newly_created_tertiary_program = $this->con-> prepare("SELECT 
+            //             course_id, course_level, program_id, program_section
+                        
+            //             FROM course
+            //             WHERE course_id=:course_id
+            //             LIMIT 1
+            //         ");
+
+            //     $newly_created_tertiary_program->bindValue(":course_id", $moveupCourseId);
+            //     $newly_created_tertiary_program->execute();
+
+            //     if($newly_created_tertiary_program->rowCount() > 0){
+
+            //         $newly_shs_section_row = $newly_created_tertiary_program->fetch(PDO::FETCH_ASSOC);
+
+            //         $newly_created_shs_program_id = $newly_shs_section_row['program_id'];
+            //         $newly_created_shs_course_level = $newly_shs_section_row['course_level'];
+            //         $newly_created_shs_program_section = $newly_shs_section_row['program_section'];
+
+            //         $get_subject_program = $this->con->prepare("SELECT * FROM subject_program
+            //             WHERE program_id=:program_id
+            //             AND course_level=:course_level
+            //             ");
+
+            //         $get_subject_program->bindValue(":program_id", $newly_created_shs_program_id);
+            //         $get_subject_program->bindValue(":course_level", $newly_created_shs_course_level);
+            //         $get_subject_program->execute();
+
+            //         if($get_subject_program->rowCount() > 0){
+                        
+            //             $isSubjectCreated = false;
+
+            //             while($row = $get_subject_program->fetch(PDO::FETCH_ASSOC)){
+
+            //                 $program_program_id = $row['subject_program_id'];
+            //                 $program_course_level = $row['course_level'];
+            //                 $program_semester = $row['semester'];
+            //                 $program_subject_type = $row['subject_type'];
+            //                 $program_subject_title = $row['subject_title'];
+            //                 $program_subject_description = $row['description'];
+            //                 $program_subject_unit = $row['unit'];
+
+            //                 // $program_section = "";
+            //                 // $course_tertiary_id = 0;
+
+            //                 $program_subject_code = $row['subject_code'] . "-" . $newly_created_shs_program_section; 
+            //                 // $program_subject_code = $row['subject_code'];
+
+            //                 $insert_section_subject->bindValue(":subject_title", $program_subject_title);
+            //                 $insert_section_subject->bindValue(":description", $program_subject_description);
+            //                 $insert_section_subject->bindValue(":subject_program_id", $program_program_id);
+            //                 $insert_section_subject->bindValue(":unit", $program_subject_unit);
+            //                 $insert_section_subject->bindValue(":semester", $program_semester);
+            //                 $insert_section_subject->bindValue(":program_id", $newly_created_shs_program_id);
+            //                 $insert_section_subject->bindValue(":course_level", $program_course_level);
+            //                 $insert_section_subject->bindValue(":course_id", $moveupCourseId);
+            //                 $insert_section_subject->bindValue(":subject_type", $program_subject_type);
+            //                 $insert_section_subject->bindValue(":subject_code", $program_subject_code);
+
+            //                 // $insert_section_subject->execute();
+            //                 if($insert_section_subject->execute()){
+            //                     $isSubjectCreated = true;
+            //                     $isFinished = true;
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
+
     }
+
+
+
+
+
 
 ?>
     <div class='col-md-10 row offset-md-1'>

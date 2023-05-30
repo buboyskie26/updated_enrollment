@@ -90,7 +90,6 @@
         }
     }
 ?>
-
  
     <div class="row col-md-12">
         <div class="col-lg-12">
@@ -238,8 +237,9 @@
                         $username = "";
                         // $sectionScheduleGradeElevenFirst = $schedule->GetSectionScheduleGradeElevenFirst($username, $student_id, 11, "First");
 
-                        $query = $con->query("SELECT t1.*, t2.acronym FROM course as t1
+                        $query = $con->query("SELECT t1.*, t2.acronym 
 
+                            FROM course as t1
                             LEFT JOIN program as t2 ON t2.program_id = t1.program_id
                             ");
 
@@ -259,12 +259,17 @@
                                 $totalStudent = $section->GetTotalNumberOfStudentInSection($course_id,
                                     $current_school_year_id);
 
+                                $url_program_section = "
+                                    <a href='section_subject_list.php?id=$course_id'>
+                                        $program_section
+                                    </a>
+                                ";
 
                                 $url = "strand_showv2.php?id=$course_id";
                                 echo "
                                     <tr class='text-center'>
                                         <td>$course_id</td>
-                                        <td>$program_section</td>
+                                        <td>$url_program_section</td>
                                         <td>$school_year_term</td>
                                         <td>$course_level</td>
                                         <td>$acronym</td>

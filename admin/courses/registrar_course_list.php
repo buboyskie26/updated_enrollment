@@ -52,67 +52,69 @@
 
             <div class="col-md-10 offset-md-1">
                 <div class="table-responsive" style="margin-top:2%;"> 
-                    <!-- <div class="mb-3">
-                
-                        <a href="<?php echo $createUrl?>">
-                            <button class="btn btn-success">Add Strand</button>
-                        </a>  
-                    </div> -->
-                    <table  class="table table-bordered table-hover "  style="font-size:13px" cellspacing="0"> 
-                        <thead>
-                            <tr class="text-center"> 
-                                <th rowspan="2">Strand</th>  
-                                <th rowspan="2">1st Year Section</th>  
-                                <th rowspan="2">Students</th>  
-                                <th rowspan="2">2nd Year Section</th>  
-                                <th rowspan="2">Students</th>  
-                                <th rowspan="2">Action</th>  
-                            </tr>	
-                        </thead> 	
-                        <tbody>
+                    <form action="generate_pdf.php" method="POST">
 
-                            <?php 
-                                // $sectionScheduleGradeElevenFirst = $schedule->GetSectionScheduleGradeElevenFirst($username, $student_id, 11, "First");
-                                $GRADE_ELEVEN = 11;
-                                $SHS_Department_ID = 4;
-                                $query = $con->prepare("SELECT * FROM program
-                                    WHERE department_id !=:department_id
-                                    ");
+                        <button class="btn btn-sm btn-primary" 
+                            name="generate_pdf">Click me to Generate Pdf</button>
+                            
+                        <table  class="table table-bordered table-hover "  style="font-size:13px" cellspacing="0"> 
+                            <thead>
+                                <tr class="text-center"> 
+                                    <th rowspan="2">Strand</th>  
+                                    <th rowspan="2">1st Year Section</th>  
+                                    <th rowspan="2">Students</th>  
+                                    <th rowspan="2">2nd Year Section</th>  
+                                    <th rowspan="2">Students</th>  
+                                    <th rowspan="2">Action</th>  
+                                </tr>	
+                            </thead> 	
+                            <tbody>
 
-                                $query->bindValue(":department_id", $SHS_Department_ID);
-                                $query->execute();
+                                <?php 
+                                    // $sectionScheduleGradeElevenFirst = $schedule->GetSectionScheduleGradeElevenFirst($username, $student_id, 11, "First");
+                                    $GRADE_ELEVEN = 11;
+                                    $SHS_Department_ID = 4;
+                                    $query = $con->prepare("SELECT * FROM program
+                                        WHERE department_id !=:department_id
+                                        ");
 
-                                if($query->rowCount() > 0){
-                                    while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+                                    $query->bindValue(":department_id", $SHS_Department_ID);
+                                    $query->execute();
 
-                                        $acronym = $row['program_name'];
-                                        $program_id = $row['program_id'];
-                                        $grade11Sections = 2;
-                                        $grade11Student = 4;
-                                        $grade12Sections = 3;
-                                        $grade12Student = 7;
+                                    if($query->rowCount() > 0){
+                                        while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
 
-                                        echo "<tr class='text-center'>";
-                                            echo "<td>
-                                                <a style='color:whitesmoke;' href='registrar_course_inner_tertiary.php?id=$program_id'>
-                                                    $acronym
-                                                </a>
-                                            </td>";
-                                            echo "<td>$grade11Student</td>";
-                                            echo "<td>$grade11Student</td>";
-                                            echo "<td>$grade12Sections</td>";
-                                            echo "<td>$grade12Student</td>";
-                                            echo "<td>
-                                                <a href='registrar_course_subject.php?id=$program_id'>
-                                                    <button class='btn btn-sm btn-primary'>Subjects</button>
-                                                </a>
-                                            </td>";
-                                        echo "</tr>";
+                                            $acronym = $row['program_name'];
+                                            $program_id = $row['program_id'];
+                                            $grade11Sections = 2;
+                                            $grade11Student = 4;
+                                            $grade12Sections = 3;
+                                            $grade12Student = 7;
+
+                                            echo "<tr class='text-center'>";
+                                                echo "<td>
+                                                    <a style='color:whitesmoke;' href='registrar_course_inner_tertiary.php?id=$program_id'>
+                                                        $acronym
+                                                    </a>
+                                                </td>";
+                                                echo "<td>$grade11Student</td>";
+                                                echo "<td>$grade11Student</td>";
+                                                echo "<td>$grade12Sections</td>";
+                                                echo "<td>$grade12Student</td>";
+                                                echo "<td>
+                                                    <a href='registrar_course_subject.php?id=$program_id'>
+                                                        <button class='btn btn-sm btn-primary'>Subjects</button>
+                                                    </a>
+                                                </td>";
+                                            echo "</tr>";
+                                        }
                                     }
-                                }
-                            ?>
-                        </tbody>
-                    </table>
+                                ?>
+                            </tbody>
+                        </table>
+
+                    </form>
+
                     
             </div>
 

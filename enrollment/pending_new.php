@@ -14,14 +14,21 @@
     require_once('../includes/config.php');
     require_once('../includes/classes/form-helper/Constants.php');
 
-
     $pending = new Pending($con);
 
     require "../vendor/autoload.php";
 
+    // use Dompdf\Dompdf;
+
     use PHPMailer\PHPMailer\PHPMailer;
  
     $mail = new PHPMailer(true);
+
+    // if (class_exists('Dompdf\Dompdf')) {
+    //     echo "Dompdf is working correctly.";
+    // } else {
+    //     echo "autoload.php is not working.";
+    // }
 
     if(
 

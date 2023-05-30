@@ -3,9 +3,35 @@
     require_once('../includes/studentHeader.php');
     require_once('./classes/StudentEnroll.php');
     require_once('./classes/Section.php');
+    require_once('./classes/SchoolYear.php');
     require_once('./classes/Pending.php');
     require_once('./classes/SectionTertiary.php');
     require_once('../includes/classes/Student.php');
+
+    $enroll = new StudentEnroll($con);
+
+    $school_year_obj = $enroll->GetActiveSchoolYearAndSemester();
+
+    $school_year_id = $school_year_obj['school_year_id'];
+    $current_semester = $school_year_obj['period'];
+
+
+    $school_year = new SchoolYear($con, $school_year_id);
+
+    $enrollment_status = $school_year->GetSYEnrollmentStatus();
+    $startEnrollment = $school_year->GetStartEnrollment();
+
+    if($enrollment_status == 0 || $startEnrollment == null){
+        # STart of Enrollment is not yet set now.
+        echo "
+        <div class='container'>
+            <div class='alert alert-danger mt-4'>
+                <strong>DCBT Online Enrollment is Closed</strong> Please check back later for enrollment availability.
+            </div>
+        </div>
+        ";
+        exit();
+    }
 
     if(isset($_SESSION['username'])
         && isset($_SESSION['status']) 
@@ -16,15 +42,12 @@
         $username = $_SESSION['username'];
 
         // echo $username;
-        $enroll = new StudentEnroll($con);
         $pending = new Pending($con);
-        $school_year_obj = $enroll->GetActiveSchoolYearAndSemester();
         // $course_id = $enroll->GetStudentCourseId($username);
 
         // $section = new Section($con, $course_id);
 
-        $school_year_id = $school_year_obj['school_year_id'];
-        $current_semester = $school_year_obj['period'];
+
 
         // $student_year_id = $enroll->GetStudentCurrentYearId($username);
 
@@ -126,8 +149,6 @@
                             }
                             
                         }
-                        
-
                     }
 
                     ?>

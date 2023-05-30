@@ -4,6 +4,7 @@
     include('../../enrollment/classes/StudentEnroll.php');
     include('../../enrollment/classes/Schedule.php');
     include('../../enrollment/classes/SchoolYear.php');
+    include('../../enrollment/classes/Section.php');
     include('../classes/Course.php');
 
     include('../registrar_enrollment_header.php');
@@ -30,7 +31,6 @@
     //
     $studentEnroll = new StudentEnroll($con);
     $schedule = new Schedule($con, $studentEnroll);
-    $school_year = new SchoolYear($con);
   
     $course = new Course($con, $studentEnroll);
 
@@ -40,18 +40,25 @@
     $current_school_year_term = $school_year_obj['term'];
     $current_school_year_period = $school_year_obj['period'];
 
+    $school_year = new SchoolYear($con, $current_school_year_id);
+
+
     $createUrl = base_url . "/create.php";
 
-    $check = $school_year->DoesEndPeriodIsOver($current_school_year_id);
+    // $check = $school_year->DoesEndPeriodIsOver($current_school_year_id);
 
-    if(isset($_POST['populate_subject_btn']) && isset($_POST['course_id'])
+    # ONLY FOR S.Y PAGE
+    $startEnrollmentInit = $school_year->DoesStartEnrollmentComesIn($current_school_year_id);
+    $endEnrollmentInit = $school_year->DoesEndEnrollmentComesIn($current_school_year_id);
+    $end = $school_year->EndOfCurrentSemesterInit($current_school_year_id);
+
+    if(isset($_POST['populate_subject_btnx']) && isset($_POST['course_id'])
         && isset($_POST['program_id']) && isset($_POST['course_level'])){
 
         $course_id = $_POST['course_id'];
         $program_id = $_POST['program_id'];
         $course_level = $_POST['course_level'];
 
-       
         $get_subject_program = $con->prepare("SELECT * FROM subject_program
             WHERE program_id=:program_id
             AND course_level=:course_level
@@ -112,8 +119,7 @@
         }
     }
 
-
-    if(isset($_POST['move_up_subject_btn'])){
+    if(isset($_POST['move_up_subject_btnx'])){
         // echo;
         $insertCourseTertiary = $con->prepare("INSERT INTO course_tertiary
             (program_section, program_id, course_level, capacity, school_year_id, school_year_term, prev_course_tertiary_id)
@@ -146,8 +152,7 @@
         }
     }
 
-
-    if(isset($_POST['tertiary_populate_subject_btn']) && isset($_POST['course_tertiary_id'])
+    if(isset($_POST['tertiary_populate_subject_btnx']) && isset($_POST['course_tertiary_id'])
         && isset($_POST['program_id']) && isset($_POST['course_level'])){
 
         $course_tertiary_id = $_POST['course_tertiary_id'];
@@ -214,7 +219,6 @@
             echo "program id not matched";
         }
     }
-
 
 ?>
 
@@ -339,6 +343,7 @@
     </div>
 
     <hr>
+    
     <!-- SHS AUTO -->
     <div style="display: none;"  >
         <div class="col-lg-12">
@@ -442,7 +447,7 @@
     </div>
 </div>
 
-<script>
+<!-- <script>
   // select all populate buttons
   const populateBtns = document.querySelectorAll('.populate-btn');
 
@@ -450,8 +455,8 @@
   populateBtns.forEach(btn => {
     btn.click();
   });
-</script>
-
+</script> -->
 
 <!-- 
+
 <?php  include('../includes/footer.php');?> -->

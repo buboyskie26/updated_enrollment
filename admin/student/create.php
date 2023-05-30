@@ -5,6 +5,11 @@
     include('../../enrollment/classes/OldEnrollees.php');
     include('../classes/Course.php');
 
+    if(!AdminUser::IsRegistrarAuthenticated()){
+
+        header("Location: /dcbt/adminLogin.php");
+        exit();
+    }
 
     $enroll = new StudentEnroll($con);
     $old_enroll = new OldEnrollees($con, $enroll);

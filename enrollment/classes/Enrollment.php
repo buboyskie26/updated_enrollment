@@ -374,6 +374,26 @@
         
         return $sql->execute();
     }
+
+    function CheckEnrollmentCashierApproved($student_id, $course_id, $school_year_id) {
+        // Check if the enrollment form ID already exists in the database
+        $sql = $this->con->prepare("SELECT enrollment_form_id FROM enrollment 
+            WHERE course_id = :course_id
+            AND student_id = :student_id
+            AND school_year_id = :school_year_id
+            AND registrar_evaluated = :registrar_evaluated
+            AND cashier_evaluated = :cashier_evaluated
+            
+            ");
+        $sql->bindValue(":course_id", $course_id);
+        $sql->bindValue(":student_id", $student_id);
+        $sql->bindValue(":school_year_id", $school_year_id);
+        $sql->bindValue(":registrar_evaluated", "yes");
+        $sql->bindValue(":cashier_evaluated", "yes");
+        $sql->execute();
+
+        return $sql->rowCount() > 0;
+    }
     
 }
 

@@ -390,6 +390,20 @@
             return "N/A";
         }
 
+        public function GetProgramIdBySectionId($course_id){
+
+            $sql = $this->con->prepare("SELECT program_id FROM course
+                WHERE course_id=:course_id");
+                
+            $sql->bindValue(":course_id", $course_id);
+            $sql->execute();
+
+            if($sql->rowCount() > 0)
+                return $sql->fetchColumn();
+            
+            return null;
+        }
+
         public function GetSectionCapacity($course_id){
 
             $sql = $this->con->prepare("SELECT capacity FROM course
@@ -535,6 +549,69 @@
             // return $sql->rowCount() > 0;
             
             return $isFull;
+        }
+
+        public function GetStrandrogramId($acronym){
+            
+            // $acronym = "HUMMS";
+            // $program_name = "Humanities and Social Sciences";
+
+            $sql = $this->con->prepare("SELECT program_id FROM program
+                WHERE acronym=:acronym
+                -- OR program_name=:program_name
+                LIMIT 1");
+                
+            $sql->bindValue(":acronym", $acronym);
+            // $sql->bindValue(":program_name", $program_name);
+            $sql->execute();
+
+            if($sql->rowCOunt() > 0){
+                return $sql->fetchColumn();
+            }
+        }
+
+        public function GetCurrentSYFullSection($school_year_term){
+           
+            $sql = $this->con->prepare("SELECT course_id FROM course
+                WHERE is_full=:is_full
+                AND school_year_term=:school_year_term
+                ");
+                
+            $sql->bindValue(":is_full", "yes");
+            $sql->bindValue(":school_year_term", $school_year_term);
+            $sql->execute();
+
+            if($sql->rowCount() > 0){
+
+                $full = $sql->fetchAll(PDO::FETCH_ASSOC);
+                return $full;
+            }
+            return [];
+        }
+
+
+        public function ResetSectionIsFull($school_year_term, $current_school_year_period){
+            
+            if($current_school_year_period == "Second"){
+
+                $fullSections = $this->GetCurrentSYFullSection($school_year_term);
+
+                // var_dump($fullSections);
+
+                $sql = $this->con->prepare("UPDATE course
+                    SET is_full='no'
+                    WHERE course_id=:course_id
+                    ");
+                foreach ($fullSections as $key => $value) {
+                    # code...
+
+                    $course_ids = $value['course_id'];
+
+                    $sql->bindValue(":course_id", $course_ids);
+                    $sql->execute();
+                }
+            }
+
         }
 
     }

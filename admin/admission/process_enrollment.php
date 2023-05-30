@@ -93,6 +93,7 @@
             // $date_creation = $row['date_creation'];
 
             if(isset($_GET['id']) && isset($_GET['step1'])){
+
                 ?>
                     <div class="row col-md-12">
 
@@ -105,13 +106,15 @@
                                         <div class="mb-4 col-md-3">
                                             <label for="">Form Id</label>
                                             <input readonly style="width: 100%;" type="text" 
-                                                value='<?php echo $enrollment_form_id;?>' class="form-control">
+                                                value='<?php echo $enrollment_form_id;?>' 
+                                                class="form-control">
                                         </div>
                                     
                                         <div class="mb-4 col-md-3">
                                             <label for="">Admission Type</label>
                                             <input readonly style="width: 100%;" type="text" 
-                                                value='New' class="form-control">
+                                                value="<?php echo ($student_status == 'Regular') ? 'New' : $student_status; ?>" 
+                                                class="form-control">
                                         </div>
 
                                         <div class="mb-4 col-md-3">

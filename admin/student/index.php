@@ -5,6 +5,7 @@
     include('../../enrollment/classes/OldEnrollees.php');
 
     $createUrl = base_url . "/create.php";
+    $manualCreateUrl = base_url . "/manual_create.php";
 
     $enroll = new StudentEnroll($con);
     $old_enrollee = new OldEnrollees($con, $enroll);
@@ -24,8 +25,11 @@
             <div class="container mb-4">
                 <h2 class="text-center text-success">SHS Student List</h2>
                 <a href="<?php echo $createUrl?>">
+                    <button class="btn btn-sm btn-outline-success">Add Student</button>
+                </a>
+                <a href="<?php echo $manualCreateUrl?>">
                     <button class="btn btn-sm btn-success">Add Student</button>
-                </a>    
+                </a>  
             </div>
             <div class="col-md-12">
                 <div class=" ">

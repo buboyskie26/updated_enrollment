@@ -4,6 +4,7 @@
 <?php
 
     require_once('./classes/StudentEnroll.php');
+    require_once('./classes/SchoolYear.php');
     require_once('./classes/OldEnrollees.php');
     require_once('./classes/Enrollment.php');
     require_once('./classes/StudentSubject.php');
@@ -13,7 +14,6 @@
     require_once('../includes/studentEnrollHeader.php');
     require_once('../includes/studentHeader.php');
     require_once('../admin/classes/AdminUser.php');
-
 
 
 
@@ -29,8 +29,6 @@
             $enroll = new StudentEnroll($con);
             $enrollment = new Enrollment($con, $enroll);
             $student_subject = new StudentSubject($con);
-
-            $enrollment_form_id = $enrollment->GenerateEnrollmentFormId();
 
 
 
@@ -66,6 +64,27 @@
             $active_school_year_id = $school_year_obj['school_year_id'];
             $year = $school_year_obj['term'];
             $semester = $school_year_obj['period'];
+
+            $school_year = new SchoolYear($con, $active_school_year_id);
+
+            $enrollment_form_id = $enrollment->GenerateEnrollmentFormId();
+
+            $enrollment_status = $school_year->GetSYEnrollmentStatus();
+            $startEnrollment = $school_year->GetStartEnrollment();
+
+            $enrollment_closed = $school_year->EnrollmentIsClosed($enrollment_status,
+                $startEnrollment);
+                
+            // if($enrollment_status == 0 || $startEnrollment == null){
+            //     echo "
+            //         <div class='container'>
+            //             <div class='alert alert-danger mt-4'>
+            //                 <strong>DCBT Online Enrollment is Closed</strong> Please check back later for enrollment availability.
+            //             </div>
+            //         </div>
+            //     ";
+            //     exit();
+            // }
 
             $current_semester = $school_year_obj['period'];
             $current_term = $school_year_obj['term'];
@@ -401,6 +420,8 @@
                     
                             <?php
 
+
+
                                 # If OS TRANSFEREE
                                 if($student_status == "Transferee"
                                     ){
@@ -427,8 +448,11 @@
                                 if($student_status == "Regular" 
                                     ){
 
+
                                     if($checkIfPrevSemesterSubjectsRemarked == true
-                                        && $checkIfStudentAlreadyApplied == false){
+                                        && $checkIfStudentAlreadyApplied == false
+                                        
+                                        ){
 
                                         ?>
                                             <form method="POST">

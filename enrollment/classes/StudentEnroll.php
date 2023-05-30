@@ -2136,12 +2136,16 @@
         // Enrollment student course_id
         $subject_query = $this->con->prepare("SELECT 
 
-
             t3.subject_code as t3_subject_code,
             t3.subject_id,
         
-            t1.*
+            t1.*,
 
+            t4.first,
+            t4.second,
+            t4.third,
+            t4.fourth,
+            t4.remarks as grade_remarks
 
             FROM subject_program as t1
 
@@ -2149,6 +2153,7 @@
             AND t2.student_id=:student_id
             
             LEFT JOIN subject as t3 ON t3.subject_id = t2.subject_id
+            LEFT JOIN student_subject_grade as t4 ON t4.student_subject_id = t2.student_subject_id
             -- LEFT JOIN course as t4 ON t4.course_id = t3.course_id
 
             WHERE t1.semester=:semester

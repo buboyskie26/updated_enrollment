@@ -13,8 +13,6 @@
         $subject_id = $_GET['subject_id'];
         $section = new Section($con, $course_id);
 
-       
-
         $edit_subject_section = $section->createForm($subject_id);
         
         echo "

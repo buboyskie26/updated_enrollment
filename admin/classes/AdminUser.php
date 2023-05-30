@@ -21,6 +21,7 @@ class AdminUser{
             $this->sqlData = $query->fetch(PDO::FETCH_ASSOC);
         }
     }
+                // allowEscapeKey: false,
 
     public static function success($text, $redirectUrl) {
         echo "<script>
@@ -28,7 +29,6 @@ class AdminUser{
                 icon: 'success',
                 title: 'Success!',
                 text: '$text',
-                allowEscapeKey: false,
                 backdrop: false
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -182,7 +182,7 @@ class AdminUser{
         $school_year_id = null;
 
         if($school_year_obj == null){
-            echo "school_year_obj is null";
+            echo "System doesnt have Active School Year.";
             exit();
         }
         
@@ -294,8 +294,7 @@ class AdminUser{
                 # 6. Get All Subject_Program Table referencing the program_id and course_level
                 # 7. Insert the subject_tertiary table that referenced the necessary column of Subject_Program Table (subject_title, subject_code etc)
                 # 8. In just changing the S.Y from 2nd sem to 1st sem. We created individual newly section based on the previous active tertiary_course section
-                # Which we have included its appropriate subject.
-                
+                # Which we have included its appropriate subjects.
 
                 # From Second Semester to First Semester. (Time of Moving-Up Section)
                 if($get_course_tertiary_section->rowCount() > 0 && $current_school_semester == "Second"){
@@ -314,7 +313,6 @@ class AdminUser{
                     $moveUpTertiarySectionId = null;
 
                     $new_program_section = "";
-
 
                     $insert_section_subject = $this->con->prepare("INSERT INTO subject_tertiary
                         (subject_title, description, subject_program_id, unit, semester, program_id, course_level, course_tertiary_id, subject_type, subject_code)
@@ -411,7 +409,6 @@ class AdminUser{
                                             
                                             $isSubjectCreated = false;
 
-
                                             while($row = $get_subject_program->fetch(PDO::FETCH_ASSOC)){
 
                                                 $program_program_id = $row['subject_program_id'];
@@ -444,6 +441,7 @@ class AdminUser{
                                                     $isSubjectCreated = true;
                                                 }
                                             }
+
                                         }
                                     }
                                 }
@@ -556,90 +554,16 @@ class AdminUser{
 
 
                         }
-
-                        // # Code for automatic population of section`s appropriate subject
-                        // # for course_tertiary table
-                        // if($moveUpTertiarySectionId != null){
-
-                        //     $newly_created_tertiary_program = $this->con-> prepare("SELECT 
-                        //             course_tertiary_id, course_level, program_id
-                                    
-                        //             FROM course_tertiary
-
-                        //             WHERE course_tertiary_id=:course_tertiary_id
-                        //             LIMIT 1
-                        //         ");
-                        //     $newly_created_tertiary_program->bindValue(":course_tertiary_id", $moveUpTertiarySectionId);
-                        //     $newly_created_tertiary_program->execute();
-
-                        //     if($newly_created_tertiary_program->rowCount() > 0){
-
-                        //         $newly_tertiary_section_row = $newly_created_tertiary_program->fetch(PDO::FETCH_ASSOC);
-
-                        //         $newly_created_tertiary_program_id = $newly_tertiary_section_row['program_id'];
-                        //         $newly_created_tertiary_course_level = $newly_tertiary_section_row['course_level'];
-
-                        //         $get_subject_program = $this->con->prepare("SELECT * FROM subject_program
-                        //             WHERE program_id=:program_id
-                        //             AND course_level=:course_level
-                        //             ");
-
-                        //         $get_subject_program->bindValue(":program_id", $newly_created_tertiary_program_id);
-                        //         $get_subject_program->bindValue(":course_level", $newly_created_tertiary_course_level);
-                        //         $get_subject_program->execute();
-
-                        //         if($get_subject_program->rowCount() > 0){
-                                    
-                        //             $isSubjectCreated = false;
-
-                        //             $insert_section_subject = $this->con->prepare("INSERT INTO subject_tertiary
-                        //                 (subject_title, description, subject_program_id, unit, semester, program_id, course_level, course_tertiary_id, subject_type, subject_code)
-                        //                 VALUES(:subject_title, :description, :subject_program_id, :unit, :semester, :program_id, :course_level, :course_tertiary_id, :subject_type, :subject_code)");
-
-                        //             while($row = $get_subject_program->fetch(PDO::FETCH_ASSOC)){
-
-                        //                 $program_program_id = $row['subject_program_id'];
-                        //                 $program_course_level = $row['course_level'];
-                        //                 $program_semester = $row['semester'];
-                        //                 $program_subject_type = $row['subject_type'];
-                        //                 $program_subject_title = $row['subject_title'];
-                        //                 $program_subject_description = $row['description'];
-                        //                 $program_subject_unit = $row['unit'];
-
-                        //                 // $program_section = "";
-                        //                 // $course_tertiary_id = 0;
-
-                        //                 $program_subject_code = $row['subject_code'] . $new_program_section; 
-
-                        //                 $insert_section_subject->bindValue(":subject_title", $program_subject_title);
-                        //                 $insert_section_subject->bindValue(":description", $program_subject_description);
-                        //                 $insert_section_subject->bindValue(":subject_program_id", $program_program_id);
-                        //                 $insert_section_subject->bindValue(":unit", $program_subject_unit);
-                        //                 $insert_section_subject->bindValue(":semester", $program_semester);
-                        //                 $insert_section_subject->bindValue(":program_id", $newly_created_tertiary_program_id);
-                        //                 $insert_section_subject->bindValue(":course_level", $program_course_level);
-                        //                 $insert_section_subject->bindValue(":course_tertiary_id", $moveUpTertiarySectionId);
-                        //                 $insert_section_subject->bindValue(":subject_type", $program_subject_type);
-                        //                 $insert_section_subject->bindValue(":subject_code", $program_subject_code);
-
-                        //                 // $insert_section_subject->execute();
-                        //                 if($insert_section_subject->execute()){
-                        //                     $isSubjectCreated = true;
-                        //                 }
-                        //             }
-                        //         }
-                        //     }
-                        // }
                     }
- 
                 }
 
                 $active_update = "no";
 
                 # For SHS automatically created move_up course section
                 # TODO. Automatically populating course subject is NOT SUPPORTED YET
+
                 // if(false){
-                // If second Sem 
+                    
                 // Creates new section from (HUMMSS11-A, STEM11-A) to (HUMMSS12-A, STEM12-A)
                 if($get_course_level_eleven->rowCount() > 0 && $current_school_semester == "Second"){
 
@@ -1258,20 +1182,85 @@ class AdminUser{
             }
 
         }
+
+        if(isset($_POST['start_enrollment_date_btn'])){
+            $school_year_id = $_POST['school_year_idx'];
+
+            $currentDateTime = new DateTime();
+            $current_time = $currentDateTime->format('Y-m-d H:i:s');
+
+            $update = $this->con->prepare("UPDATE school_year
+                SET start_enrollment_date=:start_enrollment_date
+                WHERE school_year_id=:school_year_id
+                AND statuses='Active'
+                ");
+
+            $update->bindValue(":start_enrollment_date", $current_time);
+            $update->bindValue(":school_year_id", $school_year_id);
+            $update->execute();
+        }
+
+        if(isset($_POST['end_enrollment_date_btn'])){
+
+            $school_year_id = $_POST['school_year_idx'];
+
+            $currentDateTime = new DateTime();
+            $current_time = $currentDateTime->format('Y-m-d H:i:s');
+
+            $update = $this->con->prepare("UPDATE school_year
+                SET end_enrollment_date=:end_enrollment_date
+                WHERE school_year_id=:school_year_id
+                AND statuses='Active'
+                
+                ");
+
+            $update->bindValue(":end_enrollment_date", $current_time);
+            $update->bindValue(":school_year_id", $school_year_id);
+            $update->execute();
+        }
+
+        if(isset($_POST['end_period_btn'])){
+
+            $school_year_id = $_POST['school_year_idx'];
+
+            $currentDateTime = new DateTime();
+            $current_time = $currentDateTime->format('Y-m-d H:i:s');
+
+            $update = $this->con->prepare("UPDATE school_year
+                SET end_period=:end_period
+                WHERE school_year_id=:school_year_id
+                AND statuses='Active'
+                ");
+
+            $update->bindValue(":end_period", $current_time);
+            $update->bindValue(":school_year_id", $school_year_id);
+            $update->execute();
+        }
         
+
         $table = "
-            <h3 class='text-center'>Set the Current School Year</h3>
-                <form method='POST'>
-                    <button name='end_enrollment_btn' type='submit'class='btn btn-sm btn-success'>End Enrollment</button>
-                </form>
-                <table class='table table-hover'>
-                    <thead >
-                        <tr class='text-center'>
-                            <th>Year</th>
-                            <th>Semester</th>
-                            <th style='width:250px;'>Action</th>
-                        </tr>
-                    </thead>
+            <div class='card'>
+
+                <div class='card-header'>
+                    <h6>System S.Y $current_school_term $current_school_period Semester</h6>
+                    <h3 class='text-center'>School Year Maintenace</h3>
+
+                </div>
+
+                <div class='card-body'>
+                    <form method='POST'>
+                        <button name='end_enrollment_btn' type='submit'class='btn btn-sm btn-success'>End Enrollment</button>
+                    </form>
+                    <table class='table table-hover'>
+                        <thead >
+                            <tr class='text-center'>
+                                <th>Year</th>
+                                <th>Semester</th>
+                                <th style='width:350px;'>Action</th>
+                            </tr>
+                        </thead>
+
+
         ";
 
         $get_school_year = $this->con->prepare("SELECT * FROM school_year
@@ -1287,8 +1276,9 @@ class AdminUser{
             }
         }
         $table .= "
-            </table>
-
+                    </table>
+                </div>
+            </div>
         ";
         return $table;
     }
@@ -1308,6 +1298,30 @@ class AdminUser{
                 </button>
             </a>
 
+        ";
+
+        $start_enrollment_date_btn = "
+            <button name='start_enrollment_date_btn' 
+                type='submit' class='btn btn-success btn-sm'>
+                SED
+            </button>
+            <input type='hidden' name='school_year_idx' value='".$row['school_year_id']."'>
+        ";
+
+        $end_enrollment_date_btn = "
+            <button name='end_enrollment_date_btn' 
+                type='submit' class='btn btn-outline-warning btn-sm'>
+                EED
+            </button>
+            <input type='hidden' name='school_year_idx' value='".$row['school_year_id']."'>
+        ";
+
+        $end_period_btn = "
+            <button name='end_period_btn' 
+                type='submit' class='btn btn-secondary btn-sm'>
+                EP
+            </button>
+            <input type='hidden' name='school_year_idx' value='".$row['school_year_id']."'>
         ";
 
         // Todo for changing the school year semester.
@@ -1339,8 +1353,17 @@ class AdminUser{
                     <td>$period</td>
                     <td>
                         <div class='col-md-12 row'>
-                            <div class='col-md-4'>$button</div>
-                            <div class='col-md-4'>$maintenance_button</div>
+                            <div class='col-md-2'>$button</div>
+                            <div class='col-md-2'>$maintenance_button</div>
+                            <div class='col-md-8 row'>
+                            <form method='POST'>
+                                <div class='col-md-2'>$start_enrollment_date_btn</div>
+                                <div class='col-md-2'>$end_enrollment_date_btn</div>
+                                <div class='col-md-2'>$end_period_btn</div>
+                            </form>
+                            </div>
+
+
                         </div>
                         
                         

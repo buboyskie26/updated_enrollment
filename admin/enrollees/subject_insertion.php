@@ -7,7 +7,18 @@
     require_once('../../enrollment/classes/Pending.php');
     require_once('../../enrollment/classes/Enrollment.php');
     require_once('../../enrollment/classes/Section.php');
-    include('../../includes/classes/Student.php');
+    require_once('../../includes/classes/Student.php');
+
+    // require '../../vendor/autoload.php';
+    require_once __DIR__ . '/../../vendor/autoload.php';
+    use Dompdf\Dompdf;
+    use Dompdf\Options;
+
+    // if (class_exists('Dompdf\Dompdf')) {
+    //     echo "autoload.php is working correctly.";
+    // } else {
+    //     echo "autoload.php is not working.";
+    // }
 
     require_once('../classes/Course.php');
 
@@ -146,21 +157,14 @@
 
             # Update enrollment student course_id
 
-
-
-
         }
 
-        // Student who click the apply for next semester as new semester had established
         if($old_student_status == "Regular" || $old_student_status == "Returnee" || $old_student_status == "Transferee"){
 
             if(isset($_POST['subject_load_btn']) 
                 && isset($_POST['unique_enrollment_form_id']) 
                 ){
                 
-                // $subject_ids = $_POST['subject_ids'];
-                
-                // $pre_subject_ids = $_POST['pre_subject_ids'];
                 $array_success = [];
 
                 $subject_program_id = 0;
@@ -180,49 +184,16 @@
                     VALUES(:student_id, :subject_id, :school_year_id,
                         :course_level, :enrollment_id, :subject_program_id)");
 
-                if($successInsertingSubjectLoad == true 
-                    ){
-                    // echo "hitt";
-                    // Update students status
-                    // Grade 11 1nd sem -> Grade 11 2nd sem & Enroll Student
-                    // Grade 12 1st sem -> Grade 12 2nd sem & Enroll Student
-                    // Graduate What todo next?.
-
+                if($successInsertingSubjectLoad == true){
                     $wasSuccess = $oldEnroll->UpdateSHSStudentStatus($student_username);
-                    
                 }
 
                 $isSuccess = false;
 
-                // if(sizeof($array_success) > 0 && empty($array_error)){
-
-                //     // Check registrar should include all available subjects
-                //     // if not yet ALL included, no updating status will happen
-                //     // TODO:
-                //     if($wasSuccess){
-                //         // echo "was Success ";
-                        
-                //     }else{
-                //         echo "not success";
-                //     }
-
-                //     foreach ($array_success as $key => $subject_ids_inserted) {
-                //         # subject_id that added in the student_subject db
-                //         echo "You have successfully inserted subject_id $subject_ids_inserted to the database";
-                //         $isSuccess = true;
-                //     }
-
-                //     if($isSuccess == true){
-                //         $url = directoryPath . "old_enrollees.php";
-                //         header("Location: $url");
-                //         exit();
-                //     }
-                // }
-
                 $new_regular_shs_subjects = $studentEnroll->GetStudentsStrandSubjects($student_username);
 
                 // print_r($new_regular_shs_subjects);
-                // print_r($new_regular_shs_subjects);
+                
                 $is_inserted_all = false;
 
                 $subjectInitialized = false;
@@ -237,7 +208,6 @@
                         $_SESSION['regular_subject_ids_v2'][] = array(
                             'subject_id' => $subject_id
                         );
-
                         $subjectInitialized = true;
                     }
 
@@ -367,7 +337,7 @@
                             # redirect to the receipt page.
                             if($subjectInitialized == true){
                                 // echo "truee";
-                                AdminUser::success("Successfully inserted the subjects, Student has been officially enrolled", "subject_insertion.php?inserted=success&id=$student_id");
+                                AdminUser::success("Successfully inserted the subjects, Student has been officially enrolled", "subject_insertion.php?enrolled=success&id=$student_id");
                                 // header("Location: ");
                                 exit();
                             }
@@ -378,7 +348,7 @@
                             # redirect to the receipt page.
                             if($subjectInitialized == true){
                                 AdminUser::success("Successfully inserted the subjects, Student has been officially enrolled & Section is $program_section now full",
-                                    "subject_insertion.php?inserted=success&id=$student_id");
+                                    "subject_insertion.php?enrolled=success&id=$student_id");
                                 // header("Location: ");
                                 exit();
                             }
@@ -447,14 +417,15 @@
                             </span>
                             <?php
 
-                                if($isSectionFull == true){
+                                if($isSectionFull == true 
+                                // && $current_school_year_semester != "Second"
+                                ){
                                     echo "
                                         <form method='POST'>
                                             <button type='submit' name='section_full_btn' class='btn btn-primary btn-sm'>
                                                 Move to Available Section
                                             </button>
                                         </form>
-
                                     ";
                                 }
                             ?>
@@ -536,9 +507,6 @@
 
                             <?php 
                                 # Check if Graduate, Tentative
-                                # Check joining the query for the student_subject_grade student_subject_id
-                                # if is student_subject_id, it it should delete all the student_subject_grade
-                                # 
                                 $doesFinished = $oldEnroll->DoesStudentFinishedAllSubjectLoads($student_username);
                                 // if($doesFinished == true){
                                 //     echo "
@@ -548,25 +516,37 @@
                                 //     echo "Have more Subjects to finished";
                                 // }
                             ?>
+
                             <input type="hidden" name="unique_enrollment_form_id" value="<?php echo $unique_form_id;?>">
 
                             <?php 
+
+                                $checkIfCashierEvaluated = $enrollment->CheckEnrollmentCashierApproved($student_id,
+                                    $student_course_id, $school_year_id);
+                                    
                                 if($isSectionFull == true){
 
                                     echo "
                                         <button disabled class='btn btn-outline-success'>Enroll Subject</button>
                                     ";
-                                }else{
+                                }else if($isSectionFull == false && $checkIfCashierEvaluated == true){
                                     ?>
-                                        <button type="submit" name="subject_load_btn" class="btn btn-success btn-sm"
-                                        onclick="return confirm('Are you sure you want to insert & enroll??')"
+                                        <button type="submit" name="subject_load_btn" 
+                                            class="btn btn-success btn-sm"
+                                            onclick="return confirm('Are you sure you want to insert & enroll??')"
                                         >
-                                            Enroll Subject
+                                            Approve Enrollment
+                                        </button>
+                                    <?php
+                                }
+                                else if($isSectionFull == false && $checkIfCashierEvaluated == false){
+                                    ?>
+                                        <button type="button" class="btn btn-primary btn-sm">
+                                            Waiting
                                         </button>
                                     <?php
                                 }
                             ?>
-
                             <!-- <button type="submit" name="unload_subject_btn" class="btn btn-danger btn-sm">Unload Subject</button> -->
                         </form>
                     </div>
@@ -574,11 +554,9 @@
         }
     }
 
-
-    if(isset($_GET['inserted'])){
-
-
+    if(isset($_GET['enrolled'])){
         if(isset($_GET['id'])){
+
 
             $student_id = $_GET['id'];
             $student_fullname = $studentEnroll->GetStudentFullName($student_id);
@@ -664,12 +642,14 @@
                                     <?php 
 
                                         $totalUnits = 0;
+
                                         if (isset($_SESSION['regular_subject_ids_v2']) && is_array($_SESSION['regular_subject_ids_v2'])) {
                                             foreach ($_SESSION['regular_subject_ids_v2'] as $subject) {
 
                                                 $subject_id = isset($subject['subject_id']) ? $subject['subject_id'] : 0;
 
                                                 if ($subject_id != 0) {
+
                                                     $subject_id =  $subject['subject_id'];
                                                     // $status =  $subject['status'];
 
@@ -691,9 +671,6 @@
                                                         $subject_status = "";
                                                         $totalUnits += $unit;
 
-                                                        // if($status === "checked"){
-                                                        //     $subject_status = "CREDITED";
-                                                        // }
                                                         echo "
                                                             <tr class='text-center'>
 
@@ -704,17 +681,12 @@
                                                             </tr>
                                                         ";
                                                     }
-
                                                 }
-                                            
                                             }
-                                            // Clear the subject_ids array from $_SESSION if needed
-                                            // unset($_SESSION['subject_ids']);
                                         }   
                                     ?>
                                 </tbody>
                             
-
                                 <?php
                                     if($totalUnits != 0){
                                         echo "
@@ -731,10 +703,13 @@
                             <?php
                                 if($totalUnits != 0){
                                     ?>
-                                        <button type="submit" class="btn btn-success"
-                                            name="insert_enroll_transferee" 
-                                            onclick="return confirm('Are you sure you to print?')">Print</button>
+                                    <form action="generate_pdf.php" method="POST">
 
+                                        <button type="submit" class="btn btn-success"
+                                            name="generate_pdf">Print
+                                        </button>
+
+                                    </form>
                                         <a href='../admission/index.php'>
                                             <button type='button' class='btn btn-outline-primary btn-sm'>Go back</button>
                                         </a>
