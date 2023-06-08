@@ -24,6 +24,9 @@
         public function GetSectionName() {
             return isset($this->sqlData['program_section']) ? $this->sqlData["program_section"] : ""; 
         }
+        public function GetSectionId() {
+            return isset($this->sqlData['course_id']) ? $this->sqlData["course_id"] : ""; 
+        }
         public function GetSectionGradeLevel() {
             return isset($this->sqlData['course_level']) ? $this->sqlData["course_level"] : ""; 
         }
@@ -460,6 +463,20 @@
             return "N/A";
         }
 
+        public function GetTrackByProgramId($program_id){
+
+            $sql = $this->con->prepare("SELECT track FROM program
+                WHERE program_id=:program_id");
+                
+            $sql->bindValue(":program_id", $program_id);
+            $sql->execute();
+
+            if($sql->rowCount() > 0)
+                return $sql->fetchColumn();
+            
+            return "N/A";
+        }
+
         public function CreateNewSection($new_section_name, 
             $program_id, $course_level, $current_school_year_term){
             
@@ -570,6 +587,10 @@
             }
         }
 
+
+        
+
+
         public function GetCurrentSYFullSection($school_year_term){
            
             $sql = $this->con->prepare("SELECT course_id FROM course
@@ -592,6 +613,7 @@
 
         public function ResetSectionIsFull($school_year_term, $current_school_year_period){
             
+            $isHit = false;
             if($current_school_year_period == "Second"){
 
                 $fullSections = $this->GetCurrentSYFullSection($school_year_term);
@@ -608,11 +630,128 @@
                     $course_ids = $value['course_id'];
 
                     $sql->bindValue(":course_id", $course_ids);
-                    $sql->execute();
+
+                    if($sql->execute()){
+                        $isHit = true;
+                    }
                 }
             }
+            return $isHit;
 
         }
 
+        public function GetEnrollmentSectionName($enrollment_id){
+
+
+            $sql = $this->con->prepare("SELECT course_id FROM enrollment
+                WHERE enrollment_id=:enrollment_id");
+
+            $sql->bindValue(":enrollment_id", $enrollment_id);
+            $sql->execute();
+
+            if($sql->rowCount() > 0){
+
+                $course_id = $sql->fetchColumn();
+
+                $course = $this->con->prepare("SELECT program_section 
+                    FROM course
+                    WHERE course_id=:course_id
+                    ");
+
+                $course->bindValue(":course_id", $course_id);
+                $course->execute();
+
+                if($course->rowCount() > 0){
+
+                    $program_section = $course->fetchColumn();
+                    return $program_section;
+                }
+            }
+
+            return "";
+        }
+
+        public function GetEnrollmentSectionId($enrollment_id){
+
+            $sql = $this->con->prepare("SELECT course_id FROM enrollment
+                WHERE enrollment_id=:enrollment_id");
+
+            $sql->bindValue(":enrollment_id", $enrollment_id);
+            $sql->execute();
+
+            if($sql->rowCount() > 0){
+
+                $course_id = $sql->fetchColumn();
+                return $course_id;
+            }
+
+            return null;
+        }
+
+        public function GetEnrollmentStudentId($enrollment_id){
+
+            $sql = $this->con->prepare("SELECT student_id FROM enrollment
+                WHERE enrollment_id=:enrollment_id");
+
+            $sql->bindValue(":enrollment_id", $enrollment_id);
+            $sql->execute();
+
+            if($sql->rowCount() > 0){
+
+                $course_id = $sql->fetchColumn();
+                return $course_id;
+            }
+
+            return null;
+        }
+
+
+        public function CheckSectionAligned($student_course_id, $student_course_level){
+
+            $sql = $this->con->prepare("SELECT course_id FROM course
+                WHERE course_id=:course_id
+                AND course_level=:course_level");
+
+            $sql->bindValue(":course_id", $student_course_id);
+            $sql->bindValue(":course_level", $student_course_level);
+
+            $sql->execute();
+
+            if($sql->rowCount() > 0){
+                return true;
+            }
+
+            return false;
+        }
+
+        public function GetMovedUpSectionId($tertiary_program_section,
+            $school_year_term){
+
+            $sql = $this->con->prepare("SELECT course_id FROM course
+                WHERE program_section=:program_section
+                AND school_year_term=:school_year_term");
+
+            $sql->bindValue(":program_section", $tertiary_program_section);
+            $sql->bindValue(":school_year_term", $school_year_term);
+
+            $sql->execute();
+
+            if($sql->rowCount() > 0){
+                return $sql->fetchColumn();
+            }
+
+            return null;
+        }
+
+        public function TertiarySectionMovedUp($tertiary_program_section){
+            $pattern = '/(\d+)/';
+            $replacement = '${1}';
+
+            $newString = preg_replace_callback($pattern, function($matches) {
+                return intval($matches[0]) + 1;
+            }, $tertiary_program_section);
+        
+            return $newString;
+        }
     }
 ?>

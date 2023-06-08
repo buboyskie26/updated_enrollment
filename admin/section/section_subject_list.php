@@ -140,6 +140,7 @@
                                             $subject_real = $con->prepare("SELECT 
                                                     
                                                 t1.subject_title as t1_subject_title,
+                                                t1.subject_code as t1_subject_code,
                                                 t1.subject_program_id as t1_subject_program_id
 
                                                 FROM subject as t1 
@@ -153,9 +154,9 @@
                                             $subject_real->execute();
 
                                             $t1_subject_program_id = null;
+                                            $t1_subject_code = null;
 
                                             if($subject_real->rowCount() > 0){
-
 
                                                 // $asd = $subject_real->fetchAll(PDO::FETCH_ASSOC);
 
@@ -164,26 +165,41 @@
                                                 $row = $subject_real->fetch(PDO::FETCH_ASSOC);
 
                                                 $t1_subject_title = $row['t1_subject_title'];
+                                                $t1_subject_code = $row['t1_subject_code'];
+                                                
                                                 $t1_subject_program_id = $row['t1_subject_program_id'];
 
                                             }
 
-
-                                                if($t1_subject_program_id != null && $t1_subject_program_id == $subject_program_id){
+                                                if($t1_subject_program_id != null 
+                                                    && $t1_subject_program_id == $subject_program_id){
+                                                        
                                                     $statuss = "
                                                         <i class='fas fa-check'></i>
                                                     ";
                                                 }
+
                                                 else{
                                                     $statuss = "
                                                         <button class='btn btn-primary'>Populate</button>
                                                     ";
                                                 }
 
+                                                echo $t1_subject_code;
+
+                                                // if($t1_subject_code != null 
+                                                //     && $t1_subject_code == $subject_code){
+
+                                                //     $subject_code = $t1_subject_code;
+
+                                                // }
+
+                                                // echo $subject_code;
+
                                             
                                             echo "
                                                 <tr class='text-center'>
-                                                    <td>$subject_code</td>
+                                                    <td>$t1_subject_code</td>
                                                     <td>$subject_title</td>
                                                     <td>Grade $course_level</td>
                                                     <td>$semester</td>

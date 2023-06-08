@@ -63,7 +63,7 @@
                 $program_subject_description = $row['description'];
                 $program_subject_unit = $row['unit'];
 
-                $program_subject_code = $row['subject_code'] . $program_section; 
+                $program_subject_code = $row['subject_code'] . "-" . $program_section; 
 
                 $insert_section_subject->bindValue(":subject_title", $program_subject_title);
                 $insert_section_subject->bindValue(":description", $program_subject_description);
@@ -89,6 +89,7 @@
             echo "program id not matched";
         }
     }
+
 ?>
  
     <div class="row col-md-12">
@@ -216,79 +217,87 @@
             <hr>
             <hr>
 
-            <h4 class="text-center">Section Details</h4>
+            <div class="card">
 
-            <table id="courseTable" 
-                class="table table-striped table-bordered table-hover " 
-                style="font-size:13px" cellspacing="0"  > 
-                <thead>
-                    <tr class="text-center"> 
-                        <th rowspan="2">Subject Id</th>
-                        <th rowspan="2">Section Code</th>
-                        <th rowspan="2">School Year</th>  
-                        <th rowspan="2">Level</th>
-                        <th rowspan="2">Strand</th>
-                        <th rowspan="2">Students</th>
-                        <th rowspan="2">Action</th>
-                    </tr>	
-                </thead> 	
-                <tbody>
-                    <?php 
-                        $username = "";
-                        // $sectionScheduleGradeElevenFirst = $schedule->GetSectionScheduleGradeElevenFirst($username, $student_id, 11, "First");
+                <div class="card-header">
+                    <h5 class="text-muted">Section Details</h5>
+                </div>
+                <div class="card-body">
+                    <table id="courseTable" 
+                        class="table table-striped table-bordered table-hover " 
+                        style="font-size:13px" cellspacing="0"  > 
+                        <thead>
+                            <tr class="text-center"> 
+                                <th rowspan="2">Subject Id</th>
+                                <th rowspan="2">Section Code</th>
+                                <th rowspan="2">School Year</th>  
+                                <th rowspan="2">Level</th>
+                                <th rowspan="2">Strand</th>
+                                <th rowspan="2">Students</th>
+                                <th rowspan="2">Action</th>
+                            </tr>	
+                        </thead> 	
+                        <tbody>
+                            <?php 
+                                $username = "";
+                                // $sectionScheduleGradeElevenFirst = $schedule->GetSectionScheduleGradeElevenFirst($username, $student_id, 11, "First");
 
-                        $query = $con->query("SELECT t1.*, t2.acronym 
+                                $query = $con->query("SELECT t1.*, t2.acronym 
 
-                            FROM course as t1
-                            LEFT JOIN program as t2 ON t2.program_id = t1.program_id
-                            ");
+                                    FROM course as t1
+                                    LEFT JOIN program as t2 ON t2.program_id = t1.program_id
+                                    ");
 
-                        // $query->bindValue("");
-                        $query->execute();
+                                // $query->bindValue("");
+                                $query->execute();
 
-                        if($query->rowCount() > 0){
-                            while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+                                if($query->rowCount() > 0){
+                                    while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
 
-                                $course_id = $row['course_id'];
-                                $program_section = $row['program_section'];
-                                $course_level = $row['course_level'];
-                                $program_section = $row['program_section'];
-                                $acronym = $row['acronym'];
-                                $school_year_term = $row['school_year_term'];
+                                        $course_id = $row['course_id'];
+                                        $program_section = $row['program_section'];
+                                        $course_level = $row['course_level'];
+                                        $program_section = $row['program_section'];
+                                        $acronym = $row['acronym'];
+                                        $school_year_term = $row['school_year_term'];
 
-                                $totalStudent = $section->GetTotalNumberOfStudentInSection($course_id,
-                                    $current_school_year_id);
+                                        $totalStudent = $section->GetTotalNumberOfStudentInSection($course_id,
+                                            $current_school_year_id);
 
-                                $url_program_section = "
-                                    <a href='section_subject_list.php?id=$course_id'>
-                                        $program_section
-                                    </a>
-                                ";
-
-                                $url = "strand_showv2.php?id=$course_id";
-                                echo "
-                                    <tr class='text-center'>
-                                        <td>$course_id</td>
-                                        <td>$url_program_section</td>
-                                        <td>$school_year_term</td>
-                                        <td>$course_level</td>
-                                        <td>$acronym</td>
-                                        <td>$totalStudent</td>
-                                        <td>
-                                            <a href='$url'>
-                                                <button class='btn btn-sm btn-primary'>
-                                                    View
-                                                </button>
+                                        $url_program_section = "
+                                            <a href='section_subject_list.php?id=$course_id'>
+                                                $program_section
                                             </a>
-                                        </td>
-                                    </tr>
-                                "; 
+                                        ";
 
-                            }
-                        }
-                    ?>
-                </tbody>
-            </table>
+                                        $url = "strand_showv3.php?id=$course_id";
+                                        echo "
+                                            <tr class='text-center'>
+                                                <td>$course_id</td>
+                                                <td>$url_program_section</td>
+                                                <td>$school_year_term</td>
+                                                <td>$course_level</td>
+                                                <td>$acronym</td>
+                                                <td>$totalStudent</td>
+                                                <td>
+                                                    <a href='$url'>
+                                                        <button class='btn btn-sm btn-primary'>
+                                                            View
+                                                        </button>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        "; 
+
+                                    }
+                                }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
 
 
             <!-- <table id="sectionTable"

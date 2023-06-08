@@ -27,10 +27,10 @@
                 <tbody>
                     <?php 
                         $query = $con->prepare("SELECT * FROM program
-                            WHERE department_id=:department_id
+                            -- WHERE department_id=:department_id
                             ");
 
-                        $query->bindValue(":department_id", 4);
+                        // $query->bindValue(":department_id", 4);
                         $query->execute();
 
 
@@ -38,15 +38,17 @@
                         if($query->rowCount() > 0){
                         
                             $track = "";
+                            
                             while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
 
 
                                 $program_id = $row['program_id'];
+                                $track = $row['track'];
                                 $program_name = $row['program_name'];
                                 $acronym = $row['acronym'];
 
-                                if($acronym == "HUMMS" ||$acronym == "ABM" || $acronym == "STEM" )
-                                    $track = "Academic";
+                                // if($acronym == "HUMMS" ||$acronym == "ABM" || $acronym == "STEM" )
+                                //     $track = "Academic";
                                 
                                 $strand_url = "strand_subject_view.php?id=$program_id";
                                 echo "

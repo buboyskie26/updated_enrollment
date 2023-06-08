@@ -25,6 +25,33 @@
         public function GetTeacherLastName() {
             return isset($this->sqlData['lastname']) ? $this->sqlData["lastname"] : ""; 
         }
+        public function GetStatus() {
+            return isset($this->sqlData['teacher_status']) ? $this->sqlData["teacher_status"] : ""; 
+        }     
+
+        public function GetDepartmentId() {
+            return isset($this->sqlData['department_id']) ? $this->sqlData["department_id"] : ""; 
+        }  
+
+        public function GetCreation() {
+            return isset($this->sqlData['date_creation']) ? $this->sqlData["date_creation"] : ""; 
+        }  
+                
+        public function GetDepartmentName() {
+
+            $department_id = $this->GetDepartmentId();
+            $sql = $this->con->prepare("SELECT department_name FROM department
+                WHERE department_id=:department_id");
+            
+            $sql->bindValue(":department_id", $department_id);
+            $sql->execute();
+            if($sql->rowCount() > 0){
+
+                return $sql->fetchColumn();
+            }
+            return "N/A";
+
+        } 
 
         public function GetTeacherFullName() {
            $firstname = $this->GetTeacherFirstName();

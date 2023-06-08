@@ -5,7 +5,7 @@
     require_once('../../admin/classes/AdminUser.php');
 
     if(!AdminUser::IsRegistrarAuthenticated()){
-        header("Location: /dcbt/registrarLoggedIn.php");
+        header("Location: /dcbt/registrar_login.php");
         exit();
     }
 

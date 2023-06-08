@@ -174,6 +174,40 @@
         }
         return "N/A";
     }
+
+
+    public function GetParentMatchPendingStudentId($pending_enrollees_id, $student_id){
+
+        $query = $this->con->prepare("SELECT parent_id 
+        
+            FROM parent
+            WHERE pending_enrollees_id=:pending_enrollees_id");
+
+        $query->bindValue(":pending_enrollees_id", $pending_enrollees_id);
+        $query->execute();
+
+        if($query->rowCount() > 0){
+
+            $row = $query->fetch(PDO::FETCH_ASSOC);
+
+            $parent_id = $row['parent_id'];
+
+            $update = $this->con->prepare("UPDATE parent
+                SET student_id=:update_student_id
+                WHERE parent_id=:parent_id
+                -- AND student_id=0
+                -- AND pending_enrollees_id=$pending_enrollees_id
+                ");
+            
+            $update->bindValue(":update_student_id", $student_id);
+            $update->bindValue(":parent_id", $parent_id);
+            
+            // $update->bindValue(":pending_enrollees_id", $pending_enrollees_id);
+            return $update->execute();
+        }
+        return false;
+    }
+
     private function getCurrentAge($b_day){
 
             $age = -1;
@@ -207,20 +241,20 @@
             $query->execute();
 
             $html = "<div class='form-group'>
-                        <select class='form-control' name='STRAND'>";
-            $html .= " <option value='0' >Choose Strand</option>";
-            if($query->rowCount() > 0){
-                while($row = $query->fetch(PDO::FETCH_ASSOC)){
+                <select class='form-control' name='STRAND' required>
+                    <option value=''>Choose Strand</option>"; // Add required attribute to the <select> tag
 
-                    $row_program_id  = $row['program_id'];
+            if ($query->rowCount() > 0) {
+                while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+                    $row_program_id = $row['program_id'];
 
-                    if($row['program_name']){
+                    if ($row['program_name']) {
                         // $program_name = "STEM";
-                    }   
-                    $selected = ($row_program_id == $program_id) ? 'selected' : ''; // Check if the row_program_id matches the provided program_id
+                    }
+                    $selected = ($row_program_id == $program_id) ? 'selected' : '';
 
                     $html .= "
-                        <option $selected value='".$row['program_id']."'>".$row['program_name']."</option>
+                        <option $selected value='" . $row['program_id'] . "'>" . $row['program_name'] . "</option>
                     ";
                 }
             }
@@ -423,23 +457,49 @@
         }
 
 
-        public function PendingParentInput($pending_enrollees_id, $fname,
+        public function CreateParentData($pending_enrollees_id, $fname,
             $lname, $mi, $contact_number){
 
-          
-            $query = $this->con->prepare("INSERT INTO parent 
-                (pending_enrollees_id, firstname, lastname, middle_name, contact_number) 
-                VALUES (:pending_enrollees_id, :firstname, :lastname, :middle_name, :contact_number)");
-            
+            if($this->CheckParentExists($pending_enrollees_id) == false){
 
-            $query->bindValue(":pending_enrollees_id", $pending_enrollees_id);
+                $query = $this->con->prepare("INSERT INTO parent 
+                    (pending_enrollees_id, firstname, lastname, middle_name, contact_number) 
+                    VALUES (:pending_enrollees_id, :firstname, :lastname, :middle_name, :contact_number)");
+                
+                $query->bindValue(":pending_enrollees_id", $pending_enrollees_id);
+                $query->bindValue(":firstname", $fname);
+                $query->bindValue(":middle_name", $mi);
+                $query->bindValue(":lastname", $lname);
+                $query->bindValue(":contact_number", $contact_number);
+
+                return $query->execute();
+            }else{
+                // echo "Parent Exists";
+                return false;
+            }
+          
+
+        }
+
+        public function UpdateParentData($parent_id, $fname, $lname,
+            $mi, $contact_number) {
+
+            $query = $this->con->prepare("UPDATE parent 
+            
+                SET firstname = :firstname, 
+                    lastname = :lastname,
+                    middle_name = :middle_name, 
+                    contact_number = :contact_number 
+
+                WHERE parent_id = :parent_id");
+
+            $query->bindValue(":parent_id", $parent_id);
             $query->bindValue(":firstname", $fname);
             $query->bindValue(":middle_name", $mi);
             $query->bindValue(":lastname", $lname);
             $query->bindValue(":contact_number", $contact_number);
 
             return $query->execute();
-
         }
 
         public function CalculateAge($b_day){
@@ -458,5 +518,51 @@
 
             return $age;
         }
+
+
+        public function CheckParentExists($pending_enrollees_id){
+
+            $sql = $this->con->prepare("SELECT parent_id FROM parent
+                WHERE pending_enrollees_id=:pending_enrollees_id");
+            
+            $sql->bindValue(":pending_enrollees_id", $pending_enrollees_id);
+            $sql->execute();
+
+            if($sql->rowCount() > 0){
+                return true;
+            }
+            return false;
+        }
+
+        public function CheckStudentFinishedForm($pending_enrollees_id){
+
+            $sql = $this->con->prepare("SELECT is_finished FROM pending_enrollees
+                WHERE pending_enrollees_id=:pending_enrollees_id
+                AND is_finished=1
+                ");
+            
+            $sql->bindValue(":pending_enrollees_id", $pending_enrollees_id);
+            $sql->execute();
+
+            if($sql->rowCount() > 0){
+                return true;
+            }
+            return false;
+        }
+
+        public function UpdatePendingStrand($pending_enrollees_id, $program_id) {
+
+            $query = $this->con->prepare("UPDATE pending_enrollees
+            
+                SET program_id = :program_id
+                WHERE pending_enrollees_id = :pending_enrollees_id");
+
+            $query->bindValue(":pending_enrollees_id", $pending_enrollees_id);
+            $query->bindValue(":program_id", $program_id);
+
+            return $query->execute();
+        }
+
     }
+
 ?>

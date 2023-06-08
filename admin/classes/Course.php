@@ -196,7 +196,21 @@ class Course{
         }
         return null;
     }
+    public function GetStudentSectionLevel($student_course_id){
 
+        $query = $this->con->prepare("SELECT course_level FROM course
+            WHERE course_id=:course_id
+            LIMIT 1
+        ");
+
+        $query->bindValue(":course_id", $student_course_id);
+        $query->execute();
+
+        if($query->rowCount() > 0){
+            return $query->fetchColumn();
+        }
+        return -1;
+    }
     public function GetStudentCourseLevel($username){
 
         $query = $this->con->prepare("SELECT course_level FROM student
@@ -216,17 +230,7 @@ class Course{
             // <option value="11">Grade 11</option>
             // <option value="12">Grade 12</option> 
             while($row = $query->fetch(PDO::FETCH_ASSOC)){
-            //    $match = $query->fetchColumn(); 
-
-            //     // Check if current course_id matches the default value
-            //     $selected = ($row['course_level'] == $match) ? 'selected' : ''; 
-            //     // $selected = "";
-            //     $html .= "
-            //         <option value='".$row['course_level']."' $selected>".$row['course_level']."</option>
-            //         <option value='11'>Grade 11</option>
-            //         <option value='12'>Grade 12</option>
-                    
-            //     ";
+           
             }
 
             $array = array(11, 12);

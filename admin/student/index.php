@@ -211,6 +211,10 @@
                                                     <a href="'.$gradeUrl.'">
                                                         <button class="btn btn-primary btn-sm">Check Grade</button>
                                                     </a>
+
+                                                    <a href="'.$gradeUrl.'">
+                                                        <button class="btn btn-secondary btn-sm">View Details</button>
+                                                    </a>
                                                 </td>';
                                         echo '</tr>';
                                     }
@@ -221,8 +225,6 @@
                 </div>
             </div>
 
-            <hr>
-            <hr>
             <hr>
             <h3 class="text-center mb-3">In-active Students</h3>
             <div class="col-md-12">

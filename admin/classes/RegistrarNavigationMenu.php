@@ -26,7 +26,7 @@
             
             $strand_section = $base_url . '/section/index.php';
                 
-            $school_year_url = $base_url . '/school_year/index.php';
+            $school_year_url = $base_url . '/school_year/indexv2.php';
             $admission_url = $base_url . '/admission/index.php';
             $account_url = $base_url . '/account/index.php';
             $enrollment_url = $base_url . '/enrollment/index.php';
@@ -48,14 +48,16 @@
             $result .= $this->createNavigation("$student_creation_url",
                 "../assets/images/icons/home.png", "Students");
 
+            $result .= $this->createNavigation("$strand_section",
+                "../assets/images/icons/home.png", "Sections");
+
             $result .= $this->createNavigation("$teacher_url",
                 "../assets/images/icons/home.png", "Teacher");
 
             $result .= $this->createNavigation("$courses_url",
                 "../assets/images/icons/home.png", "Courses");
 
-            $result .= $this->createNavigation("$strand_section",
-                "../assets/images/icons/home.png", "Sections");
+
             
             // $result .= $this->createNavigation("$subject_url",
             //     "../assets/images/icons/home.png", "Subject");
@@ -72,14 +74,14 @@
             $result .= $this->createNavigation("$school_year_url",
                 "../assets/images/icons/home.png", "School Year");
 
-            $result .= $this->createNavigation("$enrollees_url",
-                "../assets/images/icons/home.png", "New Enrollees");
+            // $result .= $this->createNavigation("$enrollees_url",
+            //     "../assets/images/icons/home.png", "New Enrollees");
             
-            $result .= $this->createNavigation("$old_enrollees_url",
-                "../assets/images/icons/history.png", "Old Enrollees (SHS)");
+            // $result .= $this->createNavigation("$old_enrollees_url",
+            //     "../assets/images/icons/history.png", "Old Enrollees (SHS)");
             
-            $result .= $this->createNavigation("$transferee_url",
-                "../assets/images/icons/history.png", "Transferee Enrollees");
+            // $result .= $this->createNavigation("$transferee_url",
+            //     "../assets/images/icons/history.png", "Transferee Enrollees");
  
             if(AdminUser::IsRegistrarAuthenticated()){
                     $result .= $this->createNavigation("logout.php", 

@@ -63,6 +63,9 @@
 
             $course_section_subjects = $studentEnroll->GetStudentsStrandSubjectsPerLevelSemester($student_username);
  
+
+            print_r($course_section_subjects);
+            
             $program_id = $row['program_id'];
             $program = $con->prepare("SELECT acronym FROM program
                 WHERE program_id=:program_id
@@ -253,17 +256,7 @@
 
                                                     $status = "Ongoing";
                                                     $totalUnits += $unit;
-
-                                                    // echo $is_transferee;
-                                                    // echo $t3_student_subject_id;
-                                                    // echo $student_id;
-
-                                                    // if($is_transferee == "yes"){
-                                                    //     $status = "Credited";
-                                                    // } 
-
-                                                    // if($is_transferee == "no"){
-                                                    // }
+                                                  
 
                                                     
                                                     if($subject_course_id == $student_course_id){
@@ -289,6 +282,7 @@
                                         </tr> 
                                     </tbody>
                                 </table>
+                                
                                 <!--  REMOVE SUBJECTS -->
                                 <h5 class="mb-3 text-center text-warning">Removed Subjects</h5>
                                 <table id="" class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
@@ -309,7 +303,6 @@
                                             $sql = $con->prepare("SELECT * FROM 
                                             
                                                 subject as t1
-
 
                                                 WHERE t1.subject_id NOT IN ($subjectIds)
                                                 -- WHERE t1.student_id=:student_id

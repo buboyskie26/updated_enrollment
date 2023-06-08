@@ -8,6 +8,13 @@
     require_once('./classes/SectionTertiary.php');
     require_once('../includes/classes/Student.php');
 
+    ?>
+        <style>
+        .error {
+            border: 1px solid red;
+        }
+        </style>
+    <?php
     $enroll = new StudentEnroll($con);
 
     $school_year_obj = $enroll->GetActiveSchoolYearAndSemester();
@@ -99,26 +106,7 @@
             $birthplace = empty($row['birthplace']) ? '' : $row['birthplace'];
 
 
-            $get_parent = $con->prepare("SELECT * FROM parent
-                WHERE pending_enrollees_id=:pending_enrollees_id");
-        
-            $get_parent->bindValue(":pending_enrollees_id", $pending_enrollees_id);
-            $get_parent->execute();
 
-            $parent_firstname = "";
-            $parent_lastname = "";
-            $parent_middle_name = "";
-            $parent_contact_number = "";
-
-            if($get_parent->rowCount() > 0){
-                $rowParnet = $get_parent->fetch(PDO::FETCH_ASSOC);
-
-                $parent_firstname = $rowParnet['firstname'];
-                $parent_lastname = $rowParnet['lastname'];
-                $parent_middle_name = $rowParnet['middle_name'];
-                $parent_contact_number = $rowParnet['contact_number'];
-
-            }
 
             if(isset($_GET['new_student']) && $_GET['new_student'] == "true"){
 
@@ -127,12 +115,28 @@
                     if(isset($_POST['new_step1_btn'])){
 
                         $admission_type = $_POST['admission_type'];
-                        $student_type = $_POST['student_type'];
+                        $student_type = $_POST['student_type'] ?? "";
                         $program_id = $_POST['STRAND'];
 
+                        // if(false){
+                        //     $fields = ['admission_type', 'student_type', 'STRAND'];
+                        //     $errors = [];
 
+                        //     foreach ($fields as $field) {
+                        //         if (empty($_POST[$field])) {
+                        //             echo "<script>Swal.fire('Error', 'Please fill in the {$field} field.', 'error');</script>";
+
+                        //             $_POST[$field . '_class'] = 'error';
+                        //         }
+                        //     }
+                        //     if (!empty($errors)) {
+                        //         foreach ($errors as $error) {
+                        //             echo "<p>{$error}</p>";
+                        //         }
+                        //     }
+                        // }
+                            
                         # Check if all form are inputed.
-
 
                         $wasSuccess = $pending->UpdatePendingNewStep1($admission_type,
                                 $student_type, $program_id, $pending_enrollees_id);
@@ -141,7 +145,10 @@
                             $step1Completed = $pending->CheckFormStep1Complete($pending_enrollees_id);
 
                             if($step1Completed==true){
-                                header("Location: process.php?new_student=true&step=2");
+
+                                AdminUser::success("STEP 1 Completed.",
+                                    "process.php?new_student=true&step=2");
+                                // header("Location: process.php?new_student=true&step=2");
                                 exit();
                             }else{
                                 AdminUser::error("All inputs are required.", "process.php?new_student=true&step=1");
@@ -156,14 +163,16 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="card-header">
+
                                         <h4 class="text-center">STEP 1 ~ Prefered Course</h4>
+
                                         <div class="container mb-4">
                                             <form method="POST">
                                                 <div class="row">
                                                     <span>Admission Type</span>
                                                     <div class="col-md-6">
                                                         <label for="">New Student</label>
-                                                        <input type="radio" name="admission_type"
+                                                        <input required type="radio" name="admission_type"
                                                             value="Regular"<?php echo ($student_status == "Regular") ? ' checked' : ''; ?>>
                                                     </div>
                                                     <div class="col-md-6">
@@ -177,13 +186,13 @@
                                                     <span>Student Type</span>
                                                     <div class="col-md-6">
                                                         <label for="">College</label>
-                                                        <input type="radio" name="student_type"
+                                                        <input required  type="radio" name="student_type"
                                                             value="Tertiary" <?php echo ($type == "Tertiary") ? ' checked' : ''; ?>>
                                                         
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label for="">Senior High</label>
-                                                        <input type="radio" name="student_type"
+                                                        <input required  type="radio" name="student_type"
                                                             value="SHS" <?php echo ($type == "SHS") ? ' checked' : ''; ?>>
                                                     </div>
                                                 </div>
@@ -193,7 +202,8 @@
                                                     <?php echo $pending->CreateRegisterStrand($program_id);?>
                                                 </div>
 
-                                                <button type="submit" name="new_step1_btn" class="btn btn-primary">Proceed</button>
+                                               
+                                                <button type="submit" name="new_step1_btn" class="mt-2 btn btn-primary">Proceed</button>
                                             </form>
                                         </div>
                                     </div>
@@ -205,46 +215,37 @@
 
                 if(isset($_GET['step']) && $_GET['step'] == 2){
 
+                    $get_parent = $con->prepare("SELECT * FROM parent
+                        WHERE pending_enrollees_id=:pending_enrollees_id");
+                
+                    $get_parent->bindValue(":pending_enrollees_id", $pending_enrollees_id);
+                    $get_parent->execute();
+
+                    $parent_id = null;
+                    $parent_firstname = "";
+                    $parent_lastname = "";
+                    $parent_middle_name = "";
+                    $parent_contact_number = "";
+
+                    $hasParentData = false;
+
+                    if($get_parent->rowCount() > 0){
+
+                        $rowParnet = $get_parent->fetch(PDO::FETCH_ASSOC);
+
+                        $parent_id = $rowParnet['parent_id'];
+                        $parent_firstname = $rowParnet['firstname'];
+                        $parent_lastname = $rowParnet['lastname'];
+                        $parent_middle_name = $rowParnet['middle_name'];
+                        $parent_contact_number = $rowParnet['contact_number'];
+
+                        // echo $parent_id;
+                        $hasParentData = true;
+
+                    }
+
+
                     if(isset($_POST['new_step2_btn'])){
-
-                        // $firstname = isset($_POST['firstname']) ? $_POST['firstname'] : '';
-                        // $middle_name = isset($_POST['middle_name']) ? $_POST['middle_name'] : '';
-                        // $lastName = isset($_POST['lastname']) ? $_POST['lastname'] : '';
-                        // $civil_status = isset($_POST['civil_status']) ? $_POST['civil_status'] : '';
-                        // $nationality = isset($_POST['nationality']) ? $_POST['nationality'] : '';
-                        // $sex = isset($_POST['sex']) ? $_POST['sex'] : '';
-
-                        // $birthday = isset($_POST['birthday']) ? $_POST['birthday'] : '2000-01-01';
-                        // $age = $pending->CalculateAge($birthday);
-
-                        // $birthplace = isset($_POST['birthplace']) ? $_POST['birthplace'] : '';
-                        // $religion = isset($_POST['religion']) ? $_POST['religion'] : '';
-                        // $address = isset($_POST['address']) ? $_POST['address'] : '';
-                        // $contact_number = isset($_POST['contact_number']) ? $_POST['contact_number'] : '';
-                        // $email = isset($_POST['email']) ? $_POST['email'] : '';
-                        // $lrn = isset($_POST['lrn']) ? $_POST['lrn'] : '';
-
-
-                        // $parent_firstname = isset($_POST['parent_firstname']) ? $_POST['parent_firstname'] : '';
-                        // $parent_middle_name = isset($_POST['parent_middle_name']) ? $_POST['parent_middle_name'] : '';
-                        // $parent_lastname = isset($_POST['parent_lastname']) ? $_POST['parent_lastname'] : '';
-                        // $parent_contact_number = isset($_POST['parent_contact_number']) ? $_POST['parent_contact_number'] : '';
-
-
-                        // $wasSuccess = $pending->UpdatePendingNewStep2($pending_enrollees_id, $firstname, $middle_name,
-                        //     $lastName, $civil_status, $nationality, $sex, $birthday,
-                        //     $birthplace, $religion, $address, $contact_number, $email, $age, $lrn);
-
-                        // $guardian_form_input = $pending->PendingParentInput($pending_enrollees_id, 
-                        //     $parent_firstname, $parent_middle_name,
-                        //     $parent_lastname, $parent_contact_number);
-
-                        // if($wasSuccess && $guardian_form_input){
-
-                        //     // echo "succes";
-                        //     header("Location: process.php?new_student=true&step=3");
-                        //     exit();
-                        // }
 
                         $firstname = $_POST['firstname'];
                         $middle_name = $_POST['middle_name'];
@@ -262,7 +263,8 @@
 
                         $age = $pending->CalculateAge($birthday);
 
-                        # Guardian.
+                        # If there`s a present data
+                        # it just need to update not to create another.
 
                         $parent_firstname = isset($_POST['parent_firstname']) ? $_POST['parent_firstname'] : '';
                         $parent_middle_name = isset($_POST['parent_middle_name']) ? $_POST['parent_middle_name'] : '';
@@ -270,28 +272,53 @@
                         $parent_contact_number = isset($_POST['parent_contact_number']) ? $_POST['parent_contact_number'] : '';
 
                         $wasSuccess = $pending->UpdatePendingNewStep2($pending_enrollees_id, $firstname, $middle_name,
-                            $lastName, $civil_status, $nationality, $sex, $birthday,
-                            $birthplace, $religion, $address, $contact_number, $email, $age, $lrn);
+                                $lastName, $civil_status, $nationality, $sex, $birthday,
+                                $birthplace, $religion, $address, $contact_number, $email, $age, $lrn);
+                           
 
-                        $guardian_form_input = $pending->PendingParentInput($pending_enrollees_id, 
-                            $parent_firstname, $parent_middle_name,
-                            $parent_lastname, $parent_contact_number);
+                        if($hasParentData == false){
 
-                        if($wasSuccess && $guardian_form_input){
 
-                            $wasCompleted = $pending->CheckAllStepsComplete($pending_enrollees_id);
-                            if($wasCompleted == true){
-                                AdminUser::success("All forms are successfully inserted",
+
+                            
+                            $guardian_form_input = $pending->CreateParentData($pending_enrollees_id, 
+                                $parent_firstname, $parent_middle_name,
+                                $parent_lastname, $parent_contact_number);
+                            
+                            if($guardian_form_input == false){
+                                AdminUser::error("Parent has already been created. Form should be in update state.", "");
+                            }
+                            if($wasSuccess && $guardian_form_input){
+
+                                AdminUser::success("STEP 2 Completed",
                                     "process.php?new_student=true&step=3");
                                 exit();
-
-                            }else{
+                            }
+                            else{
                                 AdminUser::error("All fields must be filled-up", "");
                             }
-                            // header("Location: process.php?new_student=true&step=3");
-                            // exit();
+
                         }
-                
+
+                        else if($wasSuccess == true && $hasParentData == true){
+
+                                $parentUpdateSuccess = $pending->UpdateParentData($parent_id,
+                                    $parent_firstname, $parent_middle_name,
+                                    $parent_lastname, $parent_contact_number);
+
+                                $wasCompleted = $pending->CheckAllStepsComplete($pending_enrollees_id);
+
+                            if($wasCompleted == true){
+
+                                    AdminUser::success("STEP 2 Modification Success",
+                                        "process.php?new_student=true&step=3");
+                                    exit();
+
+                                }else{
+                                    AdminUser::error("All fields must be filled-up", "");
+                            }
+                        }
+
                     }
                     ?>
                         <div class="row col-md-12">
@@ -304,35 +331,29 @@
                                         <div class="container mb-4">
 
                                             <form method="POST">
-
-                                            <div class="form-group">
-                                                <label for="lrn">LRN</label>
-                                                <!-- <input type="text" id="firstname" name="firstname" class="form-control"> -->
-                                                <input type="text" name="lrn" class="form-control" 
-                                                    value="<?php echo ($lrn != "") ? $lrn : ''; ?>">
-
+                                                <div class="form-group">
+                                                    <label for="lrn">LRN</label>
+                                                    <input type="text" name="lrn" class="form-control" 
+                                                        required value="<?php echo ($lrn != "") ? $lrn : '357231'; ?>">
+                                                </div>
                                                 <div class="form-group">
                                                     <label for="firstname">First Name</label>
-                                                    <!-- <input type="text" id="firstname" name="firstname" class="form-control"> -->
-                                                    <input type="firstname" name="firstname" class="form-control" 
-                                                        value="<?php echo ($firstname != "") ? $firstname : ''; ?>">
+                                                    <input type="text" id="firstname" name="firstname" class="form-control" required value="<?php echo ($firstname != "") ? $firstname : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="middlename">Middle Name</label>
-                                                    <input type="middle_name" name="middle_name" class="form-control" 
-                                                        value="<?php echo ($middle_name != "") ? $middle_name : ''; ?>">
+                                                    <input type="text" id="middlename" name="middle_name" class="form-control" required value="<?php echo ($middle_name != "") ? $middle_name : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="lastname">Last Name</label>
-                                                    <input type="lastname" name="lastname" class="form-control" 
-                                                        value="<?php echo ($lastname != "") ? $lastname : ''; ?>">
+                                                    <input type="text" id="lastname" name="lastname" class="form-control" required value="<?php echo ($lastname != "") ? $lastname : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="status">Status</label>
-                                                    <select id="status" name="civil_status" class="form-control">
+                                                    <select id="status" name="civil_status" class="form-control" required>
                                                         <option value="Single"<?php echo ($civil_status == "Single") ? " selected" : ""; ?>>Single</option>
                                                         <option value="Married"<?php echo ($civil_status == "Married") ? " selected" : ""; ?>>Married</option>
                                                         <option value="Divorced"<?php echo ($civil_status == "Divorced") ? " selected" : ""; ?>>Divorced</option>
@@ -342,95 +363,80 @@
 
                                                 <div class="form-group">
                                                     <label for="citizenship">Citizenship</label>
-                                                    <input type="nationality" name="nationality" class="form-control" 
-                                                        value="<?php echo ($nationality != "") ? $nationality : ''; ?>">
+                                                    <input type="text" id="citizenship" name="nationality" class="form-control" required value="<?php echo ($nationality != "") ? $nationality : 'Filipino'; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="sex">Gender</label>
                                                     <div>
-                                                        <!-- <input type="radio" id="male" name="sex" value="Male"> -->
-                                                        <input type="radio" name="sex"
-                                                            value="Male" <?php echo ($sex == "Male") ? ' checked' : ''; ?>>
+                                                        <input type="radio" name="sex" value="Male" required <?php echo ($sex == "Male") ? ' checked' : 'checked'; ?>>
                                                         <label for="male">Male</label>
                                                     </div>
                                                     <div>
-                                                        <input type="radio" name="sex"
-                                                            value="Female" <?php echo ($sex == "Female") ? ' checked' : ''; ?>>
+                                                        <input type="radio" name="sex" value="Female" required <?php echo ($sex == "Female") ? ' checked' : ''; ?>>
                                                         <label for="female">Female</label>
                                                     </div>
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="birthday">Birth Date</label>
-
-                                                    <!-- <input type="date" id="birthday" name="birthday" class="form-control"> -->
-                                                    <input type="date" id="birthday" name="birthday" class="form-control" value="<?php echo ($birthday != "") ? $birthday : ""; ?>">
+                                                    <input type="date" id="birthday" name="birthday" class="form-control" required value="<?php echo ($birthday != "") ? $birthday : "2023-06-17"; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="birthplace">Birth Place</label>
-                                                    <input type="text" id="birthplace" name="birthplace" class="form-control" value="<?php echo ($birthplace != "") ? $birthplace : ""; ?>">
-
+                                                    <input type="text" id="birthplace" name="birthplace" class="form-control" required value="<?php echo ($birthplace != "") ? $birthplace : "Taguigarao"; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="religion">Religion</label>
-                                                    <input type="text" id="religion" name="religion" class="form-control" value="<?php echo ($religion != "") ? $religion : ""; ?>">
-
+                                                    <input type="text" id="religion" name="religion" class="form-control" required value="<?php echo ($religion != "") ? $religion : "None"; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="address">Address</label>
-                                                    
-                                                    <input type="text" id="address" name="address" class="form-control" value="<?php echo ($address != "") ? $address : ""; ?>">
-                                                
+                                                    <input type="text" id="address" name="address" class="form-control" required value="<?php echo ($address != "") ? $address : "None"; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="contact_number">Phone Number</label>
-                                                
-                                                    <input type="tel" id="contact_number" name="contact_number" class="form-control" value="<?php echo ($contact_number != "") ? $contact_number : ""; ?>">
+                                                    <input type="tel" id="contact_number" name="contact_number" class="form-control" required value="<?php echo ($contact_number != "") ? $contact_number : "09151515123"; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="email">Email</label>
-                                                    <!-- <input type="email" id="email" name="email" class="form-control"> -->
-                                                    <input type="email" name="email" class="form-control" 
-                                                        value="<?php echo ($email != "") ? $email : ''; ?>">
+                                                    <input type="email" id="email" name="email" class="form-control" required value="<?php echo ($email != "") ? $email : ''; ?>">
                                                 </div>
-
 
                                                 <h4 class="mb-4 mt-4 text-muted">Parent Info</h4>
 
                                                 <div class="form-group">
-                                                    <label for="firstname">First Name</label>
-                                                    <!-- <input type="text" id="firstname" name="firstname" class="form-control"> -->
-                                                    <input type="text" name="parent_firstname" class="form-control" 
-                                                        value="<?php echo ($parent_firstname != "") ? $parent_firstname : ''; ?>">
+                                                    <label for="parent_firstname">Parent First Name</label>
+                                                    <input type="text" id="parent_firstname" name="parent_firstname" class="form-control" required value="<?php echo ($parent_firstname != "") ? $parent_firstname : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label for="middlename">Middle Name</label>
-                                                    <input type="text" name="parent_middle_name" class="form-control" 
-                                                        value="<?php echo ($parent_middle_name != "") ? $parent_middle_name : ''; ?>">
+                                                    <label for="parent_middle_name">Parent Middle Name</label>
+                                                    <input type="text" id="parent_middle_name" name="parent_middle_name" class="form-control" required value="<?php echo ($parent_middle_name != "") ? $parent_middle_name : 'Z'; ?>">
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label for="lastname">Last Name</label>
-                                                    <input type="text" name="parent_lastname" class="form-control" 
-                                                        value="<?php echo ($parent_lastname != "") ? $parent_lastname : ''; ?>">
+                                                    <label for="parent_lastname">Parent Last Name</label>
+                                                    <input type="text" id="parent_lastname" name="parent_lastname" class="form-control" required value="<?php echo ($parent_lastname != "") ? $parent_lastname : 'Surname'; ?>">
                                                 </div>
 
-                                                
                                                 <div class="form-group">
-                                                    <label for="phone">Phone Number</label>
-                                                    <input type="tel" name="parent_contact_number" class="form-control" 
-                                                        value="<?php echo ($parent_contact_number != "") ? $parent_contact_number : ''; ?>">
+                                                    <label for="parent_contact_number">Parent Phone Number</label>
+                                                    <input type="tel" id="parent_contact_number" name="parent_contact_number" class="form-control" required value="<?php echo ($parent_contact_number != "") ? $parent_contact_number : '0915151515123'; ?>">
                                                 </div>
 
-                                                <button name="new_step2_btn" type="submit" class="btn btn-success">Confirm</button>
+                                                <a href="process.php?new_student=true&step=1">
+                                                    <button type="button" class="btn btn-outline-primary">Return</button>
+                                                </a>
+
+                                                <button name="new_step2_btn" type="submit" class="btn btn-primary">Proceed</button>
                                             </form>
+
                                         </div>
                                     </div>
                                 </div>
@@ -469,7 +475,7 @@
                             
                             if($wasSuccess){
 
-                                AdminUser::success("All forms are successfully inserted",
+                                AdminUser::success("Validate Success, Please Walk In to Daehan College Business Technology.",
                                     "profile.php?fill_up_state=finished");
                                 exit();
                             }
@@ -490,34 +496,29 @@
 
                                             <form method="POST">
 
-                                            <div class="form-group">
-                                                <label for="lrn">LRN</label>
-                                                <!-- <input type="text" id="firstname" name="firstname" class="form-control"> -->
-                                                <input type="text" name="lrn" class="form-control" 
-                                                    value="<?php echo ($lrn != "") ? $lrn : ''; ?>">
+                                                <div class="form-group">
+                                                    <label for="lrn">LRN</label>
+                                                    <input type="text" name="lrn" class="form-control" required value="<?php echo ($lrn != "") ? $lrn : ''; ?>">
+                                                </div>
 
                                                 <div class="form-group">
                                                     <label for="firstname">First Name</label>
-                                                    <!-- <input type="text" id="firstname" name="firstname" class="form-control"> -->
-                                                    <input type="firstname" name="firstname" class="form-control" 
-                                                        value="<?php echo ($firstname != "") ? $firstname : ''; ?>">
+                                                    <input type="text" name="firstname" class="form-control" required value="<?php echo ($firstname != "") ? $firstname : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="middlename">Middle Name</label>
-                                                    <input type="middle_name" name="middle_name" class="form-control" 
-                                                        value="<?php echo ($middle_name != "") ? $middle_name : ''; ?>">
+                                                    <input type="text" name="middle_name" class="form-control" required value="<?php echo ($middle_name != "") ? $middle_name : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="lastname">Last Name</label>
-                                                    <input type="lastname" name="lastname" class="form-control" 
-                                                        value="<?php echo ($lastname != "") ? $lastname : ''; ?>">
+                                                    <input type="text" name="lastname" class="form-control" required value="<?php echo ($lastname != "") ? $lastname : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="status">Status</label>
-                                                    <select id="status" name="civil_status" class="form-control">
+                                                    <select name="civil_status" class="form-control" required>
                                                         <option value="Single"<?php echo ($civil_status == "Single") ? " selected" : ""; ?>>Single</option>
                                                         <option value="Married"<?php echo ($civil_status == "Married") ? " selected" : ""; ?>>Married</option>
                                                         <option value="Divorced"<?php echo ($civil_status == "Divorced") ? " selected" : ""; ?>>Divorced</option>
@@ -527,65 +528,56 @@
 
                                                 <div class="form-group">
                                                     <label for="citizenship">Citizenship</label>
-                                                    <input type="nationality" name="nationality" class="form-control" 
-                                                        value="<?php echo ($nationality != "") ? $nationality : ''; ?>">
+                                                    <input type="text" name="nationality" class="form-control" required value="<?php echo ($nationality != "") ? $nationality : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="sex">Gender</label>
                                                     <div>
-                                                        <!-- <input type="radio" id="male" name="sex" value="Male"> -->
-                                                        <input type="radio" name="sex"
-                                                            value="Male" <?php echo ($sex == "Male") ? ' checked' : ''; ?>>
+                                                        <input type="radio" name="sex" value="Male" required <?php echo ($sex == "Male") ? ' checked' : ''; ?>>
                                                         <label for="male">Male</label>
                                                     </div>
                                                     <div>
-                                                        <input type="radio" name="sex"
-                                                            value="Female" <?php echo ($sex == "Female") ? ' checked' : ''; ?>>
+                                                        <input type="radio" name="sex" value="Female" required <?php echo ($sex == "Female") ? ' checked' : ''; ?>>
                                                         <label for="female">Female</label>
                                                     </div>
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="birthday">Birth Date</label>
-
-                                                    <!-- <input type="date" id="birthday" name="birthday" class="form-control"> -->
-                                                    <input type="date" id="birthday" name="birthday" class="form-control" value="<?php echo ($birthday != "") ? $birthday : ""; ?>">
+                                                    <input type="date" name="birthday" class="form-control" required value="<?php echo ($birthday != "") ? $birthday : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="birthplace">Birth Place</label>
-                                                    <input type="text" id="birthplace" name="birthplace" class="form-control" value="<?php echo ($birthplace != "") ? $birthplace : ""; ?>">
-
+                                                    <input type="text" name="birthplace" class="form-control" required value="<?php echo ($birthplace != "") ? $birthplace : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="religion">Religion</label>
-                                                    <input type="text" id="religion" name="religion" class="form-control" value="<?php echo ($religion != "") ? $religion : ""; ?>">
-
+                                                    <input type="text" name="religion" class="form-control" required value="<?php echo ($religion != "") ? $religion : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="address">Address</label>
-                                                    
-                                                    <input type="text" id="address" name="address" class="form-control" value="<?php echo ($address != "") ? $address : ""; ?>">
-                                                
+                                                    <input type="text" name="address" class="form-control" required value="<?php echo ($address != "") ? $address : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="contact_number">Phone Number</label>
-                                                
-                                                    <input type="tel" id="contact_number" name="contact_number" class="form-control" value="<?php echo ($contact_number != "") ? $contact_number : ""; ?>">
+                                                    <input type="tel" name="contact_number" class="form-control" required value="<?php echo ($contact_number != "") ? $contact_number : ''; ?>">
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="email">Email</label>
-                                                    <!-- <input type="email" id="email" name="email" class="form-control"> -->
-                                                    <input type="email" name="email" class="form-control" 
-                                                        value="<?php echo ($email != "") ? $email : ''; ?>">
+                                                    <input type="email" name="email" class="form-control" required value="<?php echo ($email != "") ? $email : ''; ?>">
                                                 </div>
 
-                                                <button name="new_step3_btn" type="submit" class="btn btn-success">Confirm</button>
+                                                <a href="process.php?new_student=true&step=2">
+                                                    <button type="button" class="btn btn-outline-primary">Return</button>
+                                                </a>
+
+                                                <button name="new_step3_btn" type="submit" class="btn btn-success">Validate</button>
                                             </form>
                                         </div>
                                     </div>

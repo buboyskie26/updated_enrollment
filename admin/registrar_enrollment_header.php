@@ -14,8 +14,6 @@
         
     $registrarLoggedInObj = new AdminUser($con, $registrarLoggedIn);
 
-
-
     // if (
     // !isset($_SESSION['registrarLoggedIn']) || $_SESSION['registrarLoggedIn'] == '' 
     // // && $_SESSION['registrarLoggedIn'] == ''

@@ -235,5 +235,23 @@ class Account {
         array_push($this->errorArray, Constants::$loginFailed);
         return false;
     }
+
+
+    public function SavePassword($new_password, $student_id){
+
+        $password = password_hash($new_password, PASSWORD_BCRYPT);
+
+        // echo $hash_password;
+
+        $update = $this->con->prepare("UPDATE student
+            SET password=:password
+            WHERE student_id=:student_id
+            ");
+
+        $update->bindValue(":password", $password);
+        $update->bindValue(":student_id", $student_id);
+
+        return $update->execute();
+    }
 }
 ?>

@@ -251,45 +251,49 @@
         }
 
         return "
-                <h4 class='text-center mb-3'>Create Subject Program</h4>
-                <form method='POST'>
+            <div class='card'>
+                <div class='card-header'>
+                    <h4 class='text-center mb-3'>Create Subject Program</h4>
+                </div>
+                <div class='card-body'>
+                    <form method='POST'>
 
-                    <div class='form-group mb-2'>
-                        <input class='form-control' type='text' placeholder='Subject Code' name='subject_code'>
-                    </div>
+                        <div class='form-group mb-2'>
+                            <input class='form-control' type='text' placeholder='Subject Code' name='subject_code'>
+                        </div>
 
-                    <div class='form-group mb-2'>
-                        <input class='form-control' type='text' placeholder='Subject Title' name='subject_title'>
-                    </div>
+                        <div class='form-group mb-2'>
+                            <input class='form-control' type='text' placeholder='Subject Title' name='subject_title'>
+                        </div>
 
-                    <div class='form-group mb-2'>
-                        <textarea class='form-control' placeholder='Subject Description' name='description'></textarea>
-                    </div>
+                        <div class='form-group mb-2'>
+                            <textarea class='form-control' placeholder='Subject Description' name='description'></textarea>
+                        </div>
 
 
-               
-                    <div class='form-group mb-2'>
-                        <input class='form-control' type='text' placeholder='Pre-Requisite' name='pre_requisite_title'>
-                    </div>
-   
-                    <div class='form-group mb-2'>
-                        <select class='form-control' name='subject_type'>
-                            <option value='CORE SUBJECTS'>CORE SUBJECTS</option>
-                            <option value='APPLIED SUBJECTS'>APPLIED SUBJECTS</option>
-                            <option value='SPECIALIZED_SUBJECTS'>SPECIALIZED_SUBJECTS</option>
-                        </select>
-                    </div>
+                
+                        <div class='form-group mb-2'>
+                            <input class='form-control' type='text' placeholder='Pre-Requisite' name='pre_requisite_title'>
+                        </div>
+    
+                        <div class='form-group mb-2'>
+                            <select class='form-control' name='subject_type'>
+                                <option value='CORE SUBJECTS'>CORE SUBJECTS</option>
+                                <option value='APPLIED SUBJECTS'>APPLIED SUBJECTS</option>
+                                <option value='SPECIALIZED_SUBJECTS'>SPECIALIZED_SUBJECTS</option>
+                            </select>
+                        </div>
 
-                    <div class='form-group mb-2'>
-                        <input class='form-control' value='3' type='text' placeholder='Unit' name='unit'>
-                    </div>
+                        <div class='form-group mb-2'>
+                            <input class='form-control' value='3' type='text' placeholder='Unit' name='unit'>
+                        </div>
 
-       
-  
+                        <button type='submit' class='btn btn-primary'
+                            name='create_subject_template'>Save</button>
+                    </form>
+                </div>
+            </div>
 
-                    <button type='submit' class='btn btn-primary'
-                        name='create_subject_template'>Save</button>
-                </form>
             ";
         
 
@@ -665,10 +669,13 @@
     public function CheckStudentGradeLevelEnrolledSubjectSemesterv2($student_id,
         $selected_semester, $selected_course_level){
 
+            // echo $selected_course_level;
+            
         $query = $this->con->prepare("SELECT 
 
-            t1.enrollment_id,
+            t1.enrollment_id, t1.enrollment_form_id, t2.term,
             t1.student_id, t1.course_id, t2.school_year_id, t2.period 
+
             FROM enrollment as t1
 
             INNER JOIN school_year as t2 ON t1.school_year_id = t2.school_year_id
@@ -692,7 +699,11 @@
         $query->bindValue("course_level", $selected_course_level); 
         $query->execute(); 
 
-        return $query->rowCount() > 0;
+        if($query->rowCount() > 0){
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+        return [];
+        // return $query->rowCount() > 0;
     }
 
     public function GetSubjectCourseLevel($subject_id){
@@ -729,9 +740,29 @@
 
     }
 
+    public function GetSubjectTitle($subject_id){
+
+        $query = $this->con->prepare("SELECT subject_title FROM subject
+        
+            WHERE subject_id=:subject_id");
+
+        $query->bindValue(":subject_id", $subject_id);
+        $query->execute();
+
+        if($query->rowCount() > 0){
+            return $query->fetchColumn();
+        }
+
+        return "";
+
+    }
+
     public function GetNewTransfereeAddedSubject($student_id, 
         $current_school_year_id, $selected_course_id) : array{
 
+
+            // echo $selected_course_id;
+            // echo $student_id;
         $addedSubjects = $this->con->prepare("SELECT 
             t1.is_transferee, t1.is_final,
             t1.student_subject_id as t2_student_subject_id, 
@@ -746,6 +777,45 @@
 
             WHERE t1.student_id=:student_id
             AND t1.is_final=0
+            AND t1.school_year_id=:school_year_id
+            AND t2.course_id!=:course_id
+
+            ");
+
+        $addedSubjects->bindValue(":student_id", $student_id);
+        $addedSubjects->bindValue(":school_year_id", $current_school_year_id);
+        $addedSubjects->bindValue(":course_id", $selected_course_id);
+        $addedSubjects->execute();
+
+        if($addedSubjects->rowCount() > 0){
+            
+            return $addedSubjects->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return [];
+
+    }
+
+    public function GetNewTransfereeEnrolledAddedSubject($student_id, 
+        $current_school_year_id, $selected_course_id) : array{
+
+
+            // echo $selected_course_id;
+            // echo $student_id;
+        $addedSubjects = $this->con->prepare("SELECT 
+            t1.is_transferee, t1.is_final,
+            t1.student_subject_id as t2_student_subject_id, 
+            t3.student_subject_id as t3_student_subject_id,
+
+            t4.program_section,
+            t2.* FROM student_subject as t1
+
+            INNER JOIN subject as t2 ON t2.subject_id = t1.subject_id
+            LEFT JOIN course as t4 ON t4.course_id = t2.course_id
+            LEFT JOIN student_subject_grade as t3 ON t3.student_subject_id = t1.student_subject_id
+
+            WHERE t1.student_id=:student_id
+            AND t1.is_final=1
             AND t1.school_year_id=:school_year_id
             AND t2.course_id!=:course_id
 

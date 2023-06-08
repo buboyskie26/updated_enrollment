@@ -45,26 +45,33 @@ if(isset($_GET['id'])){
 }
 ?>
 <div class='col-md-8 row offset-md-1'>
-    <h4 class='text-center mb-3'>Edit Teacher</h4>
     <form method='POST'>
-        <div class="modal-body">
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <label for="firstname">Firstname</label>
-                </div>
-                <div class="col-md-9">
-                    <input type="text" name="firstname" class="form-control" value="<?php echo $teacher['firstname']; ?>">
-                </div>
-            </div>
+        <div class="card">
+            <div class="card-header">
+                <h4 class='text-center mb-3'>Edit Teacher</h4>
 
-                    <div class="row mb-3">
-            <div class="col-md-3">
-                <label for="lastname">Lastname</label>
             </div>
-            <div class="col-md-9">
-                <input type="text" name="lastname" class="form-control" value="<?php echo $teacher['lastname']; ?>">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="firstname">Firstname</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" name="firstname" class="form-control" value="<?php echo $teacher['firstname']; ?>">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="lastname">Lastname</label>
+                    </div>
+                <div class="col-md-9">
+                    <input type="text" name="lastname" class="form-control" value="<?php echo $teacher['lastname']; ?>">
+                </div>
+
             </div>
         </div>
+
 
         <div class="row mb-3">
             <div class="col-md-3">

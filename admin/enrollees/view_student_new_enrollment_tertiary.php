@@ -10,8 +10,6 @@
     if(AdminUser::IsRegistrarAuthenticated()){
 
 
-
-
         if(isset($_GET['id'])){
 
             $pending_enrollees_id = $_GET['id'];

@@ -15,8 +15,6 @@
     require_once('../includes/studentHeader.php');
     require_once('../admin/classes/AdminUser.php');
 
-
-
     if(isset($_SESSION['username'])
         && isset($_SESSION['status']) 
         && $_SESSION['status'] == 'enrolled'
@@ -466,7 +464,7 @@
                                         ";
                                     }
                                 }
-
+                                
                                 // In the backend, it doesnt have a validation yet.
                                 // if($enroll->CheckStudentYearIdAndCurrentYearId($username) == false){
                                 # ORIGINAL BUT DONT HAVE ANY VALIDATION FOR DIFFERNT TYPE OF STUDENT.

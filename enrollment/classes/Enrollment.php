@@ -289,6 +289,22 @@
         return $sql->fetchColumn();
     }
 
+    function GetEnrollmentDate($student_id, $course_id, $school_year_id) {
+        // Check if the enrollment form ID already exists in the database
+        $sql = $this->con->prepare("SELECT enrollment_date FROM enrollment 
+            WHERE course_id = :course_id
+            AND student_id = :student_id
+            AND school_year_id = :school_year_id
+            
+            ");
+        $sql->bindValue(":course_id", $course_id);
+        $sql->bindValue(":student_id", $student_id);
+        $sql->bindValue(":school_year_id", $school_year_id);
+        $sql->execute();
+
+        return $sql->fetchColumn();
+    }
+
     function GetEnrollmenDate($student_id, $course_id, $school_year_id) {
         // Check if the enrollment form ID already exists in the database
         $sql = $this->con->prepare("SELECT enrollment_date FROM enrollment 
@@ -381,20 +397,317 @@
             WHERE course_id = :course_id
             AND student_id = :student_id
             AND school_year_id = :school_year_id
-            AND registrar_evaluated = :registrar_evaluated
             AND cashier_evaluated = :cashier_evaluated
             
             ");
         $sql->bindValue(":course_id", $course_id);
         $sql->bindValue(":student_id", $student_id);
         $sql->bindValue(":school_year_id", $school_year_id);
-        $sql->bindValue(":registrar_evaluated", "yes");
         $sql->bindValue(":cashier_evaluated", "yes");
         $sql->execute();
 
         return $sql->rowCount() > 0;
     }
+
+    function CheckEnrollmentRegistrarApproved($student_id, $course_id, $school_year_id) {
+        // Check if the enrollment form ID already exists in the database
+        $sql = $this->con->prepare("SELECT enrollment_form_id FROM enrollment 
+            WHERE course_id = :course_id
+            AND student_id = :student_id
+            AND school_year_id = :school_year_id
+            AND registrar_evaluated = :registrar_evaluated
+            
+            ");
+        $sql->bindValue(":course_id", $course_id);
+        $sql->bindValue(":student_id", $student_id);
+        $sql->bindValue(":school_year_id", $school_year_id);
+        $sql->bindValue(":registrar_evaluated", "yes");
+        $sql->execute();
+
+        return $sql->rowCount() > 0;
+    }
+
+    function CheckEnrollmentEnrolled($student_id, $course_id, $school_year_id) {
+        // Check if the enrollment form ID already exists in the database
+        $sql = $this->con->prepare("SELECT enrollment_status FROM enrollment 
+            WHERE course_id = :course_id
+            AND student_id = :student_id
+            AND school_year_id = :school_year_id
+            AND enrollment_status = :enrollment_status
+            AND enrollment_approve IS NOT NULL
+            
+            ");
+        $sql->bindValue(":course_id", $course_id);
+        $sql->bindValue(":student_id", $student_id);
+        $sql->bindValue(":school_year_id", $school_year_id);
+        $sql->bindValue(":enrollment_status", "enrolled");
+        $sql->execute();
+
+        return $sql->rowCount() > 0;
+    }
+    function GetEnrollmentEnrolledDate($student_id, $course_id, $school_year_id) {
+        // Check if the enrollment form ID already exists in the database
+        $sql = $this->con->prepare("SELECT enrollment_approve FROM enrollment 
+            WHERE course_id = :course_id
+            AND student_id = :student_id
+            AND school_year_id = :school_year_id
+            AND enrollment_status = :enrollment_status
+            
+            ");
+        $sql->bindValue(":course_id", $course_id);
+        $sql->bindValue(":student_id", $student_id);
+        $sql->bindValue(":school_year_id", $school_year_id);
+        $sql->bindValue(":enrollment_status", "enrolled");
+        $sql->execute();
+        if($sql->rowCount() > 0){
+            return $sql->fetchColumn();
+        }
+        return null;
+    }   
     
+    function GetEnrollmentNonEnrolledDate($student_id, $course_id, $school_year_id) {
+        // Check if the enrollment form ID already exists in the database
+        $sql = $this->con->prepare("SELECT enrollment_date FROM enrollment 
+            WHERE course_id = :course_id
+            AND student_id = :student_id
+            AND school_year_id = :school_year_id
+            
+            ");
+        $sql->bindValue(":course_id", $course_id);
+        $sql->bindValue(":student_id", $student_id);
+        $sql->bindValue(":school_year_id", $school_year_id);
+        $sql->execute();
+
+        if($sql->rowCount() > 0){
+            return $sql->fetchColumn();
+
+        }
+        return null;
+    }  
+    
+    public function AnalyzedTransfereeStudentStudentStatus($enrollment_id){
+
+
+    }
+
+    public function UpdateTransfereeStudentIntoIrregular($enrollment_id){
+
+        $sql = $this->con->prepare("SELECT student_id, course_id 
+        
+            FROM enrollment 
+            WHERE enrollment_id = :enrollment_id
+            
+            ");
+        $sql->bindValue(":enrollment_id", $enrollment_id);
+        $sql->execute();
+
+        if($sql->rowCount() > 0){
+
+            $row = $sql->fetch(PDO::FETCH_ASSOC);
+
+            $student_id = $row['student_id'];
+            $course_id = $row['course_id'];
+            $student_statusv2 = "Irregular";
+            
+            $sql_update = $this->con->prepare("UPDATE student 
+                SET student_statusv2=:student_statusv2
+                WHERE student_id = :student_id
+                AND course_id = :course_id
+                ");
+
+            $sql_update->bindValue(":student_statusv2", $student_statusv2);
+            $sql_update->bindValue(":student_id", $student_id);
+            $sql_update->bindValue(":course_id", $course_id);
+            
+            
+            return $sql_update->execute();
+        }
+    }
+
+    public function EnrolledOSRegular($student_id, $course_id, $school_year_id,
+        $enrollment_form_id){
+
+        $now = date("Y-m-d H:i:s");
+
+        $sql = $this->con->prepare("INSERT INTO enrollment
+            (student_id, course_id, school_year_id, enrollment_form_id, enrollment_approve,
+                is_transferee, registrar_evaluated)
+            VALUES(:student_id, :course_id, :school_year_id, :enrollment_form_id, :enrollment_approve,
+                :is_transferee, :registrar_evaluated)");
+
+        $sql->bindValue(":student_id", $student_id);
+        $sql->bindValue(":course_id", $course_id);
+        $sql->bindValue(":school_year_id", $school_year_id);
+        $sql->bindValue(":enrollment_form_id", $enrollment_form_id);
+        $sql->bindValue(":enrollment_approve", $now);
+        $sql->bindValue(":is_transferee", 0);
+        $sql->bindValue(":registrar_evaluated", "yes");
+        $sql->execute();
+
+    }
+
+    public function PendingEnrollment(){
+        $sql = $this->con->prepare("SELECT t1.*, t2.acronym 
+            FROM pending_enrollees as t1
+
+            LEFT JOIN program as t2 ON t2.program_id = t1.program_id
+            WHERE t1.student_status !='APPROVED'
+            AND t1.is_finished = 1
+            ");
+
+        $sql->execute();
+        if($sql->rowCount() > 0){
+
+            return $sql->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+
+    public function WaitingPaymentEnrollment($current_school_year_id){
+
+        $default_shs_course_level = 11;
+        $is_new_enrollee = 1;
+        $is_transferee = 1;
+        $regular_Status = "Regular";
+        $enrollment_status = "tentative";
+        $registrar_evaluated = "yes";
+
+        $registrar_side = $this->con->prepare("SELECT 
+
+            t1.student_id, t1.cashier_evaluated,t1.registrar_evaluated,
+            t1.is_transferee,
+
+            t2.firstname,t2.username,
+            t2.lastname,t2.course_level,
+            t2.course_id, t2.student_id as t2_student_id,
+            t2.course_id, t2.course_level,t2.student_status,
+            t2.is_tertiary, t2.new_enrollee,
+            
+            t3.program_section
+
+            FROM enrollment as t1
+
+            INNER JOIN student as t2 ON t2.student_id = t1.student_id
+            LEFT JOIN course as t3 ON t2.course_id = t3.course_id
+
+            WHERE (t1.is_new_enrollee=:is_new_enrollee
+                OR 
+                t1.is_new_enrollee=:is_new_enrollee2)
+            -- AND t1.is_transferee=:is_transferee
+
+            AND (t1.is_transferee = :is_transferee 
+                OR 
+                t1.is_transferee = :is_transferee2)
+            
+            AND t1.enrollment_status=:enrollment_status
+            AND t1.school_year_id=:school_year_id
+            AND t1.registrar_evaluated=:registrar_evaluated
+            AND t1.cashier_evaluated=:cashier_evaluated
+            ");
+
+        $registrar_side->bindValue(":is_new_enrollee", $is_new_enrollee);
+        $registrar_side->bindValue(":is_new_enrollee2", 0);
+        $registrar_side->bindValue(":is_transferee", $is_transferee);
+        $registrar_side->bindValue(":is_transferee2", "0");
+        $registrar_side->bindValue(":enrollment_status", $enrollment_status);
+        $registrar_side->bindValue(":school_year_id", $current_school_year_id);
+        $registrar_side->bindValue(":registrar_evaluated", $registrar_evaluated);
+        $registrar_side->bindValue(":cashier_evaluated", "no");
+        $registrar_side->execute();
+
+        if($registrar_side->rowCount() > 0){
+
+            return $registrar_side->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+    public function OngoingEnrollment(){
+
+        $sql = $this->con->prepare("SELECT t1.*, t4.*, t2.* 
+        
+            FROM student as t1
+
+            INNER JOIN enrollment as t2 ON t2.student_id = t1.student_id
+            AND t2.course_id=t1.course_id
+
+            LEFT JOIN course as t3 ON t3.course_id = t1.course_id
+            LEFT JOIN program as t4 ON t4.program_id = t3.program_id
+
+            -- WHERE t1.student_status='Transferee'
+            WHERE t1.admission_status='Transferee'
+            AND t2.registrar_evaluated='no'
+            AND t2.enrollment_status='tentative'
+            AND t2.is_new_enrollee='no'
+        ");
+
+        $sql->execute();
+
+        if($sql->rowCount() > 0){
+
+            return $sql->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return [];
+    }
+    public function WaitingApprovalEnrollment($current_school_year_id){
+
+        $default_shs_course_level = 11;
+        $is_new_enrollee = 1;
+        $is_transferee = 1;
+        $regular_Status = "Regular";
+        $enrollment_status = "tentative";
+        $registrar_evaluated = "yes";
+
+        $registrar_side = $this->con->prepare("SELECT 
+
+            t1.student_id, t1.cashier_evaluated,t1.registrar_evaluated,
+            t1.is_transferee,
+
+            t2.firstname,t2.username,
+            t2.lastname,t2.course_level,
+            t2.course_id, t2.student_id as t2_student_id,
+            t2.course_id, t2.course_level,t2.student_status,
+            t2.is_tertiary, t2.new_enrollee,
+            
+            t3.program_section
+
+            FROM enrollment as t1
+
+            INNER JOIN student as t2 ON t2.student_id = t1.student_id
+            LEFT JOIN course as t3 ON t2.course_id = t3.course_id
+
+            WHERE (t1.is_new_enrollee=:is_new_enrollee
+            OR t1.is_new_enrollee=:is_new_enrollee2)
+            -- AND t1.is_transferee=:is_transferee
+
+                AND (t1.is_transferee = :is_transferee OR t1.is_transferee = :is_transferee2)
+                
+            AND t1.enrollment_status=:enrollment_status
+            AND t1.school_year_id=:school_year_id
+            AND t1.registrar_evaluated=:registrar_evaluated
+            AND t1.cashier_evaluated=:cashier_evaluated
+            ");
+
+        $registrar_side->bindValue(":is_new_enrollee", $is_new_enrollee);
+        $registrar_side->bindValue(":is_new_enrollee2", 0);
+        
+        $registrar_side->bindValue(":is_transferee", $is_transferee);
+        $registrar_side->bindValue(":is_transferee2", "0");
+
+        $registrar_side->bindValue(":enrollment_status", $enrollment_status);
+        $registrar_side->bindValue(":school_year_id", $current_school_year_id);
+        $registrar_side->bindValue(":registrar_evaluated", $registrar_evaluated);
+        $registrar_side->bindValue(":cashier_evaluated", "yes");
+        $registrar_side->execute();
+    
+        if($registrar_side->rowCount() > 0){
+
+            return $registrar_side->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+
+
 }
 
 

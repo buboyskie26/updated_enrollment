@@ -12,8 +12,7 @@
 
         public function create(){
 
-            $result = $this->createNavigation("school_year.php",
-                "../assets/images/icons/home.png", "School Year");
+
             
             // HARD-CODED
             $base_url = 'http://localhost/dcbt/admin';
@@ -34,8 +33,13 @@
             $current_url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             // header("Location: " . $current_url . "profile.php");
 
+            $school_year_url = $base_url . '/school_year/index.php';
 
             $enrollees_url=  "";
+
+            $result = $this->createNavigation("$school_year_url",
+                "../assets/images/icons/home.png", "School Year");
+
             $result .= $this->createNavigation("$teacher_url",
                 "../assets/images/icons/home.png", "Teacher");
                 
@@ -53,9 +57,6 @@
             
             $result .= $this->createNavigation("$schedule_url",
                 "../assets/images/icons/home.png", "Schedule");
-
-            $result .= $this->createNavigation("$enrollees_url",
-                "../assets/images/icons/home.png", "Senior High School");
 
             if(AdminUser::IsAuthenticated()){
                     $result .= $this->createNavigation("logout.php", 

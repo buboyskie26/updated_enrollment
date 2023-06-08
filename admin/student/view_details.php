@@ -6,8 +6,203 @@
     include('../../enrollment/classes/StudentEnroll.php');
     include('../../enrollment/classes/Section.php');
     include('../../enrollment/classes/OldEnrollees.php');
+    include('../../enrollment/classes/Enrollment.php');
     include('../classes/Subject.php');
     include('../classes/Course.php');
+
+    ?>
+        <style>
+
+            .process-status{
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                font-style: normal;
+                font-weight: 700;
+                align-items: center;
+                margin-top: 80px;
+                padding: 0px 53px;
+                gap: 1px;
+                isolation: isolate;
+                width: 100%;
+                height: 74px;
+                background: #1A0000;
+            }
+
+            .process-status .selection{
+                margin-top: 5px;
+            }
+
+            .process-status .checkDetails{
+                color: white;
+            }
+
+            .process-status #line-1, #line-2{
+                color: #888888;
+            }
+
+            .findSection, .subConfirm{
+                color: #888888;
+            }
+
+            .form-header h2{
+                font-style: normal;
+                font-weight: 700;
+                font-size: 36px;
+                line-height: 43px;
+                display: flex;
+                align-items: center;
+                color: #BB4444;
+            }   
+
+            .header-content{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                margin-top: 50px;
+                padding: 0px;
+                gap: 10px;
+                width: 90%;
+                height: 43px;
+                align-items: center;
+            }
+
+            .action{
+                border: none;
+                background: transparent;
+                color: #E85959;
+            }
+
+            .action:hover{
+                color: #9b3131;
+            }
+
+            .student-table{
+                display: flex;
+                flex-direction: row;
+                align-items: flex-start;
+                padding: 5px 0px;
+                width: 100%;
+                height: 58px;
+            }
+
+            .inner-student-table{
+                table-layout: fixed;
+                border-collapse: collapse;
+                width: 100%;
+                text-align: center;
+            }
+
+            /* table{
+                table-layout: fixed;
+                border-collapse: collapse;
+                width: 100%;
+                text-align: center;
+            }
+
+            tbody{
+                font-style: normal;
+                font-weight: 400;
+                font-size: 17px;
+                align-items: center;
+            } */
+
+            .choices{
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                margin-top: 80px;
+                padding: 20px 53px 0px;
+                gap: 1px;
+                width: 100%;
+                height: 74px;
+                background: #1A0000;
+                flex: none;
+                order: 2;
+                align-self: stretch;
+                flex-grow: 0;
+            }
+            .selection-btn{
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                padding: 5px 20px;
+                gap: 10px;
+                width: 233px;
+                height: 54px;
+                background: #EFEFEF;
+                border: none;
+                font-style: normal;
+                font-weight: 400;
+                font-size: 20px;
+            }
+
+            .bg-content{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 50px 0px;
+                width: 100%;
+                height: auto;
+                background: #EFEFEF;
+            }
+
+            .form-details{
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                padding: 32px 26px;
+                gap: 19px;
+                width: 85%;
+                height: auto;
+                background: #FFFFFF;
+                box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.25);
+                border-radius: 10px;
+                margin-top: 30px;
+            }
+
+            .form-details h3{
+                display: flex;
+                align-items: center;
+                font-style: normal;
+                font-weight: 700;
+                font-size: 36px;
+                line-height: 43px;
+                color: #BB4444;
+            }
+
+            form{
+                flex: none;
+                order: 1;
+                align-self: stretch;
+                flex-grow: 0;
+            }
+            .back-menu{
+                display: flex;
+                flex: row;
+                align-items: center;
+                padding: 8px 40px;
+                gap: 8px;
+                width: 100%;
+                height: 46px;
+            }
+            .admission-btn{
+                border: none;
+                background: none;
+                color: #BB4444;
+                font-style: normal;
+                font-weight: 700;
+                font-size: 16px;
+            }
+            .admission-btn:hover{
+                color: #863131;
+            }
+
+        </style>
+    <?php
 
     $enroll = new StudentEnroll($con);
     $old_enroll = new OldEnrollees($con, $enroll);
@@ -16,7 +211,6 @@
     if(isset($_GET['id'])){
 
         $student_id = $_GET['id'];
-
         
         $subject = new Subject($con, $student_id);
 
@@ -30,20 +224,27 @@
 
         $userLoggedInId = $enroll->GetStudentId($student_username);
         $course_main_id = $enroll->GetStudentCourseId($student_username);
+        $student_program_id = $enroll->GetStudentProgramId($course_main_id);
 
+        $section = new Section($con, $course_main_id);
 
+        $section_acronym = $section->GetAcronymByProgramId($student_program_id);
+
+        
         $student_course = $course->GetStudentCourse($student_username);
 
         $student_obj = $enroll->GetStudentCourseLevelYearIdCourseId($student_username);
 
 
         $student_course_level = $student_obj['course_level'];
+
         // $student_course_level = $enroll->GetStudentCourseLevel($student_username);
         $section_name = $enroll->GetStudentCourseName($student_username);
 
         $student_course_id = $student_obj['course_id'];
         $student_status = $student_obj['student_status'];
 
+        $student_section_level = $course->GetStudentSectionLevel($student_course_id);
 
         $get_student = $con->prepare("SELECT * FROM student
             WHERE student_id=:student_id
@@ -56,7 +257,8 @@
 
 
         $GRADE_ELEVEN = 11;
-        $GRADE_TWELVE = 11;
+        $GRADE_TWELVE = 12;
+
         $FIRST_SEMESTER = "First";
         $SECOND_SEMESTER = "Second";
 
@@ -86,94 +288,192 @@
             $lrn = $row['lrn'];
             $student_unique_id = $row['student_unique_id'];
 
+            $admission_status = $row['admission_status'];
+            $is_tertiary = $row['is_tertiary'];
+
+            $proccess_date = "";
+
+            $enrollment = new Enrollment($con, $enroll);
+            $enrollment_form_id = $enrollment->GenerateEnrollmentFormId();
+
+            $checkEnrollmentEnrolled = $enrollment->CheckEnrollmentEnrolled($student_id,
+                    $course_main_id, $school_year_id);
+
+            $cashierEvaluated = $enrollment->CheckEnrollmentCashierApproved($student_id,
+                    $course_main_id, $school_year_id);
+
+
+            $registrarEvaluated = $enrollment->CheckEnrollmentRegistrarApproved($student_id,
+                    $course_main_id, $school_year_id);
+
+            $payment_status = "";
+
+            if($checkEnrollmentEnrolled == true 
+                && $cashierEvaluated == true && $registrarEvaluated == true){
+
+                $payment_status = "Enrolled";
+
+            }else if($checkEnrollmentEnrolled == false 
+                && $cashierEvaluated == true && $registrarEvaluated == true){
+
+                $payment_status = "Approved";
+                
+            }else if($checkEnrollmentEnrolled == false 
+                && $cashierEvaluated == false && $registrarEvaluated == true){
+
+                $payment_status = "Waiting Payment";
+            }
+
+            else if($checkEnrollmentEnrolled == false 
+                && $registrarEvaluated == false
+                && $cashierEvaluated == false){
+
+                $payment_status = "Evaluation";
+
+            }
+
+            $getEnrollmentNonEnrolledDate = $enrollment
+                ->GetEnrollmentNonEnrolledDate($student_id, $course_main_id,
+                    $school_year_id);
+
+            $getEnrollmentEnrolledDate = $enrollment
+                ->GetEnrollmentEnrolledDate($student_id, $course_main_id,
+                    $school_year_id);
+
+            $proccess_date = null;
+
+            if($checkEnrollmentEnrolled == true){
+                $proccess_date = $getEnrollmentEnrolledDate;
+            }else{
+                $proccess_date = $getEnrollmentNonEnrolledDate;
+            }
+
+
+
             # ==1
             if(isset($_GET['profile']) && $_GET['profile'] == "show"){
             ?>
                 <div class="row col-md-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4><?php echo $lastname?>, <?php echo $firstname;?> <?php echo $middle_name;?>,</h4>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="container">
-                                        <div class="form-group">
-                                            <label for="">Student No.</label>
-                                            <p for=""><?php echo $student_unique_id;?></p>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="col-md-3">
-                                    <div class="container">
-                                        <div class="form-group">
-                                            <label for="">Level</label>
-                                            <p for=""><?php echo $student_course_level;?></p>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="content">
 
-                                <div class="col-md-3">
-                                    <div class="container">
-                                        <div class="form-group">
-                                            <label for="">Section</label>
-                                            <p for=""><?php echo $section_name;?></p>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="form-header">
+                            <div class="header-content">
+                            <h2><?php echo $lastname?>, <?php echo $firstname;?> <?php echo $middle_name;?>,</h2>
+                             
+                            </div>
 
-                                <div class="col-md-3">
-                                    <div class="container">
-                                        <div class="form-group">
-                                            <label for="">Status</label>
-                                            <p for="">Enrolled</p>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="student-table">
+                                <table class="inner-student-table">
+                                    <tr>
+                                        <th>Student No.</th>
+                                        <th>Level</th>
+                                        <th>Strand</th>
+                                        <th>Status</th>
+                                        <th>Added on:</th>
+                                    </tr>
+
+                                    <tr>
+                                        <td><?php echo $student_unique_id; ?></td>
+                                        <td><?php echo $student_course_level; ?></td>
+                                        <td><?php echo $section_acronym; ?></td>
+                                        <td><?php echo $payment_status; ?></td>
+                                     
+
+                                        <td><?php
+                                            $date = new DateTime($proccess_date);
+                                            $formattedDate = $date->format('m/d/Y H:i');
+
+                                            echo $formattedDate;
+                                        ?></td>
+                                    
+                                    </tr>
+                                </table>
                             </div>
                         </div>
+
+                        <div class="choices">
+                            <div class="student-details">
+
+                                <a href="view_details.php?profile=show&id=<?php echo $student_id?>">
+                                
+                                    <button style="background-color:palevioletred;"
+                                        type="button"
+                                        class="selection-btn"
+                                        id="student-details">
+                                        <i class="bi bi-clipboard-check"></i>Student Details
+                                    </button>
+                                </a>
+                            </div>
+
+                            <?php 
+                                # SHS
+                                if($is_tertiary == 0){
+                                    ?>
+                                    <div class="enrolled-subjects">
+                                        <a href="view_details.php?grade_record=show&id=<?php echo $student_id;?>">
+                                            <button
+                                                type="button"
+                                                class="selection-btn"
+                                                id="enrolled-subjects">
+                                                <i class="bi bi-collection"></i>Grades Records
+                                            </button>
+                                        </a>
+                                    </div>
+
+                                    <div class="enrolled-subjects">
+                                        <a href="view_details.php?subject=show&id=<?php echo $student_id?>">
+                                            <button
+                                                type="button"
+                                                class="selection-btn"
+                                                id="enrolled-subjects">
+                                                <i class="bi bi-collection"></i>Enrolled subjects
+                                            </button>
+                                        </a>
+                                    </div>
+                                    <?php  
+                                }
+
+                                # Tertiary
+                                if($is_tertiary == 1){
+                                    ?>
+                                    <div class="enrolled-subjects">
+                                        <a href="view_details.php?grade_record=show&tertiary=true&id=<?php echo $student_id;?>">
+                                            <button
+                                                type="button"
+                                                class="selection-btn"
+                                                id="enrolled-subjects">
+                                                <i class="bi bi-collection"></i>*Grades Records
+                                            </button>
+                                        </a>
+                                    </div>
+
+                                    <div class="enrolled-subjects">
+                                        <a href="view_details.php?subject=show&tertiary=true&id=<?php echo $student_id?>">
+                                            <button
+                                                type="button"
+                                                class="selection-btn"
+                                                id="enrolled-subjects">
+                                                <i class="bi bi-collection"></i>*Enrolled subjects
+                                            </button>
+                                        </a>
+                                    </div>
+                                    <?php  
+                                }
+                            ?>
+
+
+
+                        </div>
                     </div>
 
-                    <hr>
-                    <hr>
-
-                    <div class="card">
-                        <div class="card-body">
-                                                <div class="row col-md-12">
-                        <div class="col-md-4 text-center">
-                            <a href="view_details.php?profile=show&id=<?php echo $student_id;?>">
-                                <button class="btn btn-lg btn-primary">
-                                    Student Information
-                                </button>
-                            </a>
-                        </div>
-
-                       <div class="col-md-4 text-center">
-                            <a href="view_details.php?grade_record=show&id=<?php echo $student_id;?>">
-                                <button class="btn btn-lg btn-outline-primary">
-                                    Grade Records
-                                </button>
-                            </a>
-                        </div>
-
-                       <div class="col-md-4 text-center">
-                            <a href="view_details.php?subject=show&id=<?php echo $student_id;?>">
-                                <button class="btn btn-lg btn-outline-primary">
-                                    Enrolled Subjects
-                                </button>
-                            </a>
-                        </div>
-
-                    </div>
-                        </div>
-                    </div>
 
                     <hr>
                     <hr>
                     <div class="card">
                         <div class="card-body">
                             <div class="table-responsive">
-                                <h2 class="mb-3 text-center text-primary">Student Information</h2>
+                                <h4 class="mb-3 text-start text-primary">Student Information</h4>
                                 <hr>
                                 <div class="col-md-4 mb-4">
                                     <label style="font-weight: bold;" class="text-muted">
@@ -268,13 +568,13 @@
                                             </td>
                                         
                                         <td><label>Civil Status</label></td>
-                                    <td colspan="2">
-                                        <select class="form-control input-sm" name="CIVILSTATUS">
-                                            <option value="Single">Single</option>
-                                            <option value="Married">Married</option> 
-                                            <option value="Widow">Widow</option>
-                                        </select>
-                                    </td>
+                                        <td colspan="2">
+                                            <select class="form-control input-sm" name="CIVILSTATUS">
+                                                <option value="Single">Single</option>
+                                                <option value="Married">Married</option> 
+                                                <option value="Widow">Widow</option>
+                                            </select>
+                                        </td>
                                     </tr>
 
                                     
@@ -336,6 +636,64 @@
                         </div>
                     </div>
 
+
+                    <hr>
+                    <hr>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <h4 class="mb-3 text-start text-primary">Guardian`s Information</h4>
+                                <hr>
+                                <table class="table">
+                                    
+                                    <tr>
+                                        <td><label>Firstname</label></td>
+                                        <td>
+                                            <input  value='<?php echo $row['firstname']?>' class="form-control input-md" id="FNAME" 
+                                            name="FNAME" placeholder="First Name" type="text">
+                                        </td>
+                                        <td><label>Lastname</label></td>
+                                        <td colspan="2">
+                                            <input value='<?php echo $row['lastname']?>' class="form-control input-md" id="LNAME" name="LNAME" 
+                                            placeholder="Last Name" type="text">
+                                        </td> 
+                                        <td><label>Middle</label></td>
+
+                                        <td colspan="2">
+                                            <input value='<?php echo $row['middle_name']?>' class="form-control input-md"
+                                             id="MI" name="MI" placeholder="MI"  maxlength="1" type="text">
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <td><label>Phone</label></td>
+                                        <td>
+                                            <input  value='' type="text">
+                                        </td>
+                                        <td><label>Email</label></td>
+                                        <td colspan="2">
+                                            <input  value='' type="text">
+                                        </td> 
+
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="2">
+                                            <input  value='' type="text">
+                                        </td>
+
+                                        <td><label>Relationship</label></td>
+                                        <td colspan="2">
+                                            <input  value='' type="text">
+                                        </td>
+                                    </tr>
+                                
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             <?php
             }
@@ -355,87 +713,148 @@
                 $current_school_year_id = $school_year_obj['school_year_id'];
                 $current_school_year_term = $school_year_obj['term'];
                 $current_school_year_period = $school_year_obj['period'];
+
+
+                $admission_status = $row['admission_status'];
+
+                $proccess_date = "";
+
+                $enrollment = new Enrollment($con, $enroll);
+                $enrollment_form_id = $enrollment->GenerateEnrollmentFormId();
+
+                $checkEnrollmentEnrolled = $enrollment->CheckEnrollmentEnrolled($student_id,
+                        $course_main_id, $school_year_id);
+
+                $cashierEvaluated = $enrollment->CheckEnrollmentCashierApproved($student_id,
+                        $course_main_id, $school_year_id);
+
+
+                $registrarEvaluated = $enrollment->CheckEnrollmentRegistrarApproved($student_id,
+                        $course_main_id, $school_year_id);
+
+                $payment_status = "";
+
+                if($checkEnrollmentEnrolled == true 
+                    && $cashierEvaluated == true && $registrarEvaluated == true){
+
+                    $payment_status = "Enrolled";
+
+                }else if($checkEnrollmentEnrolled == false 
+                    && $cashierEvaluated == true && $registrarEvaluated == true){
+
+                    $payment_status = "Approved";
+                    
+                }else if($checkEnrollmentEnrolled == false 
+                    && $cashierEvaluated == false && $registrarEvaluated == true){
+
+                    $payment_status = "Waiting Payment";
+                }
+
+                else if($checkEnrollmentEnrolled == false 
+                    && $registrarEvaluated == false
+                    && $cashierEvaluated == false){
+
+                    $payment_status = "Evaluation";
+
+                }
+
+                $getEnrollmentNonEnrolledDate = $enrollment
+                    ->GetEnrollmentNonEnrolledDate($student_id, $course_main_id,
+                        $school_year_id);
+
+                $getEnrollmentEnrolledDate = $enrollment
+                    ->GetEnrollmentEnrolledDate($student_id, $course_main_id,
+                        $school_year_id);
+
+                $proccess_date = null;
+
+                if($checkEnrollmentEnrolled == true){
+                    $proccess_date = $getEnrollmentEnrolledDate;
+                }else{
+                    $proccess_date = $getEnrollmentNonEnrolledDate;
+                }
+
             ?>
                 <div class="row col-md-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4><?php echo $lastname?>, <?php echo $firstname;?> <?php echo $middle_name;?>,</h4>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="container">
-                                        <div class="form-group">
-                                            <label for="">Student No.</label>
-                                            <p for=""><?php echo $student_unique_id;?></p>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="col-md-3">
-                                    <div class="container">
-                                        <div class="form-group">
-                                            <label for="">Level</label>
-                                            <p for=""><?php echo $student_course_level;?></p>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="col-md-3">
-                                    <div class="container">
-                                        <div class="form-group">
-                                            <label for="">Section</label>
-                                            <p for=""><?php echo $section_name;?></p>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="content">
 
-                                <div class="col-md-3">
-                                    <div class="container">
-                                        <div class="form-group">
-                                            <label for="">Status</label>
-                                            <p for="">Enrolled</p>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="form-header">
+                            <div class="header-content">
+                            <h2><?php echo $lastname?>, <?php echo $firstname;?> <?php echo $middle_name;?>,</h2>
+                             
+                            </div>
+
+                            <div class="student-table">
+                                <table class="inner-student-table">
+                                    <tr>
+                                        <th>Student No.</th>
+                                        <th>Level</th>
+                                        <th>Strand</th>
+                                        <th>Status</th>
+                                        <th>Added on:</th>
+                                    </tr>
+
+                                    <tr>
+                                        <td><?php echo $student_unique_id; ?></td>
+                                        <td><?php echo $student_course_level; ?></td>
+                                        <td><?php echo $section_acronym; ?></td>
+                                        <td><?php echo $payment_status; ?></td>
+                                     
+
+                                        <td><?php
+                                            $date = new DateTime($proccess_date);
+                                            $formattedDate = $date->format('m/d/Y H:i');
+
+                                            echo $formattedDate;
+                                        ?></td>
+                                    
+                                    </tr>
+                                </table>
                             </div>
                         </div>
+
+                        <div class="choices">
+                            <div class="student-details">
+
+                                <a href="view_details.php?profile=show&id=<?php echo $student_id?>">
+                                
+                                    <button "
+                                        type="button"
+                                        class="selection-btn"
+                                        id="student-details">
+                                        <i class="bi bi-clipboard-check"></i>Student Details
+                                    </button>
+                                </a>
+
+                            </div>
+                            <div  class="enrolled-subjects">
+                                <a href="view_details.php?grade_record=show&id=<?php echo $student_id;?>">
+                                    <button style="background-color:palevioletred;"
+                                        type="button"
+                                        class="selection-btn"
+                                        id="enrolled-subjects">
+                                        <i class="bi bi-collection"></i>Grades Records
+                                    </button>
+                                </a>
+                            </div>
+
+
+                            <div class="enrolled-subjects">
+                                <a href="view_details.php?subject=show&id=<?php echo $student_id?>">
+                                    <button
+                                        type="button"
+                                        class="selection-btn"
+                                        id="enrolled-subjects">
+                                        <i class="bi bi-collection"></i>Enrolled subjects
+                                    </button>
+                                </a>
+                            </div>
+
+                        </div>
                     </div>
 
-                    <hr>
-                    <hr>
-
-                    <div class="card">
-                        <div class="card-body">
-                                                <div class="row col-md-12">
-                        <div class="col-md-4 text-center">
-                            <a href="view_details.php?profile=show&id=<?php echo $student_id;?>">
-                                <button class="btn btn-lg btn-outline-primary">
-                                    Student Information
-                                </button>
-                            </a>
-                        </div>
-
-                       <div class="col-md-4 text-center">
-                            <a href="view_details.php?grade_record=show&id=<?php echo $student_id;?>">
-                                <button class="btn btn-lg btn-primary">
-                                    Grade Records
-                                </button>
-                            </a>
-                        </div>
-
-                       <div class="col-md-4 text-center">
-                            <a href="view_details.php?subject=show&id=<?php echo $student_id;?>">
-                                <button class="btn btn-lg btn-outline-primary">
-                                    Enrolled Subjects
-                                </button>
-                            </a>
-                        </div>
-
-                    </div>
-                        </div>
-                    </div>
-
-                    <hr>
                     <hr>
                     <div class="card">
                         <div class="card-body">
@@ -607,13 +1026,11 @@
                                     style="margin-top:5%;">
                                 <div class="table-responsive" style="margin-top:2%;"> 
 
-                                    <!-- <h3>Grade 11 First Semester</h3>	 -->
                                     <?php 
-                                        // echo "wee";
+
                                         $GRADE_TWELVE = 12;
                                         $GRADE_ELEVEN = 11;
                                         $FIRST_SEMESTER = "First";
-
                                         // Section Based on the enrollment.
                                         $enrollment_school_year = $studentEnroll->GetStudentSectionGradeElevenSchoolYear($username, $userLoggedInId, 11, "Second");
 
@@ -776,6 +1193,8 @@
 
             # ==3
             if(isset($_GET['subject']) 
+                && !isset($_GET['tertiary'])
+
                 && $_GET['subject'] == "show" && isset($_GET['id'])){
 
                 $studentEnroll = new StudentEnroll($con);
@@ -793,54 +1212,85 @@
 
                 ?>
                 <div class="row col-md-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4><?php echo $lastname?>, <?php echo $firstname;?> <?php echo $middle_name;?>,</h4>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="container">
-                                        <div class="form-group">
-                                            <label for="">Student No.</label>
-                                            <p for=""><?php echo $student_unique_id;?></p>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="col-md-3">
-                                    <div class="container">
-                                        <div class="form-group">
-                                            <label for="">Level</label>
-                                            <p for=""><?php echo $student_course_level;?></p>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="content">
 
-                                <div class="col-md-3">
-                                    <div class="container">
-                                        <div class="form-group">
-                                            <label for="">Section</label>
-                                            <p for=""><?php echo $section_name;?></p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-3">
-                                    <div class="container">
-                                        <div class="form-group">
-                                            <label for="">Status</label>
-                                            <p for="">Enrolled</p>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="form-header">
+                            <div class="header-content">
+                                <h2><?php echo $lastname?>, <?php echo $firstname;?> <?php echo $middle_name;?>,</h2>
                             </div>
+
+                            <div class="student-table">
+                                <table class="inner-student-table">
+                                    <tr>
+                                        <th>Student No.</th>
+                                        <th>Level</th>
+                                        <th>Strand</th>
+                                        <th>Status</th>
+                                        <th>Added on:</th>
+                                    </tr>
+
+                                    <tr>
+                                        <td><?php echo $student_unique_id; ?></td>
+                                        <td><?php echo $student_course_level; ?></td>
+                                        <td><?php echo $section_acronym; ?></td>
+                                        <td><?php echo $payment_status; ?></td>
+                                     
+
+                                        <td><?php
+                                            $date = new DateTime($proccess_date);
+                                            $formattedDate = $date->format('m/d/Y H:i');
+
+                                            echo $formattedDate;
+                                        ?></td>
+                                    
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="choices">
+                            <div class="student-details">
+
+                                <a href="view_details.php?profile=show&id=<?php echo $student_id?>">
+                                
+                                    <button "
+                                        type="button"
+                                        class="selection-btn"
+                                        id="student-details">
+                                        <i class="bi bi-clipboard-check"></i>Student Details
+                                    </button>
+                                </a>
+
+                            </div>
+
+                            <div  class="enrolled-subjects">
+                                <a href="view_details.php?grade_record=show&id=<?php echo $student_id;?>">
+                                    <button 
+                                        type="button"
+                                        class="selection-btn"
+                                        id="enrolled-subjects">
+                                        <i class="bi bi-collection"></i>Grades Records
+                                    </button>
+                                </a>
+                            </div>
+
+
+                            <div class="enrolled-subjects">
+                                <a href="view_details.php?subject=show&id=<?php echo $student_id?>">
+                                    <button style="background-color:palevioletred;"
+                                        type="button"
+                                        class="selection-btn"
+                                        id="enrolled-subjects">
+                                        <i class="bi bi-collection"></i>Enrolled subjects
+                                    </button>
+                                </a>
+                            </div>
+
                         </div>
                     </div>
 
-                    <hr>
-                    <hr>
-
-                    <div class="card">
+                    <div style="display: none;" class="card">
                         <div class="card-body">
                             <div class="row col-md-12">
                                 <div class="col-md-4 text-center">
@@ -871,7 +1321,6 @@
                         </div>
                     </div>
 
-                    <hr>
 
                     <!-- GRADE 11 2ND SEM SHOULE BE REMOVE - the bottom is the replace on-->
                     <!-- If you only have enrolled in the semester, it only shows -->
@@ -900,8 +1349,8 @@
                             }
 
                             ?>
-                                <div class="row col-md-12 table-responsive"
-                                    style="margin-top:5%;">
+
+                                <div class="row col-md-12 ">
                                     <div class="table-responsive" style="display: none; margin-top:2%;"> 
                                         <?php 
                                         
@@ -947,7 +1396,6 @@
                                                     <th class="text-success" rowspan="2">Type</th>
                                                     <th class="text-success" rowspan="2">Description</th>  
                                                     <th class="text-success" rowspan="2">Unit</th>
-                                                    <th class="text-muted" colspan="4">Schedule</th> 
                                                 </tr>	
                                                 <tr> 
                                                     <!-- <th>Day</th> 
@@ -955,7 +1403,7 @@
                                                     <th>Room</th> 
                                                     <th>Section</th>   -->
                                                     <th class="text-success">Semester</th>  
-                                                    <th class="text-success">Course Level</th>  
+                                                    <th class="text-success">Year Level</th>  
                                                     <th class="text-success">Remarks</th>  
                                                 </tr>
                                             </thead> 	 
@@ -1117,7 +1565,6 @@
                                         <th class="text-success" rowspan="2">Type</th>
                                         <th class="text-success" rowspan="2">Description</th>  
                                         <th class="text-success" rowspan="2">Unit</th>
-                                        <th class="text-muted" colspan="4">Schedule</th> 
                                     </tr>	
                                     <tr class="text-center"> 
                                         <!-- <th>Day</th> 
@@ -1137,7 +1584,6 @@
                                             ->GetStudentCurriculumBasedOnSemesterSubject($username,
                                         $userLoggedInId, $GRADE_ELEVEN, $FIRST_SEMESTER);
 
-
                                         if($listOfSubjects !== null){
 
                                             foreach ($listOfSubjects as $key => $value) {
@@ -1148,7 +1594,7 @@
                                                 $remarks_url = "";
 
                                                 $query_student_subject = $con->prepare("SELECT 
-                                            
+
                                                     t1.subject_id, t1.student_subject_id as t1_student_subject_id,
                                                     
                                                     t2.student_subject_id as t2_student_subject_id,
@@ -1184,9 +1630,19 @@
                                                     if($t1_student_subject_id == $t2_student_subject_id){
 
                                                         $remarks_url = $remarks;
+                                                        // echo "we";
 
-                                                    }else if($student_subject_subject_id == $subject_id
-                                                        && $t1_student_subject_id != $t2_student_subject_id){
+                                                    }
+                                                    // else if($t1_student_subject_id != $t2_student_subject_id){
+
+                                                    //     // $remarks_url = "NULL";
+                                                    //     // echo "we";
+
+                                                    // }
+                                                    else if($student_subject_subject_id == $subject_id
+                                                        && $t1_student_subject_id != $t2_student_subject_id 
+                                                        && $payment_status == "Enrolled"
+                                                        ){
 
                                                         $remarks_url = "
                                                             <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
@@ -1242,7 +1698,6 @@
                                     $section = new Section($con, $enrollment_course_id);
                                     $enrollment_course_level = $section->GetSectionGradeLevel();
                                     $enrollment_section_name = $enroll->GetStudentCourseNameByCourseId($enrollment_course_id);
-
                                     
                                     echo "
                                         <h4 style='font-weight: 500;' class='text-primary text-center mb-3'>
@@ -1261,6 +1716,11 @@
                                                 class='btn btn-outline-primary btn-sm'>
                                                 Generate PDF
                                             </button>
+
+                                            <button type='button'
+                                                class='btn btn-primary btn-sm'>
+                                                :
+                                            </button>
                                         </form>
                                     ";
                                 }else{
@@ -1269,14 +1729,13 @@
                                     ";
                                 }
                             ?>	
-                            
+                            <!-- S2 -->
                             <?php 
                                 # ONLY FOR GRADE 11 2nd BECAUSE OF MOVING UP.
                                 $isFinished = $old_enroll->CheckIfGradeLevelSemesterSubjectWereAllPassed(
                                     $student_id, $GRADE_ELEVEN, $SECOND_SEMESTER);
                                 
                                 $moveUpBtn = "moveUpAction(\"$student_username\", $student_id)";
-                                
 
                                 if($isFinished == true && $student_course_level != $GRADE_TWELVE){
 
@@ -1306,13 +1765,8 @@
                                         <th class="text-success" rowspan="2">Type</th>
                                         <th class="text-success" rowspan="2">Description</th>  
                                         <th class="text-success" rowspan="2">Unit</th>
-                                        <th class="text-muted" colspan="4">Schedule</th> 
                                     </tr>	
                                     <tr> 
-                                        <!-- <th>Day</th> 
-                                        <th>Time</th>
-                                        <th>Room</th> 
-                                        <th>Section</th>   -->
                                         <th class="text-success">Semester</th>  
                                         <th class="text-success">Course Level</th>  
                                         <th class="text-success">Remarks</th>  
@@ -1357,8 +1811,6 @@
 
                                                 $t1_student_subject_id = null;
 
-                                                    // echo $subject_id . " 1 ";
-
                                                 if($query_student_subject->rowCount() > 0){
 
                                                     $row = $query_student_subject->fetch(PDO::FETCH_ASSOC);
@@ -1376,7 +1828,10 @@
                                                         $remarks_url = $remarks;
 
                                                     }else if($student_subject_subject_id == $subject_id
-                                                        && $t1_student_subject_id != $t2_student_subject_id){
+                                                        && $t1_student_subject_id != $t2_student_subject_id
+                                                        && $payment_status == "Enrolled"
+                                                        
+                                                        ){
 
                                                         $remarks_url = "
                                                             <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
@@ -1404,7 +1859,6 @@
                                         else{
                                             echo "No Datax was found for Grade 11 1st Semester.";
                                         }
-                                        
                                     ?>
                                 </tbody>
                             </table>
@@ -1415,7 +1869,6 @@
                     <div class="row col-md-12 table-responsive"
                         style="margin-top:5%;">
                         <div class="table-responsive" style="margin-top:2%;"> 
-                            
                             <?php 
                                 // echo "wee";
                                 $GRADE_TWELVE = 12;
@@ -1442,7 +1895,6 @@
                                     ";
                                 }else{
                                     echo "<h3 class='text-center'>Grade 12 First Semester</h3>";	
-                                    
                                 }
                             ?>		
 
@@ -1453,7 +1905,6 @@
                                         <th class="text-success" rowspan="2">Type</th>
                                         <th class="text-success" rowspan="2">Description</th>  
                                         <th class="text-success" rowspan="2">Unit</th>
-                                        <th class="text-muted" colspan="4">Schedule</th> 
                                     </tr>	
                                     <tr class="text-center"> 
 
@@ -1524,7 +1975,10 @@
                                                         $remarks_url = $remarks;
 
                                                     }else if($student_subject_subject_id == $subject_id
-                                                        && $t1_student_subject_id != $t2_student_subject_id){
+                                                        && $t1_student_subject_id != $t2_student_subject_id
+                                                        && $payment_status == "Enrolled"
+                                                        
+                                                        ){
 
                                                         $remarks_url = "
                                                             <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
@@ -1558,7 +2012,6 @@
                             </table>
                         </div>
                     </div>
-
 
                     <!-- GRADE 12 1st SEM -->
                     <div class="row col-md-12 table-responsive"
@@ -1673,7 +2126,10 @@
                                                         $remarks_url = $remarks;
 
                                                     }else if($student_subject_subject_id == $subject_id
-                                                        && $t1_student_subject_id != $t2_student_subject_id){
+                                                        && $t1_student_subject_id != $t2_student_subject_id
+                                                        && $payment_status == "Enrolled"
+                                                        
+                                                        ){
 
                                                         $remarks_url = "
                                                             <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
@@ -1702,6 +2158,631 @@
                                             echo "No Datax was found for Grade 11 1st Semester.";
                                         }
                                         
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                <?php
+            }
+
+            # Tertiary Subject
+            if(isset($_GET['subject']) 
+                && isset($_GET['tertiary'])
+                && $_GET['subject'] == "show" && isset($_GET['id'])){
+
+                $studentEnroll = new StudentEnroll($con);
+
+                $username = $studentEnroll->GetStudentUsername($_GET['id']);
+                $userLoggedInId = $studentEnroll->GetStudentId($username);
+                $course_main_id = $studentEnroll->GetStudentCourseId($username);
+                $student_course_level = $studentEnroll->GetStudentCourseLevel($username);
+
+                $school_year_obj = $studentEnroll->GetActiveSchoolYearAndSemester();
+
+                $current_school_year_id = $school_year_obj['school_year_id'];
+                $current_school_year_term = $school_year_obj['term'];
+                $current_school_year_period = $school_year_obj['period'];
+
+                $FIRST_YEAR = 1;
+                $SECOND_YEAR = 2;
+
+                $subject = new Subject($con, $student_id);
+
+
+                // echo $student_program_id;
+
+                ?>
+                <div class="row col-md-12">
+
+                    <div class="content">
+
+                        <div class="form-header">
+                            <div class="header-content">
+                                <h2><?php echo $lastname?>, <?php echo $firstname;?> <?php echo $middle_name;?>,</h2>
+                            </div>
+
+                            <div class="student-table">
+                                <table class="inner-student-table">
+                                    <tr>
+                                        <th>Student No.</th>
+                                        <th>Level</th>
+                                        <th>Strand</th>
+                                        <th>Status</th>
+                                        <th>Added on:</th>
+                                    </tr>
+
+                                    <tr>
+                                        <td><?php echo $student_unique_id; ?></td>
+                                        <td><?php echo $student_course_level; ?></td>
+                                        <td><?php echo $section_acronym; ?></td>
+                                        <td><?php echo $payment_status; ?></td>
+                                     
+
+                                        <td><?php
+                                            $date = new DateTime($proccess_date);
+                                            $formattedDate = $date->format('m/d/Y H:i');
+
+                                            echo $formattedDate;
+                                        ?></td>
+                                    
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="choices">
+                            <div class="student-details">
+
+                                <a href="view_details.php?profile=show&id=<?php echo $student_id?>">
+                                
+                                    <button "
+                                        type="button"
+                                        class="selection-btn"
+                                        id="student-details">
+                                        <i class="bi bi-clipboard-check"></i>*Student Details
+                                    </button>
+                                </a>
+
+                            </div>
+
+                            <div  class="enrolled-subjects">
+                                <a href="view_details.php?grade_record=show&&tertiary=true&id=<?php echo $student_id;?>">
+                                    <button 
+                                        type="button"
+                                        class="selection-btn"
+                                        id="enrolled-subjects">
+                                        <i class="bi bi-collection"></i>*Grades Records
+                                    </button>
+                                </a>
+                            </div>
+
+
+                            <div class="enrolled-subjects">
+                                <a href="view_details.php?subject=show&id=<?php echo $student_id?>">
+                                    <button style="background-color:palevioletred;"
+                                        type="button"
+                                        class="selection-btn"
+                                        id="enrolled-subjects">
+                                        <i class="bi bi-collection"></i>*Enrolled subjects
+                                    </button>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <!-- 1st Year First Semester -->
+                    <div class="row col-md-12 table-responsive"
+                        style="margin-top:5%;">
+                        <div class="table-responsive" style="margin-top:2%;"> 
+
+                            <?php 
+                                if(count($subject->
+                                    CheckStudentGradeLevelEnrolledSubjectSemesterv2($userLoggedInId,
+                                    $FIRST_SEMESTER, $FIRST_YEAR)) > 0){
+
+                                    
+                                    $obj = $subject->CheckStudentGradeLevelEnrolledSubjectSemesterv2($userLoggedInId,
+                                        $FIRST_SEMESTER, $FIRST_YEAR);
+
+                                    $term = $obj['term'];
+                                    $period = $obj['period'];
+                                    $school_year_id = $obj['school_year_id'];
+                                    $enrollment_course_id = $obj['course_id'];
+                                    $enrollment_form_id = $obj['enrollment_form_id'];
+
+                                    $section = new Section($con, $enrollment_course_id);
+                                    $enrollment_course_level = $section->GetSectionGradeLevel();
+                                    $enrollment_section_name = $enroll->GetStudentCourseNameByCourseId($enrollment_course_id);
+                                
+
+                                    echo "
+                                    <h4 style='font-weight: 500;' class='text-primary text-center mb-3'>
+                                        1st Year $enrollment_section_name $period Semester (SY $term) #$enrollment_form_id
+                                    </h4>
+
+                                    <form action='enrolled_subject_generate.php' method='POST'>
+
+                                        <input type='hidden' value='$student_username' name='student_username'>
+                                        <input type='hidden' value='$student_id' name='student_id'>
+                                        <input type='hidden' value='$enrollment_course_id' name='enrollment_course_id'>
+                                        <input type='hidden' value='$enrollment_course_level' name='student_course_level'>
+                                        <input type='hidden' value='$period' name='current_school_year_period'>
+
+                                        <button name='enrolled_subject_generate' type='submit'
+                                            class='btn btn-outline-primary btn-sm'>
+                                            Generate PDF
+                                        </button>
+                                    </form>
+                                ";
+
+                                }else{
+                                    echo "
+                                        <h3 class='text-center'>1st Year First Semester</h3>	
+                                    ";
+                                }
+
+                                // Section Based on the enrollment.
+                                $enrollment_school_year = $studentEnroll->
+                                    GetStudentSectionGradeElevenSchoolYear($username, 
+                                        $userLoggedInId, $SECOND_YEAR, $FIRST_SEMESTER);
+                            ?>	
+
+                            <table style="font-weight: 200;" class="table table-striped table-bordered table-hover "  style="font-size:12px" cellspacing="0"  > 
+                                <thead>
+                                    <tr class="text-center"> 
+                                        <th class="text-success" rowspan="2">Subject</th>
+                                        <th class="text-success" rowspan="2">Type</th>
+                                        <th class="text-success" rowspan="2">Description</th>  
+                                        <th class="text-success" rowspan="2">Unit</th>
+                                    </tr>	
+                                    <tr class="text-center"> 
+                                        <th class="text-success">Semester</th>  
+                                        <th class="text-success">Year Level</th>  
+                                        <th class="text-success">Remarks</th>  
+                                    </tr>
+                                </thead> 	 
+                                <tbody>
+                                    <?php 
+                                        // $listOfSubjects = $studentEnroll->GetStudentSubjectListWithGrades($username);
+                                        $listOfSubjects = $studentEnroll
+                                            ->GetStudentCurriculumBasedOnSemesterSubject($username,
+                                        $userLoggedInId, $FIRST_YEAR, $FIRST_SEMESTER);
+
+                                        if($listOfSubjects !== null){
+
+                                            foreach ($listOfSubjects as $key => $value) {
+                                                 
+                                                $subject_id = $value['subject_id'];
+                                                $course_level = $value['course_level'];
+
+                                                $remarks_url = "";
+
+                                                $query_student_subject = $con->prepare("SELECT 
+
+                                                    t1.subject_id, t1.student_subject_id as t1_student_subject_id,
+                                                    
+                                                    t2.student_subject_id as t2_student_subject_id,
+                                                    t2.remarks
+
+                                                    FROM student_subject as t1
+
+                                                    LEFT JOIN student_subject_grade as t2 ON t2.student_subject_id = t1.student_subject_id
+
+                                                    WHERE t1.subject_id=:subject_id
+                                                    AND t1.student_id=:student_id
+                                                    LIMIT 1");
+
+                                                $query_student_subject->bindValue(":subject_id", $subject_id);
+                                                $query_student_subject->bindValue(":student_id", $student_id);
+                                                $query_student_subject->execute();
+
+                                                $t1_student_subject_id = null;
+
+                                                if($query_student_subject->rowCount() > 0){
+
+                                                    $row = $query_student_subject->fetch(PDO::FETCH_ASSOC);
+
+                                                    $student_subject_subject_id = $row['subject_id'];
+                                                    $t1_student_subject_id = $row['t1_student_subject_id'];
+                                                    $t2_student_subject_id = $row['t2_student_subject_id'];
+                                                    $remarks = $row['remarks'];
+
+                                                    if($t1_student_subject_id == $t2_student_subject_id){
+
+                                                        $remarks_url = $remarks;
+                                                    }
+                     
+                                                    else if($student_subject_subject_id == $subject_id
+                                                        && $t1_student_subject_id != $t2_student_subject_id 
+                                                        && $payment_status == "Enrolled"
+                                                        ){
+
+                                                        $remarks_url = "
+                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                            </a>
+                                                        ";
+                                                    }
+                                                }
+                                            
+                                                echo '<tr class="text-center">'; 
+                                                        echo '<td>'.$value['subject_code'].'</td>';
+                                                        echo '<td>'.$value['subject_type'].'</td>';
+                                                        echo '<td>'.$value['subject_title'].'</td>';
+                                                        echo '<td>'.$value['unit'].'</td>';
+                                                        // echo '<td>'.$schedule_day.'</td>';
+                                                        // echo '<td>'.$schedule_time.'</td>';
+                                                        // echo '<td>'.$room.'</td>';
+                                                        // echo '<td>'.$section.'</td>';
+                                                        echo '<td>'.$value['semester'].'</td>';
+                                                        echo '<td>'.$value['course_level'].'</td>';
+                                                        echo '<td>'.$remarks_url.'</td>';
+                                                echo '</tr>';
+                                            }     
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 1st Year First Semester -->
+                    <div class="row col-md-12 table-responsive"
+                        style="margin-top:5%;">
+                        <div class="table-responsive" style="margin-top:2%;"> 
+
+                            <?php 
+                                if(count($subject->
+                                    CheckStudentGradeLevelEnrolledSubjectSemesterv2($userLoggedInId,
+                                    $SECOND_SEMESTER, $FIRST_YEAR)) > 0){
+
+                                    
+                                    $obj = $subject->CheckStudentGradeLevelEnrolledSubjectSemesterv2($userLoggedInId,
+                                        $SECOND_SEMESTER, $FIRST_YEAR);
+
+                                    $term = $obj['term'];
+                                    $period = $obj['period'];
+                                    $school_year_id = $obj['school_year_id'];
+                                    $enrollment_course_id = $obj['course_id'];
+                                    $enrollment_form_id = $obj['enrollment_form_id'];
+
+                                    $section = new Section($con, $enrollment_course_id);
+                                    $enrollment_course_level = $section->GetSectionGradeLevel();
+                                    $enrollment_section_name = $enroll->GetStudentCourseNameByCourseId($enrollment_course_id);
+                                
+
+                                    echo "
+                                    <h4 style='font-weight: 500;' class='text-primary text-center mb-3'>
+                                        1st Year $enrollment_section_name $period Semester (SY $term) #$enrollment_form_id
+                                    </h4>
+
+                                    <form action='enrolled_subject_generate.php' method='POST'>
+
+                                        <input type='hidden' value='$student_username' name='student_username'>
+                                        <input type='hidden' value='$student_id' name='student_id'>
+                                        <input type='hidden' value='$enrollment_course_id' name='enrollment_course_id'>
+                                        <input type='hidden' value='$enrollment_course_level' name='student_course_level'>
+                                        <input type='hidden' value='$period' name='current_school_year_period'>
+
+                                        <button name='enrolled_subject_generate' type='submit'
+                                            class='btn btn-outline-primary btn-sm'>
+                                            Generate PDF
+                                        </button>
+                                    </form>
+                                ";
+
+                                }else{
+                                    echo "
+                                        <h3 class='text-center'>1st Year Second Semester</h3>	
+                                    ";
+                                }
+
+                                // Section Based on the enrollment.
+                                $enrollment_school_year = $studentEnroll->
+                                    GetStudentSectionGradeElevenSchoolYear($username, 
+                                        $userLoggedInId, $SECOND_YEAR, $FIRST_SEMESTER);
+                            ?>	
+
+                            <?php 
+
+                                # ONLY FOR Tertiary every 2nd Semester BECAUSE OF MOVING UP.
+
+                                // Moving up student should be the end of Semester Period.
+
+                                $checkSemesterSubjectPassed = $old_enroll->CheckCurrentSemesterAllPassed(
+                                    $userLoggedInId, $student_course_id, $current_school_year_id);
+
+                                if($checkSemesterSubjectPassed == true 
+                                    && $student_section_level == $student_course_level
+                                    && $current_school_year_period == $SECOND_SEMESTER){
+
+                                    $wasSuccess = $old_enroll->TertiaryMoveUp($student_username, $student_course_level);
+
+                                    if($wasSuccess){
+
+                                        AdminUser::success("$student_username has been added by 1 year (Moved-Up)"
+                                            ,"view_details.php?subject=show&tertiary=true&id=$userLoggedInId");
+
+                                        exit();
+                                    }
+                                }
+
+                                // # Check If Current Year Level From 1st to 2nd Sem is Passed.
+                                // $isFinished = $old_enroll->CheckIfGradeLevelSemesterSubjectWereAllPassed(
+                                //     $student_id, $GRADE_ELEVEN, $SECOND_SEMESTER);
+                                
+                                // $moveUpBtn = "moveUpAction(\"$student_username\", $student_id)";
+
+                                // if($isFinished == true && $student_course_level != $GRADE_TWELVE){
+
+                                //     $wasSuccess = $old_enroll->StudentMoveUpToGrade12($student_username);
+
+                                //     if($wasSuccess){
+
+                                //         AdminUser::success("$student_username has been added by 1 year (Moved-Up)"
+                                //             , "view_details.php?subject=show&id=$student_id");
+                                //         exit();
+                                //     }
+                                // }
+                            ?>
+
+                            <table style="font-weight: 200;" class="table table-striped table-bordered table-hover "  style="font-size:12px" cellspacing="0"  > 
+                                <thead>
+                                    <tr class="text-center"> 
+                                        <th class="text-success" rowspan="2">Subject</th>
+                                        <th class="text-success" rowspan="2">Type</th>
+                                        <th class="text-success" rowspan="2">Description</th>  
+                                        <th class="text-success" rowspan="2">Unit</th>
+                                    </tr>	
+                                    <tr class="text-center"> 
+                                        <th class="text-success">Semester</th>  
+                                        <th class="text-success">Year Level</th>  
+                                        <th class="text-success">Remarks</th>  
+                                    </tr>
+                                </thead> 	 
+                                <tbody>
+                                    <?php 
+                                        // $listOfSubjects = $studentEnroll->GetStudentSubjectListWithGrades($username);
+                                        $listOfSubjects = $studentEnroll
+                                            ->GetStudentCurriculumBasedOnSemesterSubject($username,
+                                        $userLoggedInId, $FIRST_YEAR, $SECOND_SEMESTER);
+
+                                        if($listOfSubjects !== null){
+
+                                            foreach ($listOfSubjects as $key => $value) {
+                                                 
+                                                $subject_id = $value['subject_id'];
+                                                $course_level = $value['course_level'];
+
+                                                $remarks_url = "";
+
+                                                $query_student_subject = $con->prepare("SELECT 
+
+                                                    t1.subject_id, t1.student_subject_id as t1_student_subject_id,
+                                                    
+                                                    t2.student_subject_id as t2_student_subject_id,
+                                                    t2.remarks
+
+                                                    FROM student_subject as t1
+
+                                                    LEFT JOIN student_subject_grade as t2 ON t2.student_subject_id = t1.student_subject_id
+
+                                                    WHERE t1.subject_id=:subject_id
+                                                    AND t1.student_id=:student_id
+                                                    LIMIT 1");
+
+                                                $query_student_subject->bindValue(":subject_id", $subject_id);
+                                                $query_student_subject->bindValue(":student_id", $student_id);
+                                                $query_student_subject->execute();
+
+                                                $t1_student_subject_id = null;
+
+                                                if($query_student_subject->rowCount() > 0){
+
+                                                    $row = $query_student_subject->fetch(PDO::FETCH_ASSOC);
+
+                                                    $student_subject_subject_id = $row['subject_id'];
+                                                    $t1_student_subject_id = $row['t1_student_subject_id'];
+                                                    $t2_student_subject_id = $row['t2_student_subject_id'];
+                                                    $remarks = $row['remarks'];
+
+                                                    if($t1_student_subject_id == $t2_student_subject_id){
+
+                                                        $remarks_url = $remarks;
+                                                    }
+                     
+                                                    else if($student_subject_subject_id == $subject_id
+                                                        && $t1_student_subject_id != $t2_student_subject_id 
+                                                        && $payment_status == "Enrolled"
+                                                        ){
+
+                                                        $remarks_url = "
+                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                            </a>
+                                                        ";
+                                                    }
+                                                }
+                                            
+                                                echo '<tr class="text-center">'; 
+                                                        echo '<td>'.$value['subject_code'].'</td>';
+                                                        echo '<td>'.$value['subject_type'].'</td>';
+                                                        echo '<td>'.$value['subject_title'].'</td>';
+                                                        echo '<td>'.$value['unit'].'</td>';
+                                                        // echo '<td>'.$schedule_day.'</td>';
+                                                        // echo '<td>'.$schedule_time.'</td>';
+                                                        // echo '<td>'.$room.'</td>';
+                                                        // echo '<td>'.$section.'</td>';
+                                                        echo '<td>'.$value['semester'].'</td>';
+                                                        echo '<td>'.$value['course_level'].'</td>';
+                                                        echo '<td>'.$remarks_url.'</td>';
+                                                echo '</tr>';
+                                            }     
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <!-- T2 -->
+                    <!-- 2nd Year First Semester -->
+                    <div class="row col-md-12 table-responsive"
+                        style="margin-top:5%;">
+                        <div class="table-responsive" style="margin-top:2%;"> 
+
+                            <?php 
+                                if(count($subject->
+                                    CheckStudentGradeLevelEnrolledSubjectSemesterv2($userLoggedInId,
+                                    $FIRST_SEMESTER, $SECOND_YEAR)) > 0){
+
+                                    
+                                    $obj = $subject->CheckStudentGradeLevelEnrolledSubjectSemesterv2($userLoggedInId,
+                                        $FIRST_SEMESTER, $SECOND_YEAR);
+
+                                    $term = $obj['term'];
+                                    $period = $obj['period'];
+                                    $school_year_id = $obj['school_year_id'];
+                                    $enrollment_course_id = $obj['course_id'];
+                                    $enrollment_form_id = $obj['enrollment_form_id'];
+
+                                    $section = new Section($con, $enrollment_course_id);
+                                    $enrollment_course_level = $section->GetSectionGradeLevel();
+                                    $enrollment_section_name = $enroll->GetStudentCourseNameByCourseId($enrollment_course_id);
+                                
+
+                                    echo "
+                                    <h4 style='font-weight: 500;' class='text-primary text-center mb-3'>
+                                        2nd Year $enrollment_section_name $period Semester (SY $term) #$enrollment_form_id
+                                    </h4>
+
+                                    <form action='enrolled_subject_generate.php' method='POST'>
+
+                                        <input type='hidden' value='$student_username' name='student_username'>
+                                        <input type='hidden' value='$student_id' name='student_id'>
+                                        <input type='hidden' value='$enrollment_course_id' name='enrollment_course_id'>
+                                        <input type='hidden' value='$enrollment_course_level' name='student_course_level'>
+                                        <input type='hidden' value='$period' name='current_school_year_period'>
+
+                                        <button name='enrolled_subject_generate' type='submit'
+                                            class='btn btn-outline-primary btn-sm'>
+                                            Generate PDF
+                                        </button>
+                                    </form>
+                                ";
+
+                                }else{
+                                    echo "
+                                        <h3 class='text-center'>2nd Year Second Semester</h3>	
+                                    ";
+                                }
+
+                                // Section Based on the enrollment.
+                                $enrollment_school_year = $studentEnroll->
+                                    GetStudentSectionGradeElevenSchoolYear($username, 
+                                        $userLoggedInId, $SECOND_YEAR, $FIRST_SEMESTER);
+                            ?>	
+
+
+
+                            <table style="font-weight: 200;" class="table table-striped table-bordered table-hover "  style="font-size:12px" cellspacing="0"  > 
+                                <thead>
+                                    <tr class="text-center"> 
+                                        <th class="text-success" rowspan="2">Subject</th>
+                                        <th class="text-success" rowspan="2">Type</th>
+                                        <th class="text-success" rowspan="2">Description</th>  
+                                        <th class="text-success" rowspan="2">Unit</th>
+                                    </tr>	
+                                    <tr class="text-center"> 
+                                        <th class="text-success">Semester</th>  
+                                        <th class="text-success">Year Level</th>  
+                                        <th class="text-success">Remarks</th>  
+                                    </tr>
+                                </thead> 	 
+                                <tbody>
+                                    <?php 
+                                        // $listOfSubjects = $studentEnroll->GetStudentSubjectListWithGrades($username);
+                                        $listOfSubjects = $studentEnroll
+                                            ->GetStudentCurriculumBasedOnSemesterSubject($username,
+                                        $userLoggedInId, $SECOND_YEAR, $FIRST_SEMESTER);
+
+                                        if($listOfSubjects !== null){
+
+                                            foreach ($listOfSubjects as $key => $value) {
+                                                 
+                                                $subject_id = $value['subject_id'];
+                                                $course_level = $value['course_level'];
+
+                                                $remarks_url = "";
+
+                                                $query_student_subject = $con->prepare("SELECT 
+
+                                                    t1.subject_id, t1.student_subject_id as t1_student_subject_id,
+                                                    
+                                                    t2.student_subject_id as t2_student_subject_id,
+                                                    t2.remarks
+
+                                                    FROM student_subject as t1
+
+                                                    LEFT JOIN student_subject_grade as t2 ON t2.student_subject_id = t1.student_subject_id
+
+                                                    WHERE t1.subject_id=:subject_id
+                                                    AND t1.student_id=:student_id
+                                                    LIMIT 1");
+
+                                                $query_student_subject->bindValue(":subject_id", $subject_id);
+                                                $query_student_subject->bindValue(":student_id", $student_id);
+                                                $query_student_subject->execute();
+
+                                                $t1_student_subject_id = null;
+
+                                                if($query_student_subject->rowCount() > 0){
+
+                                                    $row = $query_student_subject->fetch(PDO::FETCH_ASSOC);
+
+                                                    $student_subject_subject_id = $row['subject_id'];
+                                                    $t1_student_subject_id = $row['t1_student_subject_id'];
+                                                    $t2_student_subject_id = $row['t2_student_subject_id'];
+                                                    $remarks = $row['remarks'];
+
+                                                    if($t1_student_subject_id == $t2_student_subject_id){
+
+                                                        $remarks_url = $remarks;
+                                                    }
+                     
+                                                    else if($student_subject_subject_id == $subject_id
+                                                        && $t1_student_subject_id != $t2_student_subject_id 
+                                                        && $payment_status == "Enrolled"
+                                                        ){
+
+                                                        $remarks_url = "
+                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                            </a>
+                                                        ";
+                                                    }
+                                                }
+                                            
+                                                echo '<tr class="text-center">'; 
+                                                        echo '<td>'.$value['subject_code'].'</td>';
+                                                        echo '<td>'.$value['subject_type'].'</td>';
+                                                        echo '<td>'.$value['subject_title'].'</td>';
+                                                        echo '<td>'.$value['unit'].'</td>';
+                                                        // echo '<td>'.$schedule_day.'</td>';
+                                                        // echo '<td>'.$schedule_time.'</td>';
+                                                        // echo '<td>'.$room.'</td>';
+                                                        // echo '<td>'.$section.'</td>';
+                                                        echo '<td>'.$value['semester'].'</td>';
+                                                        echo '<td>'.$value['course_level'].'</td>';
+                                                        echo '<td>'.$remarks_url.'</td>';
+                                                echo '</tr>';
+                                            }     
+                                        }
                                     ?>
                                 </tbody>
                             </table>

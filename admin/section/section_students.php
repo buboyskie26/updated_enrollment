@@ -27,7 +27,7 @@
                             <th rowspan="2">Id</th>
                             <th rowspan="2">Name</th>
                             <th rowspan="2">Status</th>
-                            <th rowspan="2"></th>
+                            <th colsp="2"></th>
                         </tr>	
                     </thead> 	 
                     <tbody>
@@ -64,14 +64,18 @@
                                     $status = $row['student_status'];
                                     $program_id = $row['program_id'];
 
-                                    $url = directoryPath . "section_shifting.php?id=$student_id&pid=$program_id";
+                                    $url = directoryPath . "section_shifting.php?id=$student_id";
+                                    $subject_shift_url = directoryPath . "subject_shifting.php?id=$student_id";
                                     echo '<tr class="text-center">'; 
                                             echo '<td>'.$student_id.'</td>';
                                             echo '<td>'.$fullName.'</td>';
                                             echo '<td>'.$status.'</td>';
                                             echo '<td>
+                                                <a href="'.$subject_shift_url.'">
+                                                    <button  class="btn btn-sm btn-outline-primary">Shift Subject(s)</button>
+                                                </a>
                                                 <a href="'.$url.'">
-                                                    <button  class="btn btn-sm btn-primary">Move</button>
+                                                    <button  class="btn btn-sm btn-primary">Shift Section</button>
                                                 </a>
                                             </td>';
                                     echo '</tr>';

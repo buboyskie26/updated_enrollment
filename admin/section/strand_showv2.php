@@ -35,12 +35,10 @@
         $section_advisery = $section->GetSectionAdvisery();
 
         ?>
-        <!-- Grade 12 1st sem REGARDLESS OF STUDENT_sTATUS -->
+            <!-- Grade 12 1st sem REGARDLESS OF STUDENT_sTATUS -->
             <div class="row col-md-12">
                 <div class="row mb-3">
-                    <!-- <div class="col">
-                        <h6 class="text-center">Select School Year Term:</h6>
-                    </div> -->
+                   
                     <h6 class="text-center">Select School Year Term:</h6>
 
                     <div class="col-6 offset-md-2">

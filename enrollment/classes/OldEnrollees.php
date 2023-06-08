@@ -271,6 +271,20 @@
         }
     }
 
+    public function TertiaryMoveUp($username, $current_course_level){
+
+        $current_course_level = $current_course_level + 1;
+        $moveUp_Update = $this->con->prepare("UPDATE student
+            SET course_level=:course_level
+            WHERE username=:username
+            ");
+    
+        $moveUp_Update->bindValue(":course_level", $current_course_level);
+        $moveUp_Update->bindValue(":username", $username);
+
+        return $moveUp_Update->execute();
+    }
+
     public function EnrolledStudentInTheEnrollmentTertiary($current_school_year_id, $student_id){
         $enrollment_status = "enrolled";
         $update_tentative = $this->con->prepare("UPDATE enrollment_tertiary
@@ -288,13 +302,18 @@
 
     public function EnrolledStudentInTheEnrollment($current_school_year_id, $student_id){
         $enrollment_status = "enrolled";
+
+        $enrollment_approve = new DateTime();
+        $enrollment_approve = $enrollment_approve->format('Y-m-d H:i:s');
         $update_tentative = $this->con->prepare("UPDATE enrollment
-            SET enrollment_status=:enrollment_status
+            SET enrollment_status=:enrollment_status,
+                enrollment_approve=:enrollment_approve
             
             WHERE student_id=:student_id
             AND school_year_id=:school_year_id");
 
         $update_tentative->bindValue(":enrollment_status", $enrollment_status);
+        $update_tentative->bindValue(":enrollment_approve", $enrollment_approve);
         $update_tentative->bindValue(":student_id", $student_id);
         $update_tentative->bindValue(":school_year_id", $current_school_year_id);
         return $update_tentative->execute(); 
@@ -305,15 +324,20 @@
             $current_school_year_id, $student_id, $unique_enrollment_form_id){
 
         $enrollment_status = "enrolled";
+        $enrollment_approve = new DateTime();
+        $enrollment_approve = $enrollment_approve->format('Y-m-d H:i:s');
         $update_tentative = $this->con->prepare("UPDATE enrollment
             SET enrollment_status=:enrollment_status,
-                enrollment_form_id=:enrollment_form_id
+                enrollment_form_id=:enrollment_form_id,
+                enrollment_approve=:enrollment_approve
+
             
             WHERE student_id=:student_id
             AND school_year_id=:school_year_id");
 
         $update_tentative->bindValue(":enrollment_status", $enrollment_status);
         $update_tentative->bindValue(":enrollment_form_id", $unique_enrollment_form_id);
+        $update_tentative->bindValue(":enrollment_approve", $enrollment_approve);
         $update_tentative->bindValue(":student_id", $student_id);
         $update_tentative->bindValue(":school_year_id", $current_school_year_id);
         return $update_tentative->execute(); 
@@ -1145,6 +1169,115 @@
         
     }
 
+
+    public function CheckCurrentSemesterAllPassed($student_id,
+        $student_course_id, $school_year_id){
+
+        # Get all Student Inserted subject for 2nd Semester.
+        # Check if 2nd Sem is Passed.
+
+
+        $student_subject = [];
+        $subject_remarked = [];
+        $query = $this->con->prepare("SELECT 
+
+            t1.enrollment_id, t2.student_subject_id
+            FROM enrollment as t1
+
+            INNER JOIN student_subject as t2 ON t2.enrollment_id = t1.enrollment_id
+            -- INNER JOIN student_subject as t2 ON t2.enrollment_id = t1.enrollment_id
+
+            WHERE t1.course_id=:course_id
+            AND t1.school_year_id=:school_year_id
+            AND t1.enrollment_status=:enrollment_status
+            AND t2.is_final = 1
+            AND t1.student_id =:student_id
+            ");
+
+        $query->bindValue("course_id", $student_course_id); 
+        $query->bindValue("school_year_id", $school_year_id); 
+        $query->bindValue("enrollment_status", "enrolled"); 
+        $query->bindValue("student_id", $student_id); 
+        $query->execute(); 
+
+        if($query->rowCount() > 0){
+
+            while($row = $query->fetch(PDO::FETCH_ASSOC)){
+
+                $student_subject_id = $row['student_subject_id'];
+
+                array_push($student_subject, $student_subject_id);
+
+                $get_marked = $this->con->prepare("SELECT student_subject_id FROM student_subject_grade
+                    WHERE student_subject_id=:student_subject_id
+                    AND remarks='Passed'");
+
+                $get_marked->bindValue("student_subject_id", $student_subject_id); 
+                $get_marked->execute(); 
+
+                if($get_marked->rowCount() > 0){
+
+                    $subject_passed_remarked = $get_marked->fetchColumn();
+
+                    // echo $subject_passed_remarked;
+                    array_push($subject_remarked, $subject_passed_remarked);
+                }
+            }
+
+            // print_r($student_subject);
+            // print_r($subject_remarked);
+
+            if(count($student_subject) == count($subject_remarked)
+                && empty(array_diff($student_subject, $subject_remarked))
+                && empty(array_diff($subject_remarked, $student_subject))){
+
+                    // echo "true";
+                return true;
+            }
+
+        }
+        return false;
+
+
+            // $query = $this->con->prepare(" SELECT 
+
+            //     t1.enrollment_id, t2.student_subject_id
+
+            //     FROM enrollment AS t1
+
+            //     INNER JOIN student_subject AS t2 ON t2.enrollment_id = t1.enrollment_id
+
+            //     WHERE t1.course_id = :course_id
+            //     AND t1.school_year_id = :school_year_id
+            //     AND t1.enrollment_status = :enrollment_status
+            //     AND t2.is_final = 1
+            //     AND t1.student_id = :student_id
+
+            //     AND EXISTS (
+            //         SELECT 1
+            //         FROM student_subject_grade
+            //         WHERE student_subject_id = t2.student_subject_id
+            //         AND remarks = 'Passed'
+            //     )
+            // ");
+
+            // $query->execute([
+            //     "course_id" => $student_course_id,
+            //     "school_year_id" => $school_year_id,
+            //     "enrollment_status" => "enrolled",
+            //     "student_id" => $student_id
+            // ]);
+
+            // if ($query->rowCount() > 0) {
+            //     while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+            //         $student_subject_id = $row['student_subject_id'];
+            //         // Do something with the result
+            //         echo $student_subject_id;
+            //     }
+            // }
+
+
+    }
 
 
     public function GetStudentCurrentSemesterSubjects($username, $current_school_year_period){

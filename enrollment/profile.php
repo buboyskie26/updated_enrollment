@@ -2,9 +2,11 @@
 
     require_once('../includes/studentHeader.php');
     require_once('./classes/StudentEnroll.php');
+    require_once('./classes/Pending.php');
     require_once('./classes/Section.php');
     require_once('./classes/SectionTertiary.php');
     require_once('../includes/classes/Student.php');
+    require_once('../includes/classes/form-helper/Account.php');
 
     if(isset($_SESSION['username'])
         && isset($_SESSION['status']) 
@@ -15,6 +17,7 @@
 
         $username = $_SESSION['username'];
 
+        $pending = new Pending($con);
         // echo $username;
 
         $sql = $con->prepare("SELECT * FROM pending_enrollees
@@ -53,28 +56,45 @@
 
             if(isset($_GET['fill_up_state']) && $_GET['fill_up_state'] == "finished"){
 
+                $isFinishedForm = $pending->CheckStudentFinishedForm($pending_enrollees_id);
+
                 ?>
                     <div class="row col-md-12">
                         <div class="row">
-                            <div class="col-md-6">
-                                <a href="process.php?new_student=true&step=1">
-                                    <button class="btn btn-outline-primary">New Student Process</button>
-                                </a>
-                            </div>
-                            <div class="col-md-6">
 
-                                <a href="profile.php?view_form=true&id=<?php echo $pending_enrollees_id;?>">
-                                    <button class="btn btn-outline-info">View Form</button>
-                                </a>
+                            <?php
+                                if($isFinishedForm == false){
 
-                            </div>
+                                    echo "
+                                    <div class='col-md-6'>
+                                        <a href='process.php?new_student=true&step=1'>
+                                            <button class='btn btn-outline-primary'>New Student Process</button>
+                                        </a>
+                                    </div>
+                                    ";
+
+                                }
+                            ?>
+
+                            <?php
+                                if($isFinishedForm == true){
+                                echo "
+                                    <div class='col-md-6'>
+                                        <a href='profile.php?view_form=true&id=<?php echo $pending_enrollees_id;?>'>
+                                            <button class='btn btn-outline-info'>View Form</button>
+                                        </a>
+                                    </div>
+                                    ";
+                                }
+                            ?>
+
                         </div>
 
                         <div class="card">
                             <div class="card-header">
                                 <div class="text-center container">
                                         <h3>Successfully filled-up the form</h3>
-                                        <p>Please Walk-in for registrar now.</p>
+                                        <p>Please walk-in for registrar accomodation.</p>
                                 </div>
                             
                             </div>
@@ -200,6 +220,74 @@
         }
 
     }else{
-        echo "wee";
+
+
+        $studentEnroll = new StudentEnroll($con);
+
+        $student_id = $studentEnroll->GetStudentId($_SESSION['username']);
+
+        // echo $_SESSION['username'];
+
+
+        if(isset($_POST['save_resetted_password'])){
+
+            $account = new Account($con);
+
+            $new_password = $_POST['new_password'];
+            $confirm_password = $_POST['confirm_password'];
+
+            if ($new_password === $confirm_password) {
+
+                $doesSave = $account->SavePassword($new_password, $student_id);
+                if($doesSave){
+                    echo "change successfully";
+
+                AdminUser::success("Password has been save.", "");
+
+                }
+            }else{
+                AdminUser::error("Password wont match", "");
+            }
+
+        }
+
+        ?>
+            <div class="col-md-12 row">
+
+                <div class="col-md-8 offset-md-2">
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="text-center text-muted">Credentials</h3>
+                        </div>
+                        
+                        <div class="card-body">
+
+                            <form method="post">
+
+                                <div class="form-group mb-3 ">
+                                    <label for="">New Password</label>
+                                    <input class="form-control" type="password" 
+                                        name="new_password" 
+                                        placeholder="Set New Password" autocomplete="off">
+                                </div>
+
+                                <div class="form-group mb-3 ">
+                                    <label for="">Confirm Password</label>
+                                    <input class="form-control" type="password" 
+                                        name="confirm_password" 
+                                        placeholder="Confirm Password" autocomplete="off">
+                                </div>
+
+                                <button name="save_resetted_password" type="submit" class="btn btn-primary">Save</button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        <?php
     }
 ?>

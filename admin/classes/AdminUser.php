@@ -29,7 +29,8 @@ class AdminUser{
                 icon: 'success',
                 title: 'Success!',
                 text: '$text',
-                backdrop: false
+                backdrop: false,
+
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = '$redirectUrl';
@@ -1184,6 +1185,8 @@ class AdminUser{
         }
 
         if(isset($_POST['start_enrollment_date_btn'])){
+
+            // echo "post";
             $school_year_id = $_POST['school_year_idx'];
 
             $currentDateTime = new DateTime();

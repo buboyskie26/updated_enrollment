@@ -23,6 +23,7 @@
             $department_url = $base_url . '/department/index.php';
 
             $unassigned_strand_section = $base_url . '/section/admin_strand_sections.php';
+            $admin_find_account = $base_url . '/account/admin_find_account.php';
 
             $teacher_url = $base_url . '/teacher/index.php';
             $enrollment_url = $base_url . '/enrollment/index.php';
@@ -44,9 +45,10 @@
             // echo "<br>";
             // echo $_SERVER['REQUEST_URI'];
 
+            $school_year_url = $base_url . '/school_year/index.php';
 
 
-            $result = $this->createNavigation($base_url . "/school_year.php",
+            $result = $this->createNavigation("$school_year_url",
                 "../../assets/images/icons/home.png", "School Year");
 
             $result .= $this->createNavigation("$teacher_url",
@@ -61,49 +63,12 @@
             $result .= $this->createNavigation("$unassigned_strand_section",
                 "../../assets/images/icons/home.png", "Sections");
 
-           $result .= $this->createNavigation("$unassigned_strand_section",
+           $result .= $this->createNavigation("$admin_find_account",
                 "../../assets/images/icons/home.png", "Accounts");
 
             $result .= $this->createNavigation("$schedule_url",
                 "../../assets/images/icons/home.png", "Schedule");
 
-
-
-            // $result .= $this->createNavigation("$student_creation_url",
-            //     "../../assets/images/icons/settings.png", "Student Admission");
-
-
-            
-            // $result .= $this->createNavigation("$enrollees_schedule",
-            //     "../../assets/images/icons/home.png", "Schedule");
-
-            // $result .= $this->createNavigation("$enrollees_url",
-            //     "../../assets/images/icons/home.png", "New Enrollees");
-
-            // $result .= $this->createNavigation("$old_enrollees_url",
-            //     "../../assets/images/icons/history.png", "Old Enrollees (SHS)");
-            
-            // $result .= $this->createNavigation("$transferee_url",
-            //     "../../assets/images/icons/history.png", "Transferee Enrollees");
-
-            // // $result .= $this->createNavigation("$student_drop_url",
-            // //     "../../assets/images/icons/history.png", "Drop Students");
-
-            // $result .= $this->createNavigation("$enrollment_url",
-            //     "../../assets/images/icons/history.png", "Enrollment");
-
-            // $result .= $this->createNavigation("$department_url",
-            //     "../../assets/images/icons/history.png", "Department");
-
-
-
-
-
-            // $result .= $this->createNavigation("$school_year_url",
-            //     "../../assets/images/icons/history.png", "School Year");
-
-            // $result .= $this->createNavigation("$sections_url",
-            //     "../../assets/images/icons/history.png", "Sections");
 
             if(AdminUser::IsAuthenticated()){
                     $result .= $this->createNavigation("../logout.php", 

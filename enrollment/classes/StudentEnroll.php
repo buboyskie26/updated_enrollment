@@ -1148,6 +1148,44 @@
 
         return $firstname;
     }
+ public function GetStudentLastname($student_id){
+
+        $lastname = "";
+        $query = $this->con->prepare("SELECT lastname FROM student
+            WHERE student_id=:student_id");
+     
+        $query->bindValue(":student_id", $student_id);
+        $query->execute();
+
+        if($query->rowCount() > 0){
+            $row = $query->fetch(PDO::FETCH_ASSOC);
+
+            $lastname = $row['lastname'];
+
+        }
+
+        return $lastname;
+    }
+
+    public function GetStudentMiddlename($student_id){
+
+        $middle_name = "";
+        $query = $this->con->prepare("SELECT middle_name FROM student
+            WHERE student_id=:student_id");
+     
+        $query->bindValue(":student_id", $student_id);
+        $query->execute();
+
+        if($query->rowCount() > 0){
+            $row = $query->fetch(PDO::FETCH_ASSOC);
+
+            $middle_name = $row['middle_name'];
+
+        }
+
+        return $middle_name;
+    }
+
     public function GetStudentFullName($student_id){
 
         $fullname = "N/A";
@@ -1863,6 +1901,8 @@
             t1.pre_subject_id,
             t1.subject_type,
             t1.subject_program_id,
+            t1.pre_requisite,
+            t1.subject_type,
 
             t2.schedule_day,
             t2.schedule_time,
@@ -2386,15 +2426,15 @@
         $course_id = $this->GetStudentCourseId($username);
         $program_id = $this->GetStudentProgramId($course_id);
         $arr = [];
-
-        // TODO: GRADE 11 HUMSS-101 1st Semester (Done)
-        // TODO: Subject -> Schedule 
  
         $first_sem = "First";
 
         $query = $this->con->prepare("SELECT 
 
-            e.student_id, e.course_id, sy.school_year_id, sy.period, sy.term
+            e.student_id, e.enrollment_id,
+            e.enrollment_form_id,
+             e.course_id, sy.school_year_id, 
+            sy.period, sy.term
 
             FROM enrollment e
 
@@ -2407,9 +2447,9 @@
             -- AND c.course_id =:course_id
             ");
 
-        $query->bindValue("student_id", $student_id); 
-        $query->bindValue("first_sem", $SEMESTER); 
-        $query->bindValue("enrollment_status", "enrolled"); 
+        $query->bindValue(":student_id", $student_id); 
+        $query->bindValue(":first_sem", $SEMESTER); 
+        $query->bindValue(":enrollment_status", "enrolled"); 
         // $query->bindValue("course_id", 20); 
         $query->execute(); 
 

@@ -4,19 +4,13 @@
     include('../../enrollment/classes/StudentEnroll.php');
     include('../../enrollment/classes/Schedule.php');
     include('../../enrollment/classes/Enrollment.php');
+    include('../../enrollment/classes/OldEnrollees.php');
     include('../../enrollment/classes/SchoolYear.php');
     include('../../enrollment/classes/Section.php');
     include('../../includes/classes/Student.php');
     include('../classes/Course.php');
 
-    // include('../registrar_enrollment_header.php');
-    include('../admin_enrollment_header.php');
-
-    if(!AdminUser::IsAuthenticated()){
-        header("location: /dcbt/adminLogin.php");
-        exit();
-    }
-
+    include('../registrar_enrollment_header.php');
 
     // $teacher = new Teacher($con, $adminLoggedIn);
 
@@ -51,6 +45,18 @@
 
     $school_year = new SchoolYear($con, $current_school_year_id);
 
+    $student = new Student($con, null);
+
+    $string = "ABE4-A";
+
+    // $pattern = '/(\d+)/';
+    // $replacement = '${1}';
+
+    // $newString = preg_replace_callback($pattern, function($matches) {
+    //     return intval($matches[0]) + 1;
+    // }, $string);
+
+    // echo $newString;
 
     $createUrl = base_url . "/create.php";
 
@@ -60,6 +66,10 @@
     $startEnrollmentInit = $school_year->DoesStartEnrollmentComesIn();
     $endEnrollmentInit = $school_year->DoesEndEnrollmentComesIn($current_school_year_id);
     $end = $school_year->EndOfCurrentSemesterInit($current_school_year_id);
+
+    // $allRegularNewStudents = $student->GetAllOngoingRegularStudent();
+
+    // print_r($allRegularNewStudents);
 
     if(isset($_POST['populate_subject_btnx']) && isset($_POST['course_id'])
         && isset($_POST['program_id']) && isset($_POST['course_level'])){
