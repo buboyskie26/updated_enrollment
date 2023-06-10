@@ -274,14 +274,15 @@
     public function TertiaryMoveUp($username, $current_course_level){
 
         $current_course_level = $current_course_level + 1;
+
         $moveUp_Update = $this->con->prepare("UPDATE student
             SET course_level=:course_level
             WHERE username=:username
+            AND active=1
             ");
     
         $moveUp_Update->bindValue(":course_level", $current_course_level);
         $moveUp_Update->bindValue(":username", $username);
-
         return $moveUp_Update->execute();
     }
 

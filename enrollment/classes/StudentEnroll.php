@@ -1898,7 +1898,6 @@
             t1.subject_title,
             t1.unit,
             t1.course_level,
-            t1.pre_subject_id,
             t1.subject_type,
             t1.subject_program_id,
             t1.pre_requisite,
@@ -2185,7 +2184,13 @@
             t4.second,
             t4.third,
             t4.fourth,
-            t4.remarks as grade_remarks
+            t4.remarks as grade_remarks,
+
+
+            t5.time_from,
+            t5.time_to,
+            t5.schedule_day,
+            t5.schedule_time
 
             FROM subject_program as t1
 
@@ -2194,6 +2199,8 @@
             
             LEFT JOIN subject as t3 ON t3.subject_id = t2.subject_id
             LEFT JOIN student_subject_grade as t4 ON t4.student_subject_id = t2.student_subject_id
+            LEFT JOIN subject_schedule as t5 ON t5.subject_id = t2.subject_id
+
             -- LEFT JOIN course as t4 ON t4.course_id = t3.course_id
 
             WHERE t1.semester=:semester
@@ -2220,10 +2227,8 @@
             // print_r($row_sub);
             return $row_sub;
         }
-        else{
-            // echo "no data";
-        }
-        return null;
+        
+        return [];
 
     }
 

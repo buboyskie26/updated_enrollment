@@ -27,10 +27,58 @@
     
     $waitingApprovalEnrollment = $enrollment->WaitingApprovalEnrollment($current_school_year_id);
 
-    if(count($waitingApprovalEnrollment) > 0){
+
+    $enrollment = new Enrollment($con, null);
+    $pendingEnrollment = $enrollment->PendingEnrollment();
+    $waitingPaymentEnrollment = $enrollment->WaitingPaymentEnrollment($current_school_year_id);
+    $waitingApprovalEnrollment = $enrollment->WaitingApprovalEnrollment($current_school_year_id);
+
+
+    $pendingEnrollmentCount = count($pendingEnrollment);
+    $waitingPaymentEnrollmentCount = count($waitingPaymentEnrollment);
+    $waitingApprovalEnrollmentCount = count($waitingApprovalEnrollment);
+    
+?>
+
+    <div class="row col-md-12">
+
+        <div class="row col-md-12">
+            <div class="col-md-3">
+                <a href="evaluation.php">
+                    <button class="btn btn btn-outline-primary">Evaluation 
+                        <span class="text-white">(<?php echo $pendingEnrollmentCount;?>)</span></button>
+                    
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="waiting_payment.php">
+                <button class="btn btn  btn-outline-primary">Waiting Payment <span class="text-white">
+                    (<?php echo $waitingPaymentEnrollmentCount;?>)</span></button>
+
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="waiting_approval.php">
+                    <button class="btn btn  btn-primary">Waiting Approval <span class="text-white">(<?php echo $waitingApprovalEnrollmentCount;?>)</span></button>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="enrolled.php">
+                <button class="btn btn  btn-outline-primary">Enrolled</button>
+
+                </a>
+            </div>
+            <hr>
+            <hr>
+            <hr>
+
+        </div>
+
+        <?php 
+        
+        if(count($waitingApprovalEnrollment) > 0){
         ?>
             <div class="row col-md-12">
- 
                 <h3 class="mb-2 text-center text-success">Evaluated</h3>
                 <div class="table-responsive">			
                     <table id="dash-table" class="table table-striped table-bordered table-hover table-responsive" style="font-size:12px" cellspacing="0">
@@ -185,15 +233,14 @@
                         </tbody>
                     </table>
                 </div>
-
             </div>
         <?php
     }else{
         echo "
-            <h3 class='text-info text-center'>No Data found.</h3>
+            <h3 class='text-info text-center'>No Waiting Approval found.</h3>
         ";
     }
 
+        ?>
 
-
-?>
+    </div>

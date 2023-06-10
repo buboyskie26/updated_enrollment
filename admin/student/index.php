@@ -31,6 +31,8 @@
                     <button class="btn btn-sm btn-success">Add Student</button>
                 </a>  
             </div>
+
+
             <div class="col-md-12">
                 <div class=" ">
                     <table  class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
@@ -76,9 +78,12 @@
                                         $status = $row['student_status'];
                                         $program_section = $row['program_section'];
 
+                                        $view_url = directoryPath . "view_details.php?profile=show&id=$student_id";
+
+                                        # RF
                                         $gradeUrl = "http://localhost/dcbt/admin/enrollees/student_grade_report.php?id=$student_id";
 
-                                        $view_url = directoryPath . "view_details.php?profile=show&id=$student_id";
+                                        // $view_url = directoryPath . "view_details.php?profile=show&id=$student_id";
 
                                         $trans_url = directoryPath . "shs_view_transferee_details.php?profile=show&id=$student_id";
 
@@ -162,11 +167,9 @@
                                 $active = 1;
 
                                 $sql = $con->prepare("SELECT 
-                                    t1.*, t2.program_section, t2.course_tertiary_id
+                                    t1.*
 
                                 FROM student as t1
-
-                                LEFT JOIN course_tertiary as t2 ON t2.course_tertiary_id = t1.course_tertiary_id
 
                                 WHERE t1.active =:active
                                 AND t1.is_tertiary =:is_tertiary
@@ -186,11 +189,12 @@
                                         $course_level = $row['course_level'];
                                         $course_id = $row['course_id'];
                                         $status = $row['student_status'];
-                                        $program_section = $row['program_section'];
+                                        $program_section = "";
 
                                         
                                         $gradeUrl = "http://localhost/dcbt/admin/enrollees/tertiary_student_grade_report.php?id=$student_id";
                                         $section_url = "http://localhost/dcbt/admin/section/strand_show.php?id=$course_id";
+                                        $view_url = directoryPath . "view_details.php?profile=show&id=$student_id";
 
                                         echo '<tr class="text-center">'; 
                                                 echo '<td>'.$student_id.'</td>';
@@ -201,6 +205,7 @@
                                                 </td>';
                                                 echo '<td>'.$status.'</td>';
                                                 echo '<td>'.$course_level.'</td>';
+
                                                 echo '<td>
                                                     <a href="'.$section_url.'">
                                                         '.$program_section.'</td>
@@ -208,11 +213,7 @@
                                                 ';
                                                 echo 
                                                 '<td> 
-                                                    <a href="'.$gradeUrl.'">
-                                                        <button class="btn btn-primary btn-sm">Check Grade</button>
-                                                    </a>
-
-                                                    <a href="'.$gradeUrl.'">
+                                                    <a href="'.$view_url.'">
                                                         <button class="btn btn-secondary btn-sm">View Details</button>
                                                     </a>
                                                 </td>';
@@ -226,8 +227,9 @@
             </div>
 
             <hr>
-            <h3 class="text-center mb-3">In-active Students</h3>
-            <div class="col-md-12">
+            <div style="display: none;" class="col-md-12">
+                <h3 class="text-center mb-3">In-active Students</h3>
+
                 <div class=" ">
                     <table  class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
                         <thead>

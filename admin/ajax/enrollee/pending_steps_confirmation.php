@@ -126,7 +126,7 @@
                 $stmt_insert->bindParam(':religion', $religion);
                 $stmt_insert->bindParam(':birthplace', $birthplace);
                 $stmt_insert->bindParam(':email', $email);
-                $stmt_insert->bindValue(':admission_status', "New");
+                $stmt_insert->bindValue(':admission_status', "Standard");
                 $stmt_insert->bindValue(':is_tertiary', 0);
                 
             }
@@ -157,7 +157,7 @@
                 $stmt_insert->bindParam(':religion', $religion);
                 $stmt_insert->bindParam(':birthplace', $birthplace);
                 $stmt_insert->bindParam(':email', $email);
-                $stmt_insert->bindValue(':admission_status', "New");
+                $stmt_insert->bindValue(':admission_status', "Standard");
                 $stmt_insert->bindValue(':is_tertiary', 1);
             }
 

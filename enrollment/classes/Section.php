@@ -136,10 +136,10 @@
             $SHS_DEPARTMENT = 4;
 
             $query = $this->con->prepare("SELECT * FROM program
-                WHERE department_id=:department_id
+                -- WHERE department_id=:department_id
             ");
 
-            $query->bindValue(":department_id", $SHS_DEPARTMENT);
+            // $query->bindValue(":department_id", $SHS_DEPARTMENT);
             $query->execute();
             
             if($query->rowCount() > 0){

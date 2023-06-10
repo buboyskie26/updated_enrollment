@@ -27,177 +27,219 @@
     
     $waitingPaymentEnrollment = $enrollment->WaitingPaymentEnrollment($current_school_year_id);
 
-    if(count($waitingPaymentEnrollment) > 0){
-        ?>
-            <div class="row col-md-12">
-                        
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="text-muted text-center">Waiting Payment List</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">			
-                            <table id="dash-table" class="table table-striped table-bordered table-hover table-responsive" style="font-size:12px" cellspacing="0">
-                                <thead>
-                                    <tr class="text-center">
-                                        <th>Id</th>
-                                        <th>Name</th>
-                                        <th>Standing</th>
-                                        <th>Course/Section</th>
-                                        <th>Type</th>
-                                        <th style="width: 150px;;" class="text-center">Action</th>
-                                    </tr>	
-                                </thead> 
-                                <tbody>
-                                    <?php
-                                        // Generate a random alphanumeric string as the enrollment form ID
 
-                                        $waitingPaymentEnrollment = $enrollment->WaitingPaymentEnrollment($current_school_year_id);
-                                    
-                                        $transResult = "";
-                                        $createUrl = "";
+    $enrollment = new Enrollment($con, null);
+    $pendingEnrollment = $enrollment->PendingEnrollment();
+    $waitingPaymentEnrollment = $enrollment->WaitingPaymentEnrollment($current_school_year_id);
+    $waitingApprovalEnrollment = $enrollment->WaitingApprovalEnrollment($current_school_year_id);
 
-                                        foreach ($waitingPaymentEnrollment as $key => $row) {
 
-                                                $enrollement_student_id = $row['student_id'];
-                                                $fullname = $row['firstname'] . " " . $row['lastname'];
-                                                $standing = $row['course_level'];
-                                                $course_id = $row['course_id'];
-                                                $username = $row['username'];
-                                                $student_id = $row['t2_student_id'];
-                                                $program_section = $row['program_section'];
-                                                $cashier_evaluated = $row['cashier_evaluated'];
-                                                $registrar_evaluated = $row['registrar_evaluated'];
-                                                $course_level = $row['course_level'];
-                                                $student_status = $row['student_status'];
-                                                $new_enrollee = $row['new_enrollee'];
-                                                $is_tertiary = $row['is_tertiary'];
-                                                $is_transferee = $row['is_transferee'];
+    $pendingEnrollmentCount = count($pendingEnrollment);
+    $waitingPaymentEnrollmentCount = count($waitingPaymentEnrollment);
+    $waitingApprovalEnrollmentCount = count($waitingApprovalEnrollment);
+    
+?>
 
-                                                // $program_section_default = "";
-                                                if($program_section === ""){
-                                                    $program_section = "NO SECTION";
-                                                }
+    <div class="row col-md-12">
 
-                                                // $course_level_default = "";
-                                                if($course_level == ""){
-                                                    $course_level = "NO SECTION";
-                                                }else{
-                                                    $course_level = "Grade $course_level";
-                                                }
-                                            
-                                                $createUrl = "http://localhost/dcbt/admin/student/edit.php?id=$student_id";
+        <div class="row col-md-12">
+            <div class="col-md-3">
+                <a href="evaluation.php">
+                    <button class="btn btn btn-outline-primary">Evaluation 
+                        <span class="text-white">(<?php echo $pendingEnrollmentCount;?>)</span></button>
+                    
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="waiting_payment.php">
+                <button class="btn btn  btn-primary">Waiting Payment <span class="text-white">
+                    (<?php echo $waitingPaymentEnrollmentCount;?>)</span></button>
 
-                                                // $transferee_insertion_url = "http://localhost/dcbt/admin/student/transferee_insertion.php?id=$student_id";
-                                                $transferee_insertion_url = "../student/transferee_insertion.php?enrolled_subjects=true&id=$student_id";
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="waiting_approval.php">
+                    <button class="btn btn  btn-outline-primary">Waiting Approval <span class="text-white">(<?php echo $waitingApprovalEnrollmentCount;?>)</span></button>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="enrolled.php">
+                <button class="btn btn  btn-outline-primary">Enrolled</button>
 
-                                                // $regular_insertion_url = "http://localhost/dcbt/admin/student/transferee_insertion.php?id=$student_id";
+                </a>
+            </div>
+            <hr>
+            <hr>
+            <hr>
 
-                                                $regular_insertion_url = "../enrollees/subject_insertion.php?username=$username&id=$student_id";
+        </div>
 
-                                                $confirmButton  = "
-                                                    <button onclick='confirmValidation(" . $course_id . ", " . $enrollement_student_id . ")' name='confirm_validation_btn' class='btn btn-primary btn-sm'>Confirm</button>
-                                                ";
+        <?php 
+            if(count($waitingPaymentEnrollment) > 0){
+                ?>
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="text-muted text-center">Waiting Payment List</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">			
+                                <table id="dash-table" class="table table-striped table-bordered table-hover table-responsive" style="font-size:12px" cellspacing="0">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th>Id</th>
+                                            <th>Name</th>
+                                            <th>Standing</th>
+                                            <th>Course/Section</th>
+                                            <th>Type</th>
+                                            <th style="width: 150px;;" class="text-center">Action</th>
+                                        </tr>	
+                                    </thead> 
+                                    <tbody>
+                                        <?php
+                                            // Generate a random alphanumeric string as the enrollment form ID
 
-                                                $evaluateBtn = "";
-                
-                                                $student_type_status = "";
-                                                if($cashier_evaluated == "no"
-                                                    && $registrar_evaluated == "yes"){
+                                            $waitingPaymentEnrollment = $enrollment->WaitingPaymentEnrollment($current_school_year_id);
+                                        
+                                            $transResult = "";
+                                            $createUrl = "";
 
-                                                    if($student_status == "Regular"){
-                                                        $evaluateBtn = "
-                                                            <a href='$regular_insertion_url'>
-                                                                <button class='btn btn-outline-success btn-sm'>
-                                                                    Check
-                                                                </button>
-                                                            </a>
-                                                        ";
+                                            foreach ($waitingPaymentEnrollment as $key => $row) {
 
-                                                        if($new_enrollee == 1 && $is_tertiary == 0){
-                                                            $student_type_status = "New Regular (SHS)";
+                                                    $enrollement_student_id = $row['student_id'];
+                                                    $fullname = $row['firstname'] . " " . $row['lastname'];
+                                                    $standing = $row['course_level'];
+                                                    $course_id = $row['course_id'];
+                                                    $username = $row['username'];
+                                                    $student_id = $row['t2_student_id'];
+                                                    $program_section = $row['program_section'];
+                                                    $cashier_evaluated = $row['cashier_evaluated'];
+                                                    $registrar_evaluated = $row['registrar_evaluated'];
+                                                    $course_level = $row['course_level'];
+                                                    $student_status = $row['student_status'];
+                                                    $new_enrollee = $row['new_enrollee'];
+                                                    $is_tertiary = $row['is_tertiary'];
+                                                    $is_transferee = $row['is_transferee'];
 
-                                                        }else if($new_enrollee == 0 && $is_tertiary == 0){
-                                                            $student_type_status = "On Going (SHS)";
-                                                        }
+                                                    // $program_section_default = "";
+                                                    if($program_section === ""){
+                                                        $program_section = "NO SECTION";
                                                     }
 
-                                                    # if Transferee
-                                                    if($student_status == "Transferee"){
+                                                    // $course_level_default = "";
+                                                    if($course_level == ""){
+                                                        $course_level = "NO SECTION";
+                                                    }else{
+                                                        $course_level = "Grade $course_level";
+                                                    }
+                                                
+                                                    $createUrl = "http://localhost/dcbt/admin/student/edit.php?id=$student_id";
 
-                                                            // if($new_enrollee == 0 || $new_enrollee == 1){
-                                                        if($new_enrollee == 1 && $is_tertiary == 0 && $is_transferee == 1){
-                                                            $student_type_status = "New Transferee (SHS)";
+                                                    // $transferee_insertion_url = "http://localhost/dcbt/admin/student/transferee_insertion.php?id=$student_id";
+                                                    $transferee_insertion_url = "../student/transferee_insertion.php?enrolled_subjects=true&id=$student_id";
 
+                                                    // $regular_insertion_url = "http://localhost/dcbt/admin/student/transferee_insertion.php?id=$student_id";
+
+                                                    $regular_insertion_url = "../enrollees/subject_insertion.php?username=$username&id=$student_id";
+
+                                                    $confirmButton  = "
+                                                        <button onclick='confirmValidation(" . $course_id . ", " . $enrollement_student_id . ")' name='confirm_validation_btn' class='btn btn-primary btn-sm'>Confirm</button>
+                                                    ";
+
+                                                    $evaluateBtn = "";
+                    
+                                                    $student_type_status = "";
+                                                    if($cashier_evaluated == "no"
+                                                        && $registrar_evaluated == "yes"){
+
+                                                        if($student_status == "Regular"){
                                                             $evaluateBtn = "
-                                                                <a href='$transferee_insertion_url'>
+                                                                <a href='$regular_insertion_url'>
                                                                     <button class='btn btn-outline-success btn-sm'>
-                                                                        Evaluate
+                                                                        Check
                                                                     </button>
                                                                 </a>
                                                             ";
 
-                                                        }else if($new_enrollee == 0 && $is_tertiary == 0 && $is_transferee == 0){
+                                                            if($new_enrollee == 1 && $is_tertiary == 0){
+                                                                $student_type_status = "New Regular (SHS)";
 
-                                                            $student_type_status = "On Going Transferee (SHS)";
+                                                            }else if($new_enrollee == 0 && $is_tertiary == 0){
+                                                                $student_type_status = "On Going (SHS)";
+                                                            }
+                                                        }
 
-                                                            // $evaluateBtn = "
-                                                            //     <a href='cashier_process_enrollment.php?id=$student_id'>
+                                                        # if Transferee
+                                                        if($student_status == "Transferee"){
 
-                                                            //         <button class='btn btn-outline-primary btn-sm'>
-                                                            //             Evaluate
-                                                            //         </button>
-                                                            //     </a>
-                                                            // ";
+                                                                // if($new_enrollee == 0 || $new_enrollee == 1){
+                                                            if($new_enrollee == 1 && $is_tertiary == 0 && $is_transferee == 1){
+                                                                $student_type_status = "New Transferee (SHS)";
 
-                                                            // $asd = $course_id;
+                                                                $evaluateBtn = "
+                                                                    <a href='$transferee_insertion_url'>
+                                                                        <button class='btn btn-outline-success btn-sm'>
+                                                                            Evaluate
+                                                                        </button>
+                                                                    </a>
+                                                                ";
 
-                                                            // $trans_url = "transferee_process_enrollment.php?step3=true&id=$student_id&selected_course_id=$course_id";
+                                                            }else if($new_enrollee == 0 && $is_tertiary == 0 && $is_transferee == 0){
 
-                                                            # PREVIOUS URL
-                                                            $trans_url = "transferee_process_enrollment.php?step3=true&st_id=$student_id&selected_course_id=$course_id";
+                                                                $student_type_status = "On Going Transferee (SHS)";
 
-                                                            $evaluateBtn = "
-                                                                <a href='$transferee_insertion_url'>
-                                                                    <button class='btn btn-outline-success btn-sm'>
-                                                                        Evaluate
-                                                                    </button>
-                                                                </a>
-                                                            ";
+                                                                // $evaluateBtn = "
+                                                                //     <a href='cashier_process_enrollment.php?id=$student_id'>
+
+                                                                //         <button class='btn btn-outline-primary btn-sm'>
+                                                                //             Evaluate
+                                                                //         </button>
+                                                                //     </a>
+                                                                // ";
+
+                                                                // $asd = $course_id;
+
+                                                                // $trans_url = "transferee_process_enrollment.php?step3=true&id=$student_id&selected_course_id=$course_id";
+
+                                                                # PREVIOUS URL
+                                                                $trans_url = "transferee_process_enrollment.php?step3=true&st_id=$student_id&selected_course_id=$course_id";
+
+                                                                $evaluateBtn = "
+                                                                    <a href='$transferee_insertion_url'>
+                                                                        <button class='btn btn-outline-success btn-sm'>
+                                                                            Evaluate
+                                                                        </button>
+                                                                    </a>
+                                                                ";
+                                                            }
                                                         }
                                                     }
-                                                }
 
 
-                                                echo "
-                                                    <tr class='text-center'>
-                                                        <td>$student_id</td>
-                                                        <td>$fullname</td>
-                                                        <td>$course_level </td>
-                                                        <td>$program_section</td>
-                                                        <td>$student_type_status</td>
-                                                        
-                                                        <td>
-                                                            $evaluateBtn
-                                                        </td>
-                                                    </tr>
-                                                ";
-                                        }
-                                    ?>
-                                </tbody>
-                            </table>
+                                                    echo "
+                                                        <tr class='text-center'>
+                                                            <td>$student_id</td>
+                                                            <td>$fullname</td>
+                                                            <td>$course_level </td>
+                                                            <td>$program_section</td>
+                                                            <td>$student_type_status</td>
+                                                            
+                                                            <td>
+                                                                $evaluateBtn
+                                                            </td>
+                                                        </tr>
+                                                    ";
+                                            }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-            </div>
-        <?php
-    }else{
-        echo "
-            <h3 class='text-info text-center'>No Data found.</h3>
-        ";
-    }
-
-
-
-?>
+                <?php
+            }else{
+                echo "
+                    <h3 class='text-info text-center'>No Waiting Payment found.</h3>
+                ";
+            }
+        ?>
+    </div>

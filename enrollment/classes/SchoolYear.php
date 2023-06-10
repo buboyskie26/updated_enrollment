@@ -117,7 +117,6 @@
         $student_enroll = new StudentEnroll($this->con, null);
         $student = new Student($this->con, null);
 
-
         $enrollment = new Enrollment($this->con, $student_enroll);
 
         $start_enrollment = $this->GetStartEnrollment();
@@ -149,16 +148,14 @@
             # Should applicable for First and Second Semester.
                     
             if($current_school_year_period == "Second" || $current_school_year_period == "First"
-                // && $prev_sy_id != -1
                 ){
-                    // echo "qwe";
 
                 # Applicable only For First Semester.
                 $allRegularNewStudents = $student->GetAllOngoingRegularStudent(
                     $prev_sy_id, $current_school_year_id);
+            
+                // print_r($allRegularNewStudents);
 
-                
-                    // print_r($allRegularNewStudents);
                 // if(false){
                 if(count($allRegularNewStudents) > 0){
 
@@ -269,43 +266,75 @@
                                     }
                                 }
                             }
-                        }
+                        }else{
 
+                            $student_current_course_id = $student_enroll->GetStudentCourseIdById($student_id);
+                             
+                            # TODO on Transferee LOGIC (REGULAR) ONLY.
+                            if($admission_status === "Transferee"){
 
-                        $student_current_course_id = $student_enroll->GetStudentCourseIdById($student_id);
+                                $sql->bindValue(":student_id", $student_id);
+                                $sql->bindValue(":course_id", $student_current_course_id);
+                                $sql->bindValue(":school_year_id", $current_school_year_id);
+                                $sql->bindValue(":enrollment_form_id", $enrollment_form_id);
+                                $sql->bindValue(":enrollment_approve", $now);
+                                $sql->bindValue(":is_transferee", 0);
+                                $sql->bindValue(":registrar_evaluated", "no");
 
+                                // if(false){
+                                if($sql->execute() && $sql->rowCount() > 0){
+                                    $isSuccess = true;
+                                }           
+                            }
 
-                        if($admission_status === "Transferee"){
+                            else if($admission_status !== "Transferee"){
 
-                            $sql->bindValue(":student_id", $student_id);
-                            $sql->bindValue(":course_id", $student_current_course_id);
-                            $sql->bindValue(":school_year_id", $current_school_year_id);
-                            $sql->bindValue(":enrollment_form_id", $enrollment_form_id);
-                            $sql->bindValue(":enrollment_approve", $now);
-                            $sql->bindValue(":is_transferee", 0);
-                            $sql->bindValue(":registrar_evaluated", "no");
+                                if($is_tertiary == 0){
+                                    $sql->bindValue(":student_id", $student_id);
+                                    $sql->bindValue(":course_id", $student_current_course_id);
+                                    $sql->bindValue(":school_year_id", $current_school_year_id);
+                                    $sql->bindValue(":enrollment_form_id", $enrollment_form_id);
+                                    $sql->bindValue(":enrollment_approve", $now);
+                                    $sql->bindValue(":is_transferee", 0);
+                                    $sql->bindValue(":registrar_evaluated", "yes");
+                                    $sql->bindValue(":is_tertiary", 0);
 
-                            // if(false){
-                            if($sql->execute() && $sql->rowCount() > 0){
-                                $isSuccess = true;
-                            }           
-                        }
+                                    // if(false){
+                                    if($sql->execute() && $sql->rowCount() > 0){
+                                        $isSuccess = true;
+                                    }
+                                }
+                                else if($is_tertiary == 1){
+                                    $sql->bindValue(":student_id", $student_id);
+                                    $sql->bindValue(":course_id", $student_current_course_id);
+                                    $sql->bindValue(":school_year_id", $current_school_year_id);
+                                    $sql->bindValue(":enrollment_form_id", $enrollment_form_id);
+                                    $sql->bindValue(":enrollment_approve", $now);
+                                    $sql->bindValue(":is_transferee", 0);
+                                    $sql->bindValue(":registrar_evaluated", "yes");
+                                    $sql->bindValue(":is_tertiary", 1);
 
-                        if($admission_status !== "Transferee"){
-                            $sql->bindValue(":student_id", $student_id);
-                            $sql->bindValue(":course_id", $student_current_course_id);
-                            $sql->bindValue(":school_year_id", $current_school_year_id);
-                            $sql->bindValue(":enrollment_form_id", $enrollment_form_id);
-                            $sql->bindValue(":enrollment_approve", $now);
-                            $sql->bindValue(":is_transferee", 0);
-                            $sql->bindValue(":registrar_evaluated", "yes");
+                                    // if(false){
+                                    if($sql->execute() && $sql->rowCount() > 0){
+                                        $isSuccess = true;
+                                    }
+                                }
 
-                            if(false){
-                            // if($sql->execute() && $sql->rowCount() > 0){
+                                // $sql->bindValue(":student_id", $student_id);
+                                // $sql->bindValue(":course_id", $student_current_course_id);
+                                // $sql->bindValue(":school_year_id", $current_school_year_id);
+                                // $sql->bindValue(":enrollment_form_id", $enrollment_form_id);
+                                // $sql->bindValue(":enrollment_approve", $now);
+                                // $sql->bindValue(":is_transferee", 0);
+                                // $sql->bindValue(":registrar_evaluated", "yes");
+                                // if(false){
+                                // // if($sql->execute() && $sql->rowCount() > 0){
 
-                                $isSuccess = true;
+                                //     $isSuccess = true;
+                                // }
                             }
                         }
+                        // echo $student_current_course_id;
                     }
 
                     if($isSuccess == true){
@@ -316,7 +345,6 @@
                     }
                 }
             }
-
 
             // AdminUser::success("Todays Semester Enrollment is now started.",
             //     "");
@@ -518,25 +546,39 @@
                                 # 8. In just changing the S.Y from 2nd sem to 1st sem. We created individual newly section based on the previous active tertiary_course section
                                 # Which we have included its appropriate subjects.
 
-                                $get_shs_course_section = $this->con->prepare("SELECT * 
+                                $getMoveUpShsSection = $this->con->prepare("SELECT * 
                                 
                                     FROM course
                                     WHERE school_year_term=:school_year_term
                                     AND active=:active
+                                    AND course_level != 12
                                     AND is_tertiary=0
                                     ");
 
-                                $get_shs_course_section->bindValue(":school_year_term", $current_school_year_term);
-                                $get_shs_course_section->bindValue(":active", "yes");
-                                $get_shs_course_section->execute();
+                                $getMoveUpShsSection->bindValue(":school_year_term", $current_school_year_term);
+                                $getMoveUpShsSection->bindValue(":active", "yes");
+                                $getMoveUpShsSection->execute();
+
+                                $isMoveUpShsFinished = false;
+
+                                $isSetToInactive = false;
 
                                 // if(false){
-                                if($get_shs_course_section->rowCount() > 0){
+                                if($getMoveUpShsSection->rowCount() > 0){
 
                                     $update_shs_course = $this->con->prepare("UPDATE course
                                         SET active=:active
-                                        -- WHERE course_level=:course_level
-                                        WHERE course_id=:course_id");
+                                        WHERE school_year_term=:school_year_term
+                                        AND course_level >= 11
+                                        
+                                        ");
+
+                                    $update_shs_course->bindValue(":active", "no");
+                                    $update_shs_course->bindValue(":school_year_term", $current_school_year_term);
+                                    if($update_shs_course->execute()){
+                                        $isSetToInactive = true;
+                                    }
+
 
                                     $moveUpShsSection = $this->con->prepare("INSERT INTO course
                                         (program_section, program_id, course_level, capacity, school_year_term, active, is_full, previous_course_id)
@@ -553,9 +595,8 @@
                                         AND course_level=:course_level
                                         ");
 
-                                    $getShsCoursesForMovingUp = $get_shs_course_section->fetchAll(PDO::FETCH_ASSOC);
+                                    $getShsCoursesForMovingUp = $getMoveUpShsSection->fetchAll(PDO::FETCH_ASSOC);
 
-                                    $isFinished = false;
 
                                     foreach ($getShsCoursesForMovingUp as $key => $value) {
 
@@ -569,10 +610,10 @@
 
                                             $new_program_section = str_replace('11', 12, $tertiary_program_section);
 
-                                            $update_shs_course->bindValue(":active", "no");
-                                            $update_shs_course->bindValue(":course_id", $course_id);
+                                            // $update_shs_course->bindValue(":active", "no");
+                                            // $update_shs_course->bindValue(":course_id", $course_id);
 
-                                            if($update_shs_course->execute()){
+                                            if($isSetToInactive == true){
 
                                                 $moveUpShsSection->bindValue(":program_section", $new_program_section);
                                                 $moveUpShsSection->bindValue(":program_id", $tertiary_program_id);
@@ -583,6 +624,7 @@
                                                 $moveUpShsSection->bindValue(":is_full", "no");
                                                 $moveUpShsSection->bindValue(":previous_course_id", $previous_course_tertiary_id);
 
+                                                // if(false){
                                                 if($moveUpShsSection->execute()){
                                                     // echo "New Tertiary $new_program_section section has been established at new $new_school_year_term";
                                                     // echo "<br>";
@@ -591,16 +633,17 @@
                                                     if($moveupCourseId != null){
 
                                                         $newly_created_shs_program = $this->con-> prepare("SELECT 
-                                                                course_id, course_level, program_id, program_section
-                                                                
-                                                                FROM course
-                                                                WHERE course_id=:course_id
-                                                                LIMIT 1
+                                                            course_id, course_level, program_id, program_section
+                                                            
+                                                            FROM course
+                                                            WHERE course_id=:course_id
+                                                            LIMIT 1
                                                             ");
 
                                                         $newly_created_shs_program->bindValue(":course_id", $moveupCourseId);
                                                         $newly_created_shs_program->execute();
 
+                                                        // if(false){
                                                         if($newly_created_shs_program->rowCount() > 0){
 
                                                             $newly_shs_section_row = $newly_created_shs_program->fetch(PDO::FETCH_ASSOC);
@@ -612,7 +655,6 @@
                                                             $get_subject_program->bindValue(":program_id", $newly_created_shs_program_id);
                                                             $get_subject_program->bindValue(":course_level", $newly_created_shs_course_level);
                                                             $get_subject_program->execute();
-
 
                                                             if($get_subject_program->rowCount() > 0){
                                                                 
@@ -645,7 +687,7 @@
                                                                     // $insert_section_subject->execute();
                                                                     if($insert_section_subject->execute()){
                                                                         $isSubjectCreated = true;
-                                                                        $isFinished = true;
+                                                                        $isMoveUpShsFinished = true;
                                                                     }
                                                                 }
 
@@ -658,29 +700,47 @@
                                     }
                                 }
 
-                                // Tertiary Moving Up
-
-                                $get_shs_tertiary_section = $this->con->prepare("SELECT * 
+                                ### Tertiary Moving Up
+                                $getMovingUpTertiarySection = $this->con->prepare("SELECT * 
                                 
                                     FROM course
                                     WHERE school_year_term=:school_year_term
                                     AND active=:active
                                     AND is_tertiary=1
+                                    AND course_level != 4
                                     ");
 
-                                $get_shs_tertiary_section->bindValue(":school_year_term", $current_school_year_term);
-                                $get_shs_tertiary_section->bindValue(":active", "yes");
-                                $get_shs_tertiary_section->execute();
+                                $getMovingUpTertiarySection->bindValue(":school_year_term", $current_school_year_term);
+                                $getMovingUpTertiarySection->bindValue(":active", "yes");
+                                $getMovingUpTertiarySection->execute();
 
-                                $tertiaryFinished = false;
+                                $isMovedUpTertiaryFinished = false;
 
                                 // if(false){
-                                if($get_shs_tertiary_section->rowCount() > 0){
+
+                                $isSetToInactiveTertiary = false;
+
+                                if($getMovingUpTertiarySection->rowCount() > 0){
+
+                                    // $update_tertiary_course = $this->con->prepare("UPDATE course
+                                    //     SET active=:active
+                                    //     -- WHERE course_level=:course_level
+                                    //     WHERE school_year_term=:school_year_term
+                                    //     WHERE course_id=:course_id");
 
                                     $update_tertiary_course = $this->con->prepare("UPDATE course
                                         SET active=:active
-                                        -- WHERE course_level=:course_level
-                                        WHERE course_id=:course_id");
+                                        WHERE school_year_term=:school_year_term
+                                        AND course_level <= 4
+                                        
+                                        ");
+
+                                    $update_tertiary_course->bindValue(":active", "no");
+                                    $update_tertiary_course->bindValue(":school_year_term", $current_school_year_term);
+
+                                    if($update_tertiary_course->execute()){
+                                        $isSetToInactiveTertiary = true;
+                                    }
 
                                     $moveUpTertiarySection = $this->con->prepare("INSERT INTO course
                                         (program_section, program_id, course_level, capacity, school_year_term, active, is_full, previous_course_id, is_tertiary)
@@ -697,7 +757,7 @@
                                         AND course_level=:course_level
                                         ");
 
-                                    $getTertiaryCoursesForMovingUp = $get_shs_tertiary_section->fetchAll(PDO::FETCH_ASSOC);
+                                    $getTertiaryCoursesForMovingUp = $getMovingUpTertiarySection->fetchAll(PDO::FETCH_ASSOC);
 
 
                                     foreach ($getTertiaryCoursesForMovingUp as $key => $value) {
@@ -710,16 +770,6 @@
                                            
                                             $tertiary_program_section = $value['program_section'];
 
-                                            // echo $tertiary_program_section;
-
-
-                                            // $parts = explode('-', $tertiary_program_section); // Split the string into parts using the hyphen as the delimiter
-
-                                            // $number = intval($parts[1]); // Convert the number part to an integer
-                                            // $number++; // Increment the number by 1
-
-                                            // $newString = $parts[0] . '-' . $number . $parts[1][strlen($parts[1])-1]; // Recreate the string with the incremented number and the original capital letter 'A'
-
                                             $pattern = '/(\d+)/';
                                             $replacement = '${1}';
 
@@ -727,15 +777,14 @@
                                                 return intval($matches[0]) + 1;
                                             }, $tertiary_program_section);
 
-                                            // echo $newString;  // Output: ABE-2A
-                                            // $new_program_section = str_replace('11', 12, $tertiary_program_section);
-
-
-                                            $update_tertiary_course->bindValue(":active", "no");
-                                            $update_tertiary_course->bindValue(":course_id", $course_id);
+                                            // $update_tertiary_course->bindValue(":active", "no");
+                                            // $update_tertiary_course->bindValue(":course_id", $course_id);
 
                                             // if(false){
-                                            if($update_tertiary_course->execute()){
+                                            // if($update_tertiary_course->execute()){
+                                            if($isSetToInactiveTertiary){
+
+                                                // echo "ter";
 
                                                 $moveUpTertiarySection->bindValue(":program_section", $newString);
                                                 $moveUpTertiarySection->bindValue(":program_id", $tertiary_program_id);
@@ -748,6 +797,7 @@
                                                 $moveUpTertiarySection->bindValue(":is_tertiary", 1);
 
                                                 if($moveUpTertiarySection->execute()){
+                                                    // echo "moved-up";
                                                     // echo "New Tertiary $new_program_section section has been established at new $new_school_year_term";
                                                     // echo "<br>";
                                                     $moveupTertiaryCourseId = $this->con->lastInsertId();
@@ -755,16 +805,17 @@
                                                     if($moveupTertiaryCourseId != null){
 
                                                         $newly_created_shs_program = $this->con-> prepare("SELECT 
-                                                                course_id, course_level, program_id, program_section
-                                                                
-                                                                FROM course
-                                                                WHERE course_id=:course_id
-                                                                LIMIT 1
+                                                            course_id, course_level, program_id, program_section
+                                                            
+                                                            FROM course
+                                                            WHERE course_id=:course_id
+                                                            LIMIT 1
                                                             ");
 
                                                         $newly_created_shs_program->bindValue(":course_id", $moveupTertiaryCourseId);
                                                         $newly_created_shs_program->execute();
 
+                                                        // if(false){
                                                         if($newly_created_shs_program->rowCount() > 0){
 
                                                             $newly_shs_section_row = $newly_created_shs_program->fetch(PDO::FETCH_ASSOC);
@@ -808,7 +859,7 @@
 
                                                                     if($insert_tertiary_section_subject->execute()){
                                                                         $isSubjectCreated = true;
-                                                                        $tertiaryFinished = true;
+                                                                        $isMovedUpTertiaryFinished = true;
                                                                     }
                                                                 }
 
@@ -827,7 +878,7 @@
                                 # IT SHOULD DYNAMIC, WHATEVER sets by admin
                                 # Should automatically created for every Fresh S.Y
                                 // if(false){
-                                if($isFinished){
+                                if($isMoveUpShsFinished){
 
                                     $STEM_PROGRAM_ID = $section->GetStrandrogramId("STEM");
                                     $HUMMS_PROGRAM_ID = $section->GetStrandrogramId("HUMMS");
@@ -917,7 +968,7 @@
                                                     $insertSectionSubject->execute();
                                                 }
 
-                                                $isFinished = true;
+                                                $isMoveUpShsFinished = true;
                                             }
                                 }
 
@@ -928,7 +979,7 @@
                                 # Should automatically created for every Fresh S.Y
 
                                 // if(false){
-                                if($tertiaryFinished){
+                                if($isMovedUpTertiaryFinished){
 
                                     $ABE_PROGRAM_ID = $section->GetStrandrogramId("ABE");
 
@@ -1012,8 +1063,6 @@
                 }else{
                     echo "get_ntext_sy not executed";
                 }
-
-
 
             }  
             # Creating Of Section should be perform if Todays is 2nd Semester.

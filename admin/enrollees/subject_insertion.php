@@ -634,7 +634,7 @@
                                                     $time_to = $value['time_to'] == "" ? '-' : $value['time_to'];
                                                     $room = $value['room'] == "" ? '-' : $value['room'];
 
-                                                    $pre_subject_id = $value['pre_subject_id'] != 0 ? $value['pre_subject_id'] : "";
+                                                    // $pre_subject_id = $value['pre_subject_id'] != 0 ? $value['pre_subject_id'] : "";
                                                     $failed_remark = "Failed";
 
                                                     // echo $pre_subject_id . " ";
@@ -1360,7 +1360,7 @@
                                                     $time_to = $value['time_to'] == "" ? '-' : $value['time_to'];
                                                     $room = $value['room'] == "" ? '-' : $value['room'];
 
-                                                    $pre_subject_id = $value['pre_subject_id'] != 0 ? $value['pre_subject_id'] : "";
+                                                    // $pre_subject_id = $value['pre_subject_id'] != 0 ? $value['pre_subject_id'] : "";
                                                     $failed_remark = "Failed";
     
                                                     $query_failed = $con->prepare("SELECT subject_id 

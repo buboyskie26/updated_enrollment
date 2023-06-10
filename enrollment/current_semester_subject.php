@@ -52,10 +52,7 @@
 
             $section = new Section($con, $course_id);
             
-            $student_course_tertiary_id = $enroll->GetStudentCourseTertiaryId($username);
-
-            $course_tertiary = new SectionTertiary($con, $student_course_tertiary_id);
-
+       
 
             $school_year_obj = $enroll->GetActiveSchoolYearAndSemester();
 

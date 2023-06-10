@@ -102,13 +102,10 @@
             
         </div>
 
-        <div class="table-responsive" style="margin-top:2%;"> 
-            <div class="mb-3">
-                <a href="<?php echo directoryPath . "create.php"; ?>">
-                    <button class=" btn btn-success">Add Section</button>
-                </a> 
-            </div>
-            <table id="courseTable" class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
+        <div class="table-responsive" style="margin-top:2%; "> 
+
+            <table id="courseTable" class="table table-striped table-bordered table-hover "  
+                style="font-size:13px; display:none;" cellspacing="0"  > 
                 <thead>
                     <tr class="text-center"> 
                         <th rowspan="2">Course Id</th>
@@ -218,9 +215,20 @@
             <hr>
 
             <div class="card">
-
+                <div style="
+                align-items: end;
+                display: flex;
+                flex-direction: column;" 
+                class="col-md-12 text-right">
+                    <a href="<?php echo directoryPath . "create.php"; ?>">
+                        <button class=" btn btn-success">Add Section</button>
+                    </a> 
+                </div>
+                   
                 <div class="card-header">
+
                     <h5 class="text-muted">Section Details</h5>
+
                 </div>
                 <div class="card-body">
                     <table id="courseTable" 
@@ -228,7 +236,7 @@
                         style="font-size:13px" cellspacing="0"  > 
                         <thead>
                             <tr class="text-center"> 
-                                <th rowspan="2">Subject Id</th>
+                                <th rowspan="2">Section Id</th>
                                 <th rowspan="2">Section Code</th>
                                 <th rowspan="2">School Year</th>  
                                 <th rowspan="2">Level</th>

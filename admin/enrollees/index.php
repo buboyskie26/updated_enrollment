@@ -152,13 +152,12 @@
                                 t1.student_id, t1.cashier_evaluated, t2.firstname,
                                 t2.lastname,t2.course_level,
                                 t2.course_id, t2.student_id as t2_student_id,
-                                t2.course_id, t2.username,
+                                t2.course_id, t2.username
                                 
-                                t3.program_section
+                                -- t3.program_section
                                 FROM enrollment_tertiary as t1
 
                                 INNER JOIN student as t2 ON t2.student_id = t1.student_id
-                                LEFT JOIN course_tertiary as t3 ON t2.course_tertiary_id = t3.course_tertiary_id
 
                                 WHERE t1.is_new_enrollee=:is_new_enrollee
                                 AND t1.is_transferee=:is_transferee
@@ -188,7 +187,7 @@
                                     $standing = $row['course_level'];
                                     $course_id = $row['course_id'];
                                     $student_id = $row['t2_student_id'];
-                                    $program_section = $row['program_section'];
+                                    $program_section = "";
                                     $cashier_evaluated = $row['cashier_evaluated'];
 
                                     $createUrl = directoryPath . "tertiary_subject_insertion.php?id=$student_id";

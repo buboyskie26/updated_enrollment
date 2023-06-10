@@ -6,7 +6,6 @@
     include('../../enrollment/classes/StudentEnroll.php');
     include('../classes/Subject.php');
 
-
     $createProgramSelection = "2";
 
     $section = new Section($con, null);
@@ -77,7 +76,6 @@
                 $recently_created_course_id = $con->lastInsertId();
 
                 $get_program_section = $section->GetSectionNameByCourseId($recently_created_course_id);
-
 
                 if($current_school_year_period == "First" 
                     && $course_level == 11){
@@ -163,6 +161,7 @@
 
                 }else if($current_school_year_period == "Second" 
                     && $course_level == 11){
+
                     $get_subject_program = $con->prepare("SELECT * FROM subject_program
                         WHERE program_id=:program_id
                         AND semester=:semester
@@ -240,6 +239,7 @@
                 }
                 else if($current_school_year_period == "First" 
                     && $course_level == 12){
+
                     $get_subject_program = $con->prepare("SELECT * FROM subject_program
                         WHERE program_id=:program_id
                         -- AND semester=:semester
@@ -313,10 +313,91 @@
                             }
                         }
                     }
-
                 }
 
+                if($current_school_year_period == "First" 
+                    && $course_level == 1){
+                    $get_subject_program = $con->prepare("SELECT * FROM subject_program
+                        WHERE program_id=:program_id
+                        AND course_level=:course_level
+                        -- AND semester=:semester
+                        ");
 
+                    # Second Semester Subjects only,
+                    # None usage of First Semester subject here.
+                    
+                    $get_subject_program->bindValue(":program_id", $program_id);
+                    $get_subject_program->bindValue(":course_level", $course_level);
+                    // $get_subject_program->bindValue(":semester", $current_school_year_period);
+                    $get_subject_program->execute();
+
+                    if($get_subject_program->rowCount() > 0){
+
+                        $isSubjectCreated = false;
+
+                        $insert_section_subject = $con->prepare("INSERT INTO subject
+                            (subject_title, description, subject_program_id, unit, semester,
+                                program_id, course_level, course_id, subject_type, subject_code,
+                                pre_requisite)
+                            VALUES(:subject_title, :description, :subject_program_id, :unit, :semester, 
+                                :program_id, :course_level, :course_id, :subject_type, :subject_code,
+                                :pre_requisite)");
+
+                        while($row = $get_subject_program->fetch(PDO::FETCH_ASSOC)){
+
+                            $program_program_id = $row['subject_program_id'];
+                            $program_course_level = $row['course_level'];
+                            $program_semester = $row['semester'];
+                            $program_subject_type = $row['subject_type'];
+                            $program_subject_title = $row['subject_title'];
+                            $program_subject_description = $row['description'];
+                            $program_subject_unit = $row['unit'];
+                            $program_subject_pre_requisite = $row['pre_req_subject_title'];
+
+                            $program_subject_code = $row['subject_code'] . "-". $get_program_section; 
+                            // $program_subject_code = $row['subject_code']; 
+
+                            $insert_section_subject->bindValue(":subject_title", $program_subject_title);
+                            $insert_section_subject->bindValue(":description", $program_subject_description);
+                            $insert_section_subject->bindValue(":subject_program_id", $program_program_id);
+                            $insert_section_subject->bindValue(":unit", $program_subject_unit);
+                            $insert_section_subject->bindValue(":semester", $program_semester);
+                            $insert_section_subject->bindValue(":program_id", $program_id);
+                            $insert_section_subject->bindValue(":course_level", $program_course_level);
+                            $insert_section_subject->bindValue(":course_id", $recently_created_course_id);
+                            $insert_section_subject->bindValue(":subject_type", $program_subject_type);
+                            $insert_section_subject->bindValue(":subject_code", $program_subject_code);
+                            $insert_section_subject->bindValue(":pre_requisite", $program_subject_pre_requisite);
+
+                            // $insert_section_subject->execute();
+                            if($insert_section_subject->execute()){
+                                $isSubjectCreated = true;
+                            }
+                        }
+
+                        if($isSubjectCreated == true){
+
+
+                            if(isset($_SESSION['process_enrollment'])
+                                && $_SESSION['process_enrollment'] == 'transferee'){
+
+                                    AdminUser::success("New section has been created.", "../admission/transferee_process_enrollment.php?step2=true&id=$pending_enrollees_id");
+                                    exit();
+
+                            }else if(isset($_SESSION['process_enrollment'])
+                                && $_SESSION['process_enrollment'] == 'non_transferee'){
+
+                                    AdminUser::success("New section has been created.", "../admission/process_enrollment.php?step2=true&id=$pending_enrollees_id");
+                                    exit();
+                            }
+                            else{
+                                AdminUser::success("New section has been created.", "index.php");
+
+                            }
+                        }
+                    }
+
+                }
               
             }
             else{
@@ -415,10 +496,14 @@
                 <select class='form-control' name='course_level'>
                     <option value='11'>Grade 11</option>
                     <option value='12'>Grade 12</option>
+                    <option value='1'>1st Year</option>
+                    <option value='2'>2nd Year</option>
+                    <option value='3'>3rd Year</option>
+                    <option value='4'>4th Year</option>
                 </select>
             </div>
             <div class='form-group mb-2'>
-                <input class='form-control' type='text' placeholder='Room Capacity' name='capacity'>
+                <input class='form-control' type='number' placeholder='Room Capacity' name='capacity'>
             </div>
 
             <div class='form-group mb-2'>
@@ -426,16 +511,8 @@
             </div>
 
               <div class='form-group mb-2'>
-                <input class='form-control' type='text' placeholder='Room' name='room'>
+                <input class='form-control' type='number' placeholder='Room' name='room'>
             </div>
-
-            <!-- <div class='form-group mb-2'>
-                <select class='form-control' name='course_level'>
-                    <option value='11'>Grade 11</option>
-                    <option value='12'>Grade 12</option>
-                </select>
-            </div> -->
-           
 
             <button type='submit' class='btn btn-primary' name='create_section_btn'>Save</button>
         </form>

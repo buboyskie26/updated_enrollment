@@ -56,14 +56,7 @@
 
             $result .= $this->createNavigation("$courses_url",
                 "../assets/images/icons/home.png", "Courses");
-
-
-            
-            // $result .= $this->createNavigation("$subject_url",
-            //     "../assets/images/icons/home.png", "Subject");
-
-            $result .= $this->createNavigation("$account_url",
-                "../assets/images/icons/home.png", "Account");
+           
 
             $result .= $this->createNavigation("$enrollment_url",
                 "../assets/images/icons/home.png", "Enrollment");

@@ -1008,8 +1008,6 @@
                 <?php
             }
 
-
-
             if(isset($_GET['id']) 
                 && isset($_GET['step3'])
                 && isset($_GET['selected_course_id'])

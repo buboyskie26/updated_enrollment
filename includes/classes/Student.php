@@ -25,6 +25,18 @@ class Student{
     public function GetId() {
         return isset($this->sqlData['student_id']) ? $this->sqlData["student_id"] : 0; 
     }
+
+    public function GetIsGraduated() {
+        return isset($this->sqlData['is_graduated']) ? $this->sqlData["is_graduated"] : null; 
+    }
+
+    public function CheckIfActive() {
+        return isset($this->sqlData['active']) ? $this->sqlData["active"] : null; 
+    }
+
+    public function CheckIfTertiary() {
+        return isset($this->sqlData['is_tertiary']) ? $this->sqlData["is_tertiary"] : null; 
+    }
     public function GetUsername() {
         return isset($this->sqlData['username']) ? $this->sqlData["username"] : ""; 
     }
@@ -224,6 +236,24 @@ class Student{
         return $sql->execute();
     }
 
+    public function MarkAsGraduate($student_id){
+
+        $is_graduated = 1;
+        $sql = $this->con->prepare("UPDATE student 
+                    SET is_graduated = :is_graduated,
+                        active=:set_unactive
+                    WHERE student_id = :student_id
+                    AND active = :active
+                    ");
+
+        $sql->bindValue(":is_graduated", $is_graduated);
+        $sql->bindValue(":set_unactive", 0);
+        $sql->bindValue(":student_id", $student_id);
+        $sql->bindValue(":active", 1);
+
+        return $sql->execute();
+    }
+
     public function GetAllOngoingRegularStudent($prev_sy_id, $current_school_year_id){
 
         $toEnrollStudentsv2 = [];
@@ -266,8 +296,10 @@ class Student{
             -- t1.is_tertiary,
             -- t1.admission_status
             FROM enrollment as t1
+            INNER JOIN student as t2 ON t2.student_id = t1.student_id
 
             WHERE t1.school_year_id=:school_year_id
+            AND t2.active=1
         ");
 
         $current_enrollment->bindValue(":school_year_id", $current_school_year_id);
@@ -277,6 +309,7 @@ class Student{
         $prev_enrollment = $this->con->prepare("SELECT 
                 t1.student_id,
                 t2.is_tertiary,
+                t1.enrollment_id,
                 t2.admission_status
         
                 FROM enrollment as t1
@@ -285,6 +318,7 @@ class Student{
             
                 WHERE t1.school_year_id=:school_year_id
                 AND t2.new_enrollee=:new_enrollee
+                AND t2.active=1
                 -- AND t1.school_year_id=:current_school_year_id
             ");
 
@@ -415,5 +449,75 @@ class Student{
          
     }
 
+
+    public function CheckShsStudentGraduateCandidate($student_id, $program_id){
+       
+        $studentCurriculumSubject = [];
+        $subjects = $this->GetStudentWholeCurriculumStrandBased($program_id);
+
+        foreach ($subjects as $key => $value) {
+            # code...
+            array_push($studentCurriculumSubject, $value['subject_program_id']);
+        }
+
+        $sql = $this->con->prepare("SELECT t1.subject_program_id
+    
+            FROM student_subject as t1
+            INNER JOIN student_subject_grade as t2 ON t2.student_subject_id = t1.student_subject_id
+            AND t2.remarks = 'Passed'
+            AND t1.student_id =:student_id
+        ");
+
+        $sql->bindValue(":student_id", $student_id);
+        $sql->execute();
+
+        $studentCurrentSubject = [];
+  
+        if($sql->rowCount() > 0){
+
+            $subjects = $sql->fetchAll(PDO::FETCH_ASSOC);
+            // var_dump($subjects);
+
+            foreach ($subjects as $key => $value) {
+                # code...
+                // array_push($studentCurrentSubject, $value);
+                array_push($studentCurrentSubject, $value['subject_program_id']);
+            }
+        }
+ 
+ 
+        $difference = array_diff($studentCurriculumSubject, $studentCurrentSubject);
+
+        if(count($studentCurriculumSubject) == count($studentCurrentSubject)
+            && empty($difference)
+            ){
+            return true;
+        }else{
+            return false;
+        }
+
+        return false;
+
+    }
+
+    public function GetStudentWholeCurriculumStrandBased($program_id){
+
+        $subject_query = $this->con->prepare("SELECT subject_program_id
+
+            FROM subject_program
+            WHERE program_id=:program_id
+            ");
+
+        $subject_query->bindValue(":program_id", $program_id); 
+        $subject_query->execute();
+
+        if($subject_query->rowCount() > 0){
+
+            $row_sub = $subject_query->fetchAll(PDO::FETCH_ASSOC);
+            return $row_sub;
+        }
+
+        return [];
+    }
 }
 ?>

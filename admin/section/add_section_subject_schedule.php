@@ -19,24 +19,25 @@
         $current_school_year_term = $school_year_obj['term'];
         $current_school_year_period = $school_year_obj['period'];
 
-        $teacher_id = $_GET['id'];
+        $subject_id = $_GET['id'];
 
-        $stmt = $con->prepare("SELECT * FROM teacher WHERE teacher_id = ?");
+        $stmt = $con->prepare("SELECT * FROM subject WHERE subject_id = ?");
 
-        $stmt->execute([$teacher_id]);
+        $stmt->execute([$subject_id]);
 
-        $teacher = $stmt->fetch();
+        $subjectObj = $stmt->fetch();
 
-        if (!$teacher) {
+        if (!$subjectObj) {
             // handle error, the 'id' value does not exist in the database
             echo "error id";
             exit();
         }
 
+        $course_id = $subjectObj['course_id'];
 
-    if(isset($_POST['create_schedule_enrollment'])
-        && isset($_POST['course_id'])
-        && isset($_POST['subject_id'])
+    if(isset($_POST['create_section_subject_schedule_btn'])
+        // && isset($_POST['course_id'])
+        && isset($_POST['teacher_id'])
         && isset($_POST['room'])
         && isset($_POST['schedule_day'])
         && isset($_POST['time_from'])
@@ -44,6 +45,7 @@
         && isset($_POST['time_from_am_pm'])
         && isset($_POST['time_to_am_pm'])
         ){
+            // echo "qwe";
         
         $room = $_POST['room'];
 
@@ -55,63 +57,82 @@
 
         $schedule_time = $time_from . "-" . $time_to;
 
-        // $section = $_POST['section'];
-        $course_id = $_POST['course_id'];
-        $subject_id = $_POST['subject_id'];
+        $teacher_id = $_POST['teacher_id'];
+
+        // echo $teacher_id;
+
         $teacher_id = $teacher_id;
 
         $time_from_am_pm = $_POST['time_from_am_pm'];
         $time_to_am_pm = $_POST['time_to_am_pm'];
 
-        // $room = null;
 
-        if($course_id != 0){
-            // $room_query = $con->prepare("SELECT room FROM course
-            //     WHERE course_id=:course_id
-            //     LIMIT 1");
+        $sql = $con->prepare("INSERT INTO subject_schedule
+            (room, schedule_day, time_from, time_to, schedule_time, school_year_id, subject_id, teacher_id)
+            VALUES(:room, :schedule_day, :time_from, :time_to, :schedule_time, :school_year_id, :subject_id, :teacher_id)");
+        
 
-            // $room_query->bindValue(":course_id", $course_id);
-            // $room_query->execute();
+        $schedule_time = $time_from . ' '. $time_from_am_pm . ' - ' . $time_to. ' ' . $time_to_am_pm;
 
-            $section_query = $con->prepare("SELECT program_section, room FROM course
-                WHERE course_id=:course_id
-                LIMIT 1");
-            $section_query->bindValue(":course_id", $course_id);
-            $section_query->execute();
+        $sql->bindValue(":room", $room);
+        $sql->bindValue(":schedule_day", $schedule_day);
+        $sql->bindValue(":time_from", $time_from);
+        $sql->bindValue(":time_to", $time_to);
+        $sql->bindValue(":schedule_time", $schedule_time);
+        $sql->bindValue(":school_year_id", $current_school_year_id);
+        $sql->bindValue(":subject_id", $subject_id);
+        $sql->bindValue(":teacher_id", $teacher_id);
+
+        // $sql->execute();
+        if($sql->execute()){
+
+            AdminUser::success("Subject $subject_id has been assign to Teacher: $teacher_id",
+                "section_subject_list.php?id=$course_id");
 
         }
-
-            $sql = $con->prepare("INSERT INTO subject_schedule
-                (room, schedule_day, time_from, time_to, schedule_time, school_year_id, course_id, subject_id, teacher_id)
-                VALUES(:room, :schedule_day, :time_from, :time_to, :schedule_time, :school_year_id, :course_id, :subject_id, :teacher_id)");
             
 
-            $schedule_time = $time_from . ' '. $time_from_am_pm . ' - ' . $time_to. ' ' . $time_to_am_pm;
-            $sql->bindValue(":room", $room);
-            $sql->bindValue(":schedule_day", $schedule_day);
-            $sql->bindValue(":time_from", $time_from);
-            $sql->bindValue(":time_to", $time_to);
-            $sql->bindValue(":schedule_time", $schedule_time);
-            $sql->bindValue(":school_year_id", $current_school_year_id);
-            $sql->bindValue(":course_id", $course_id);
-            $sql->bindValue(":subject_id", $subject_id);
-            $sql->bindValue(":teacher_id", $teacher_id);
-            // $sql->execute();
+            //     $section_query = $con->prepare("SELECT program_section, room FROM course
+            //         WHERE course_id=:course_id
+            //         LIMIT 1");
+            //     $section_query->bindValue(":course_id", $course_id);
+            //     $section_query->execute();
 
-            if($sql->execute()){
-            // if(true){
-                AdminUser::success("Subject $subject_id has been inserted to the teacher", 'registrar_access_index.php');
-                // header("Location: registrar_access_index.php");
-            }
+            // }
+
+            // $sql = $con->prepare("INSERT INTO subject_schedule
+            //     (room, schedule_day, time_from, time_to, schedule_time, school_year_id, course_id, subject_id, teacher_id)
+            //     VALUES(:room, :schedule_day, :time_from, :time_to, :schedule_time, :school_year_id, :course_id, :subject_id, :teacher_id)");
+            
+
+            // $schedule_time = $time_from . ' '. $time_from_am_pm . ' - ' . $time_to. ' ' . $time_to_am_pm;
+            // $sql->bindValue(":room", $room);
+            // $sql->bindValue(":schedule_day", $schedule_day);
+            // $sql->bindValue(":time_from", $time_from);
+            // $sql->bindValue(":time_to", $time_to);
+            // $sql->bindValue(":schedule_time", $schedule_time);
+            // $sql->bindValue(":school_year_id", $current_school_year_id);
+            // $sql->bindValue(":course_id", $course_id);
+            // $sql->bindValue(":subject_id", $subject_id);
+            // $sql->bindValue(":teacher_id", $teacher_id);
+            // // $sql->execute();
+
+            // if($sql->execute()){
+            // // if(true){
+            //     AdminUser::success("Subject $subject_id has been inserted to the teacher", 'registrar_access_index.php');
+            //     // header("Location: registrar_access_index.php");
+            // }
+        
+        
         }
 
         ?>
 
-        <div class='col-md-8 row offset-md-1'>
+        <div class='col-md-10 row offset-md-1'>
 
             <div class="card">
                 <div class="card-header">
-                    <h3 class='mb-3'>Create Schedule of <?php echo $teacher['firstname'] . " " . $teacher['lastname'];?> </h3>
+                    <h4 class='mb-3'>Assigning schedule of <?php echo $subjectObj['subject_title']?> </h4>
                     <h5 class="text-muted text-center">S.Y (<?php echo $current_school_year_term;?>) <?php echo $current_school_year_period;?> Semester</h5>
                 </div>
 
@@ -119,6 +140,38 @@
 
                     <form method='POST'>
                             <div class="modal-body">
+
+                                <div class="mb-3">
+                                    <label for="">Instructor</label>
+
+                                    <select class="form-control" name="teacher_id" id="teacher_id">
+                                        <?php
+                                            $query = $con->prepare("SELECT * FROM teacher");
+                                            $query->execute();
+                                            
+                                            echo "<option value='' disabled selected>Choose Teacher</option>";
+
+                                            if ($query->rowCount() > 0) {
+                                                while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+                                                    $selected = "";  
+
+                                                    // Add condition to check if the option should be selected
+                                                    if ($row['teacher_id'] == $selectedTeacherId) {
+                                                        $selected = "selected";
+                                                    }
+
+                                                    echo "<option value='" . $row['teacher_id'] . "' $selected>" . $row['firstname'] . " " . $row['lastname'] . "</option>";
+                                                }
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="">Subject</label>
+                                    <input type="text" name="subject_id" readonly value="<?php echo $subjectObj['subject_title']?>" class="form-control">
+                                </div>
+
                                 <div class="mb-3">
                                     <label for="">Room number</label>
                                     <input value='55' type="text" placeholder="(Room: 501)" name="room" id="room" class="form-control" />
@@ -162,40 +215,20 @@
                                     </select>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="">Strand Section</label>
-                                    <!-- <input type="text" placeholder="Section" name="section" id="section" class="form-control" /> -->
-                                    <select class="form-control" name="course_id" id="course_id">
-                                        <?php
-                                            $query = $con->prepare("SELECT * FROM course
-                                                WHERE course_level > :course_level
-                                                AND active=:active
-                                            ");
-                                            $query->bindValue(":course_level", 10);
-                                            $query->bindValue(":active", "yes");
-                                            $query->execute();
 
-                                            echo "<option value='Course-Section' disabled selected>Select-Section</option>";
-
-                                            while($row = $query->fetch(PDO::FETCH_ASSOC)) {
-                                                echo "<option value='" . $row['course_id'] . "'>" . $row['program_section'] . "</option>";
-                                            }
-                                        ?>
-                                    </select>
-                                </div>
 
                                 <div class="mb-3">
                                     <label for="">Semester</label>
                                     <input type="text" readonly value="<?php echo $current_school_year_period?>" placeholder="Semester Period" name="semester" id="semester" class="form-control" />
                                 </div>
 
-                                <div class="form-group mb-4">
+                                <!-- <div class="form-group mb-4">
                                     <label for="subject_id">Subject:</label>
 
                                     <select class="form-control" name="subject_id" id="subject_id">
                                         <option value="">Pick Subject</option>
                                     </select>
-                                </div>
+                                </div> -->
                             
 
                                 <!-- <div class="form-group mb-4">
@@ -213,9 +246,10 @@
                                         ?>
                                     </select>
                                 </div> -->
+
                             </div>
                             <div class="modal-footer">
-                                <button name="create_schedule_enrollment" type="submit" class="btn btn-primary">Save Student</button>
+                                <button name="create_section_subject_schedule_btn" type="submit" class="btn btn-primary">Save Schedule</button>
                             </div>
                     </form>
 
@@ -228,7 +262,7 @@
     }
 ?>
 
-<script>
+<!-- <script>
     
     $('#course_id').on('change', function() {
 
@@ -300,4 +334,4 @@
     //     });
 
     // });
-</script>
+</script> -->

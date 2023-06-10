@@ -24,10 +24,7 @@
     <div class="row col-md-12">
         <div class="col-md-12">
             <div class="container mb-4">
-                <h2 class="page-header">Teacher Section</h2>
-                <a href="<?php echo $createUrl?>">
-                    <button class="btn btn-sm btn-success">Add Teacher Schedule</button>
-                </a>    
+                <h3 class="text-muted text-center page-header">Teacher Section</h3>
             </div>
  
             <div class="col-md-12">
