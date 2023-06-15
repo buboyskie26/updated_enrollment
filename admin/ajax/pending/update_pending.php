@@ -10,7 +10,6 @@
         && isset($_POST['enrollment_id'])
         && isset($_POST['doesHaveRemovedSubjects'])
     ){
-        
             $enrollment = new Enrollment($con, null);
             $oldEnrollees = new OldEnrollees($con, null);
 
@@ -20,18 +19,27 @@
             $doesHaveRemovedSubjects = $_POST['doesHaveRemovedSubjects'];
 
             // echo $doesHaveRemovedSubjects;
+            // echo $doesHaveRemovedSubjects;
             // echo "success";
 
             $wasSuccess = $enrollment->MarkAsRegistrarEvaluatedByEnrollmentId($enrollment_id);
 
-            // if($doesHaveRemovedSubjects == true){
-            //     $updateToIrregular = $enrollment->UpdateTransfereeStudentIntoIrregular($enrollment_id);
-            // }
+            $updateStatus = false;
 
-            if($wasSuccess == true 
+            if($doesHaveRemovedSubjects != 'Regular'){
+                $updateToIrregular = $enrollment->UpdateTransfereeStudentIntoIrregular($enrollment_id);
+                $updateStatus = true;
+            }
+
+            else if($doesHaveRemovedSubjects == 'Regular'){
+                // echo "fuck";
+                $updateToRegular= $enrollment->UpdateTransfereeStudentToRegular($enrollment_id);
+                $updateStatus = true;
+            }
+
+            if($wasSuccess == true  && $updateStatus == true
                 // && $updateToIrregular
             ){
-
                 // $newToOld = $oldEnrollees->UpdateSHSStudentNewToOld($student_id);
                 $approved = "APPROVED";
                 $update_pending = $con->prepare("UPDATE pending_enrollees

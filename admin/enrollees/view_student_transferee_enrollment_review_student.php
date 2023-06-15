@@ -216,7 +216,7 @@
         $section = new Section($con, $selected_course_id);
         $studentSubject = new StudentSubject($con);
 
-        $subject = new Subject($con, $registrarLoggedIn);
+        $subject = new Subject($con, $registrarLoggedIn, null);
 
         $section_name = $section->GetSectionName();
 

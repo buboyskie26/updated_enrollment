@@ -15,6 +15,8 @@
             // HARD-CODED
             $base_url = 'http://localhost/dcbt/enrollment/';
 
+            $elms_base_url = 'http://localhost/dcbt/elms/';
+
             // Set the dynamic part of the URL using a global variable
             $registrar_url = $base_url . '/registrar_index.php';
             $courses_url = $base_url . '/courses/registrar_course_list.php';
@@ -26,6 +28,7 @@
             $student_schedule = $base_url . 'student_schedule.php';
             $registration = $base_url . 'current_semester_subject.php';
             $student_grade_list = $base_url . 'student_grade_list.php';
+            $user_dashboard_url = $elms_base_url . 'user_dashboard.php';
            
 
             $current_url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -58,9 +61,15 @@
                         "../assets/images/icons/history.png", "Schedule");
                 }
 
+
+
                 $result .= $this->createNavigation("$student_grade_list",
                     "../assets/images/icons/history.png", "Prospectus");
-                        $result .= $this->createNavigation("../logout.php", 
+
+                $result .= $this->createNavigation("$user_dashboard_url",
+                    "../assets/images/icons/history.png", "My Class");
+
+                $result .= $this->createNavigation("../logout.php", 
                     "../assets/images/icons/logout.png", "Logout");
             }
 

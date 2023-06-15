@@ -151,7 +151,7 @@
         $student_id = $_GET['id'];
         $subject_id = $_GET['subject_id'];
 
-        $subject = new Subject($con, $registrarLoggedIn);
+        $subject = new Subject($con, $registrarLoggedIn, null);
 
         $subject_title = $subject->GetSubjectTitle($subject_id);
 

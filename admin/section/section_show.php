@@ -58,7 +58,44 @@
                             <?php
                                 $query = "";
 
-                                if($current_school_year_period == "First"){
+                                // if($current_school_year_period == "First"){
+                                //     $query = $con->prepare("SELECT 
+                                //         DISTINCT
+                                //         t1.school_year_id,
+                                //         t1.period
+                                    
+                                //         FROM school_year as t1
+
+                                //         INNER JOIN course as t2 ON t2.school_year_term = t1.term
+
+                                //         AND t1.period='First'
+
+                                //         WHERE t1.term=:term
+
+                                //     ");
+                                // }
+
+                                // if($current_school_year_period == "Second"){
+                                //     $query = $con->prepare("SELECT 
+                                //         DISTINCT
+                                //         t1.school_year_id,
+                                //         t1.period
+                                    
+                                //         FROM school_year as t1
+
+                                //         INNER JOIN course as t2 ON t2.school_year_term = t1.term
+
+                                //         AND (
+                                //             t1.period='First'
+                                //             OR
+                                //             t1.period='Second'
+                                //             )
+
+                                //         WHERE t1.term=:term
+
+                                //     ");
+                                // }
+
                                     $query = $con->prepare("SELECT 
                                         DISTINCT
                                         t1.school_year_id,
@@ -66,36 +103,13 @@
                                     
                                         FROM school_year as t1
 
-                                        INNER JOIN course as t2 ON t2.school_year_term = t1.term
+                                        -- INNER JOIN course as t2 ON t2.school_year_term = t1.term
 
-                                        AND t1.period='First'
-
-                                        WHERE t1.term=:term
-
-                                    ");
-                                }
-
-                                if($current_school_year_period == "Second"){
-                                    $query = $con->prepare("SELECT 
-                                        DISTINCT
-                                        t1.school_year_id,
-                                        t1.period
-                                    
-                                        FROM school_year as t1
-
-                                        INNER JOIN course as t2 ON t2.school_year_term = t1.term
-
-                                        AND (
-                                            t1.period='First'
-                                            OR
-                                            t1.period='Second'
-                                            )
+                                        -- AND t1.period='First'
 
                                         WHERE t1.term=:term
 
                                     ");
-                                }
-
 
                                 $query->bindValue(":term", $current_school_year_term);
                                 $query->execute();
@@ -103,12 +117,20 @@
                                 // $query->bindValue(":course_id", $course_id);
                                 // $query->execute();
 
-                                echo "<option value='1' selected>Select School Year</option>";
+                                echo "<option value='0' selected>Select School Year</option>";
                                 while($row = $query->fetch(PDO::FETCH_ASSOC)) {
                                     echo "<option value='" . $row['school_year_id'] . "'>" . $row['period'] . "</option>";
                                 }
                             ?>     
                         </select>
+
+
+                        <!-- <select name="select_school_year_id"
+                            id="select_school_year_id" class="form-select">
+                            <option value="" selected>Choose Semester</option>
+                            <option value="First">First</option>
+                            <option value="Second">Second</option>
+                        </select> -->
 
                     </div>
                 </div>
@@ -336,7 +358,9 @@
                     course_id: course_id,
                     school_year_id: school_year_id
                 },
+
                 dataType: 'json',
+
                 success: function(response) {
 
                     // console.log(response);
@@ -452,7 +476,7 @@
                                     <td>${value.semester}</td>
                                     <td>${value.pre_requisite}</td>
                                     <td>${value.subject_type}</td>
-                                    <td>5</td>
+                                    <td>${value.enrolled_students}</td>
                                     <td>${status}</td>
                                 </tr>
                             </body>

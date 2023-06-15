@@ -69,7 +69,7 @@
                     //     </script>
                     // ";
 
-                    Constants::success("Please check you email to proceed.", "");
+                    Constants::success("Please check your email to proceed.", "");
                 }
             }
                         

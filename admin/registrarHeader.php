@@ -5,6 +5,7 @@
     require_once('../admin/classes/RegistrarNavigationMenu.php');
     require_once('../admin/classes/ButtonProvider.php');
     require_once('../admin/classes/AdminUser.php');
+    require_once('../admin/classes/Alert.php');
    
     $adminLoggedIn = isset($_SESSION["registrarLoggedIn"]) 
         ? $_SESSION["registrarLoggedIn"] : "";

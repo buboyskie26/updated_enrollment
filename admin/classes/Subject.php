@@ -2,12 +2,55 @@
 
     class Subject{
 
-    private $con, $userLoggedIn;
+    private $con, $userLoggedIn, $subject_id, $sqlData;
 
-    public function __construct($con, $userLoggedIn)
+    public function __construct($con, $userLoggedIn, $subject_id)
     {
         $this->con = $con;
         $this->userLoggedIn = $userLoggedIn;
+        $this->subject_id = $subject_id;
+
+        $query = $this->con->prepare("SELECT t1.*, t2.program_section 
+        
+                FROM subject as t1
+
+                INNER JOIN course as t2 ON t2.course_id = t1.course_id
+                WHERE t1.subject_id=:subject_id
+
+                ");
+
+        $query->bindValue(":subject_id", $subject_id);
+        $query->execute();
+
+        $this->sqlData = $query->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function InvalidSubject() {
+
+        // Assuming $con is your database connection object
+
+        $stmt = $this->con->prepare("SELECT * FROM subject
+            
+            WHERE subject_id = ?");
+
+        $stmt->execute([$this->subject_id]);
+
+        if( $stmt->rowCount() > 0){
+            return true;
+        } 
+
+        return false;
+
+    }
+ 
+  
+
+    public function GetSubjectSection() {
+        return isset($this->sqlData['program_section']) ? $this->sqlData["program_section"] : ""; 
+    }
+
+    public function GetSubjectName() {
+        return isset($this->sqlData['subject_title']) ? $this->sqlData["subject_title"] : ""; 
     }
 
     public function createFormTemplate(){
@@ -870,6 +913,18 @@
 
         return [];
 
+    }
+
+    public function GetEnrolledStudentInSubjects($subject_id){
+
+        $addedSubjects = $this->con->prepare("SELECT * FROM student_subject
+            WHERE subject_id=:subject_id");
+        
+        $addedSubjects->bindParam(":subject_id", $subject_id);
+        $addedSubjects->execute();
+
+        return $addedSubjects->rowCount();
+        
     }
 
     

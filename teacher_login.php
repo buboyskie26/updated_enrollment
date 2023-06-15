@@ -8,18 +8,19 @@
 
     if(isset($_POST['loginButtonTeacher'])){
 
-        echo "qwe";
-        // $username = FormSanitizer::SanitizeFormUsername($_POST['username']);
-        // $password = FormSanitizer::SanitizeFormUsername($_POST['password']);
+        // echo "qwe";
+        $username = FormSanitizer::SanitizeFormUsername($_POST['username']);
+        $password = FormSanitizer::SanitizeFormPassword($_POST['password']);
 
-        // $wasSuccessful = $account->loginCashier($username, $password);
+        $wasSuccessful = $account->LoginTeacher($username, $password);
 
-        // if($wasSuccessful == true){
-        //     $_SESSION['teacherLoggedIn'] = $username;
+        if($wasSuccessful == true){
+            $_SESSION['teacherLoggedIn'] = $username;
 
-        //     // echo "success";
-        //     header("Location: admin/teacher_index.php");
-        // }
+            // echo "success";
+            header("Location: admin/teacher_index.php");
+        }
+
     };
 
     function getInputValue($input){
@@ -56,7 +57,7 @@
                     <form  method="POST">
 
                         <?php echo $account->getError(Constants::$loginFailed) ?>
-                        <input  type="text" value="teacher" value="<?php echo getInputValue('username') ?>" name="username" placeholder="Teacher Username" autocomplete="off" required>
+                        <input type="text" value="200" value="<?php echo getInputValue('username') ?>" name="username" placeholder="Teacher Username" autocomplete="off" required>
  
                         <input type="password" name="password" value="123456" placeholder="Password" autocomplete="off" required>
 

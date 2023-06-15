@@ -107,7 +107,20 @@
                     var page = `
                         <?php echo $page;?>
                     `;
+
+
                     page = page.trim();
+
+                    // tertiary = tertiary.trim();
+
+                    // if(!tertiary == "true"){
+
+                    //     // console.log("true");
+                    //     url_page = `view_details.php?subject=show&tertiary=true&id=${student_id}`;
+                    // }else{
+                    //     url_page = `view_details.php?subject=show&id=${student_id}`;
+
+                    // }
 
                     $.post('../ajax/shs_transferee_grading.php', {
                         student_id,

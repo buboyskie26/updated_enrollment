@@ -166,6 +166,29 @@ class Account {
         return false;
     }
 
+    public function LoginTeacher($username, $password){
+
+        // $username = strtolower($username);
+
+        // echo $username;
+        // echo $password;
+
+        $query = $this->con->prepare("SELECT * FROM teacher
+            WHERE username=:username AND password=:password");
+
+        $query->bindValue(":username", $username);
+        $query->bindValue(":password", $password);
+
+        $query->execute();
+
+        if($query->fetchColumn() > 0){
+            return true;
+        }
+
+        array_push($this->errorArray, Constants::$loginFailed);
+        return false;
+    }   
+
     public function loginStudent($username, $password){
 
         $query = $this->con->prepare("SELECT * FROM users

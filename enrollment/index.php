@@ -46,56 +46,7 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" id="pending-regular-new-tab"
-                        href="./application/process.php?enrollment_type=1">
-                         
-                        <button class="btn btn-sm btn-info">
-                            Enroll Here
-                        </button>
-                    </a>
-                </li>
-
-                <!-- <li class="nav-item">
-                    <a class="nav-link" id="pending-regular-tab" 
-                        data-bs-toggle="tab" 
-                        href="#pending-regular" role="tab"
-                        aria-controls="pending-regular" aria-selected="true">
-                        Regular (Pending)
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" id="transferee-pending-tab" 
-                        data-bs-toggle="tab" 
-                        href="#transferee-pending" role="tab"
-                        aria-controls="transferee-pending" aria-selected="true">
-                        Transferee (Pending)
-                    </a>
-                </li> -->
-
-                <!-- <li class="nav-item">
-                    <a class="nav-link" id="Old-tab" 
-                        data-bs-toggle="tab" 
-                        href="#Old" role="tab"
-                        aria-controls="Old" aria-selected="true">
-                        Old
-                    </a>
-                </li> -->
-
-                <!-- <?php
-                    # TODO: Logic for hiding the Apply Now.
-                    echo '
-                        <li class="nav-item">
-                            <a class="nav-link" id="transferee-tab" 
-                                data-bs-toggle="tab" 
-                                href="#transferee" role="tab"
-                                aria-controls="transferee" aria-selected="true">
-                                Transferee
-                            </a>
-                        </li>
-                    ';
-                ?> -->
+             
             </ul>
 
             <div class='tab-content channelContent' id='myTabContent'>
@@ -110,31 +61,7 @@
                     role="tabpanel" aria-labelledby="pending-regular-tab">
                     <?php include "pending_new.php"; ?> 
                 </div>
-
-                <div class="tab-pane fade" id="pending-regular"
-                    role="tabpanel" aria-labelledby="pending-regular-tab">
-                   
-                    <?php include "regular_pending_form.php"; ?> 
-                </div>
-
-
-                <div class="tab-pane fade " id="transferee-pending"
-                    role="tabpanel" aria-labelledby="transferee-pending-tab">
-                   
-                    <?php include "transferee_pending_form.php"; ?> 
-                 
-                </div>
-
-                <div class="tab-pane fade" id="Old" role="tabpanel"
-                    aria-labelledby="Old-tab">
-                       Old Page
-                </div>
-
-                <div class="tab-pane fade" id="transferee" role="tabpanel"
-                    aria-labelledby="transferee-tab">
-                    <?php include "transferee.php"; ?> 
-
-                </div>
+ 
             </div>
             
             <div>

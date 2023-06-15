@@ -3,7 +3,9 @@
 <?php 
 
     include('../registrar_enrollment_header.php');
+    include('../../includes/classes/Student.php');
     include('../../enrollment/classes/StudentEnroll.php');
+    include('../../enrollment/classes/StudentSubject.php');
     include('../../enrollment/classes/OldEnrollees.php');
     include('../../enrollment/classes/Section.php');
     include('../../enrollment/classes/Enrollment.php');
@@ -215,7 +217,7 @@
         $student_id = $_GET['id'];
 
          
-        $subject = new Subject($con, $student_id);
+        $subject = new Subject($con, $student_id, null);
 
         $school_year_obj = $enroll->GetLatestSchoolYearAndSemester();
 
@@ -258,7 +260,6 @@
         if($get_student->rowCount() > 0){
 
             $row = $get_student->fetch(PDO::FETCH_ASSOC);
-
 
             // $program_id = $row['program_id'];
             $firstname = $row['firstname'];
@@ -428,36 +429,6 @@
                                     </a>
                                 </div>
 
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row col-md-12">
-                                    <div class="col-md-4 text-center">
-                                        <a href="shs_view_transferee_details.php?profile=show&id=<?php echo $student_id;?>">
-                                            <button class="btn btn-lg btn-primary">
-                                                Student Information
-                                            </button>
-                                        </a>
-                                    </div>
-
-                                    <div class="col-md-4 text-center">
-                                        <a href="shs_view_transferee_details.php?subject=show&id=<?php echo $student_id;?>">
-                                            <button class="btn btn-lg btn-outline-primary">
-                                                Enrolled Subjects
-                                            </button>
-                                        </a>
-                                    </div>
-
-                                    <div class="col-md-4 text-center">
-                                        <a href="shs_view_transferee_details.php?credited_subject=show&id=<?php echo $student_id;?>">
-                                            <button class="btn btn-lg btn-outline-primary">
-                                                Credited Subjects
-                                            </button>
-                                        </a>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -790,7 +761,6 @@
                     <hr>
                     <div class="card">
                         <div class="card-body">
-
                             <!-- GRADE 11 1st SEM -->
                             <?php 
                                 // if($subject->CheckStudentGradeLevelEnrolledSubjectSemesterv2(
@@ -1080,6 +1050,7 @@
                                 }
                             ?>
 
+
                             <!-- GRADE 11 2nd SEMESTER -->
                             <div class="row col-md-12 table-responsive"
                                     style="margin-top:5%;">
@@ -1241,19 +1212,14 @@
                                 </div>
                             </div>
 
-
-
                         </div>
                     </div>
 
                 </div>
             <?php
             }
-            
 
-
-            if(isset($_GET['subject']) 
-                && $_GET['subject'] == "show" && isset($_GET['id'])){
+            if(isset($_GET['subject']) && $_GET['subject'] == "show" && isset($_GET['id'])){
 
                 $studentEnroll = new StudentEnroll($con);
 
@@ -1322,6 +1288,11 @@
                 }
 
 
+                $studentSubject = new StudentSubject($con);
+                $student = new Student($con, $username);
+                $is_student_graduated = $student->GetIsGraduated();
+                $student_is_active = $student->CheckIfActive();
+                $checkIfTertiary = $student->CheckIfTertiary();
                 ?>
                 <div class="row col-md-12">
 
@@ -1399,38 +1370,6 @@
                                 </a>
                             </div>
 
-                        </div>
-                    </div>
-
-
-                    <!--  2nd -->
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row col-md-12">
-                                <div class="col-md-4 text-center">
-                                    <a href="shs_view_transferee_details.php?profile=show&id=<?php echo $student_id;?>">
-                                        <button class="btn btn-lg btn-outline-primary">
-                                            Student Information
-                                        </button>
-                                    </a>
-                                </div>
-
-                                <div class="col-md-4 text-center">
-                                    <a href="shs_view_transferee_details.php?subject=show&id=<?php echo $student_id;?>">
-                                        <button class="btn btn-lg btn-primary">
-                                            Enrolled Subjects
-                                        </button>
-                                    </a>
-                                </div>
-
-                                <div class="col-md-4 text-center">
-                                    <a href="shs_view_transferee_details.php?credited_subject=show&id=<?php echo $student_id;?>">
-                                        <button class="btn btn-lg btn-outline-primary">
-                                            Credited Subjects
-                                        </button>
-                                    </a>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -1642,8 +1581,15 @@
                                                  
                                                 $subject_id = $value['subject_id'];
                                                 $course_level = $value['course_level'];
+                                                $subject_title = $value['subject_title'];
 
                                                 $remarks_url = "";
+
+                                                $check = $studentSubject->CheckAlreadyCreditedSubject($student_id, $subject_title);
+                                                $credited = "";
+                                                if($check){
+                                                    $credited = "Credited";
+                                                }
                                             
                                                 echo '<tr class="text-center">'; 
                                                         echo '<td>'.$value['subject_code'].'</td>';
@@ -1656,7 +1602,7 @@
                                                         // echo '<td>'.$section.'</td>';
                                                         echo '<td>'.$value['semester'].'</td>';
                                                         echo '<td>'.$value['course_level'].'</td>';
-                                                        echo '<td></td>';
+                                                        echo '<td>'.$credited.'</td>';
                                                 echo '</tr>';
                                             }     
                                         }
@@ -1673,7 +1619,6 @@
 
                     <!-- GRADE 11 2nd SEM -->
                     <?php 
-                    
                         if($subject->CheckStudentGradeLevelEnrolledSubjectSemesterv2(
                             $student_id, $SECOND_SEMESTER, $GRADE_ELEVEN)){
                             
@@ -1717,37 +1662,37 @@
                                             ?>	
 
                                             <?php 
+
                                                 # ONLY FOR GRADE 11 2nd BECAUSE OF MOVING UP.
-                                                $isFinished = $old_enroll->CheckIfGradeLevelSemesterSubjectWereAllPassed(
-                                                    $student_id, $GRADE_ELEVEN, $SECOND_SEMESTER);
+                                                // $isFinished = $old_enroll->CheckIfGradeLevelSemesterSubjectWereAllPassed(
+                                                //     $student_id, $GRADE_ELEVEN, $SECOND_SEMESTER);
                                                 
                                                 $moveUpBtn = "moveUpAction(\"$student_username\", $student_id)";
                                                 
+                                                $checkMoveUp = $student->CheckShsEligibleForMoveUp($student_id,
+                                                    $student_program_id);
 
-                                                if($isFinished == true
-                                                    && $student_course_level != $GRADE_TWELVE){
-
-                                                    // echo "qwe";
+                                                if($checkMoveUp == true 
+                                                    && $student_course_level != $GRADE_TWELVE
+                                                    ){
                                                     
                                                     $wasSuccess = $old_enroll->StudentMoveUpToGrade12($student_username);
 
                                                     if($wasSuccess){
 
-                                                        AdminUser::success("$student_username has been Move Up to Grade 12"
-                                                            , "view_details.php?subject=show&id=$student_id");
+                                                        AdminUser::success("$student_username has been Move Up to Grade 12 (TRANS)"
+                                                            // , "shs_view_transferee_details.php?subject=show&id=$student_id"
+                                                            , "");
                                                         exit();
 
                                                     }
+
+                                                }else{
+                                                    // echo "not";
                                                 }
 
-                                                if($isFinished == true && $student_course_level != $GRADE_TWELVE){
-                                                    # Enable this for the button.
-                                                    // echo "
-                                                    //     <button type='button' onclick='$moveUpBtn' class='btn btn-success'>
-                                                    //         Move Up
-                                                    //     </button>				
-                                                    // ";
-                                                }
+                                              
+                                              
                                             ?>
                                                         
                                         </div>
@@ -1901,6 +1846,8 @@
                                 <tbody>
                                     <?php 
 
+
+
                                         // $listOfSubjects = $studentEnroll->GetStudentSubjectListWithGrades($username);
                                         $listOfSubjects = $studentEnroll
                                             ->GetStudentCurriculumBasedOnSemesterSubject($username,
@@ -1912,6 +1859,15 @@
                                                  
                                                 $subject_id = $value['subject_id'];
                                                 $course_level = $value['course_level'];
+                                                $subject_title = $value['subject_title'];
+
+
+
+                                                $check = $studentSubject->CheckAlreadyCreditedSubject($student_id, $subject_title);
+                                                $credited = "";
+                                                if($check){
+                                                    $credited = "Credited";
+                                                }
 
                                                 $remarks_url = "";
                                                  
@@ -1926,7 +1882,7 @@
                                                         // echo '<td>'.$section.'</td>';
                                                         echo '<td>'.$value['semester'].'</td>';
                                                         echo '<td>'.$value['course_level'].'</td>';
-                                                        echo '<td></td>';
+                                                        echo '<td>'.$credited.'</td>';
                                                 echo '</tr>';
                                             }     
                                         }
@@ -1940,6 +1896,7 @@
                             <?php
                         }
                     ?>
+
 
                     <!-- GRADE 12 1st SEM -->
                     <?php 
@@ -2135,12 +2092,19 @@
 
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
-                                            $subject_id = $value['subject_id'];
+                                                $subject_id = $value['subject_id'];
                                                 $course_level = $value['course_level'];
 
                                                 $remarks_url = "";
 
-                                                 
+                                                $subject_title = $value['subject_title'];
+
+
+                                                $check = $studentSubject->CheckAlreadyCreditedSubject($student_id, $subject_title);
+                                                $credited = "";
+                                                if($check){
+                                                    $credited = "Credited";
+                                                }
                                             
                                                 echo '<tr class="text-center">'; 
                                                         echo '<td>'.$value['subject_code'].'</td>';
@@ -2153,7 +2117,7 @@
                                                         // echo '<td>'.$section.'</td>';
                                                         echo '<td>'.$value['semester'].'</td>';
                                                         echo '<td>'.$value['course_level'].'</td>';
-                                                        echo '<td></td>';
+                                                        echo '<td>'.$credited.'</td>';
                                                 echo '</tr>';
                                             }     
                                         }
@@ -2210,6 +2174,29 @@
                                                     echo "
                                                         <h3>Grade 12 Second Semester</h3>	
                                                     ";
+                                                }
+
+
+                                                // $isCandidateForGraduation = $student->CheckShsStudentGraduateCandidate($student_id, $student_program_id);
+                                                $isCandidateForGraduationv2 = $student->
+                                                    CheckShsStudentGraduateCandidateTitleBased($student_id, 
+                                                    $student_program_id);
+
+                                                // echo $student_is_active;
+                                                 
+                                                if($isCandidateForGraduationv2 && $is_student_graduated == 0
+                                                    && $checkIfTertiary == 0 && $student_is_active == 1                                     ){
+
+                                                    echo "*Finished.";
+                                                    // Update 
+
+                                                    $wasSuccessGraduate = $student->MarkAsGraduate($student_id);
+                                                    if($wasSuccessGraduate){
+                                                            AdminUser::success("SHS Student: $student_id is now graduated in the system.", "");
+                                                    }
+
+                                                }else{
+                                                    // echo "not candidate";
                                                 }
                                             ?>	
                                         
@@ -2366,6 +2353,18 @@
                                                 $course_level = $value['course_level'];
 
                                                 $remarks_url = "";
+
+                                                $subject_title = $value['subject_title'];
+
+
+                                                $check = $studentSubject->CheckAlreadyCreditedSubject($student_id,
+                                                    $subject_title);
+
+                                                $credited = "";
+
+                                                if($check){
+                                                    $credited = "Credited";
+                                                }
                                             
                                                 echo '<tr class="text-center">'; 
                                                         echo '<td>'.$value['subject_code'].'</td>';
@@ -2378,7 +2377,7 @@
                                                         // echo '<td>'.$section.'</td>';
                                                         echo '<td>'.$value['semester'].'</td>';
                                                         echo '<td>'.$value['course_level'].'</td>';
-                                                        echo '<td></td>';
+                                                        echo '<td>'.$credited.'</td>';
                                                 echo '</tr>';
                                             }     
                                         }
@@ -2392,13 +2391,13 @@
                             <?php
                         }
                     ?>
+
                 </div>
 
                 <?php
             }
  
-            if(isset($_GET['credited_subject']) 
-                && $_GET['credited_subject'] == "show" && isset($_GET['id'])){
+            if(isset($_GET['credited_subject']) && $_GET['credited_subject'] == "show" && isset($_GET['id'])){
 
                 ?>
                 <div class="row col-md-12">

@@ -144,11 +144,6 @@
     $('#school_year_term').on('change', function() {
         var school_year_term = $(this).val();
 
-        // console.log(course_id)
-        // var course_id = parseInt($("#course_id").val());
-        // console.log(course_id);
-
-        // console.log(school_year_term)
         
         $.ajax({
             url: '../ajax/get_section_from_sy.php',
@@ -191,6 +186,7 @@
                 $.each(response, function(index, value) {
                     options += '<option value="' + value.subject_id + '">' + value.subject_title +'</option>';
                 });
+                
                 $('#subject_id').html(options);
             }
         });

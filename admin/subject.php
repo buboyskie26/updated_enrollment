@@ -2,7 +2,7 @@
     include('./adminHeader.php');
     include('../includes/classes/Subject.php');
 
-    $subject = new Subject($con, $adminLoggedInObj);
+    $subject = new Subject($con, $adminLoggedInObj, null);
 
     if(isset($_POST['submit_subject'])){
 

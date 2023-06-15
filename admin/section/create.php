@@ -33,6 +33,8 @@
         isset($_POST['course_level'])
         ){
 
+            $is_tertiary = 1;
+
             $program_section = $_POST['program_section'];
             $program_id = $_POST['program_id'];
             $capacity = $_POST['capacity'];
@@ -42,6 +44,21 @@
 
             $is_active = "yes";
             $not_full = "no";
+
+            $sql = $con->prepare("SELECT t2.department_name FROM program as t1
+
+                INNER JOIN department as t2 ON t2.department_id = t1.department_id 
+                WHERE t1.program_id=:program_id
+                LIMIT 1");
+            $sql->bindValue(":program_id", $program_id);
+            $sql->execute();
+
+            if($sql->rowCount() > 0){
+
+                $department_name = $sql->fetchColumn();
+
+                $is_tertiary = ($department_name == "Senior High School") ? 0 : 1;
+            }
 
             # CONTROLLER.
             #                               | POPULATE |
@@ -57,8 +74,8 @@
             }
 
             $insert = $con->prepare("INSERT INTO course
-                (program_section, program_id, capacity, adviser_teacher_id, room, school_year_term, active, is_full, course_level)
-                VALUES(:program_section, :program_id, :capacity, :adviser_teacher_id, :room, :school_year_term, :active, :is_full, :course_level)");
+                (program_section, program_id, capacity, adviser_teacher_id, room, school_year_term, active, is_full, course_level, is_tertiary)
+                VALUES(:program_section, :program_id, :capacity, :adviser_teacher_id, :room, :school_year_term, :active, :is_full, :course_level, :is_tertiary)");
             
             $insert->bindValue(":program_section", $program_section);
             $insert->bindValue(":program_id", $program_id);
@@ -69,6 +86,7 @@
             $insert->bindValue(":active", $is_active);
             $insert->bindValue(":is_full", $not_full);
             $insert->bindValue(":course_level", $course_level, PDO::PARAM_INT);
+            $insert->bindValue(":is_tertiary", $is_tertiary, PDO::PARAM_INT);
 
             if($insert->execute()){
             // if(false){
@@ -79,6 +97,7 @@
 
                 if($current_school_year_period == "First" 
                     && $course_level == 11){
+
                     $get_subject_program = $con->prepare("SELECT * FROM subject_program
                         WHERE program_id=:program_id
                         AND course_level=:course_level
@@ -159,7 +178,9 @@
                         }
                     }
 
-                }else if($current_school_year_period == "Second" 
+                }
+                
+                else if($current_school_year_period == "Second" 
                     && $course_level == 11){
 
                     $get_subject_program = $con->prepare("SELECT * FROM subject_program
@@ -231,12 +252,12 @@
                             }
                             else{
                                 AdminUser::success("New section has been created.", "index.php");
-
                             }
                         }
                     }
 
                 }
+
                 else if($current_school_year_period == "First" 
                     && $course_level == 12){
 
@@ -396,14 +417,13 @@
                             }
                         }
                     }
-
                 }
-              
+
             }
-            else{
-                AdminUser::error("Something went wrong on creation section.", "create.php");
-                exit();
-            }
+            // else{
+            //     AdminUser::error("Something went wrong on creation section.", "create.php");
+            //     exit();
+            // }
 
             // if($moveupCourseId != null){
 
@@ -478,42 +498,142 @@
 
     }
 
-
-
-
-
-
 ?>
     <div class='col-md-10 row offset-md-1'>
-       <h4 class='text-center mb-3'>Add Section for (S.Y <?php echo $current_school_year_term; ?> <?php echo $current_school_year_period; ?> Semester)</h4>
-        <form method='POST'>
-            <?php echo $trackDropdown;?>
-            <div class='form-group mb-2'>
-                <input class='form-control' type='text' placeholder='e.g: STEM11-A, ABM11-A' name='program_section'>
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class='text-center mb-3'>Add Section for (S.Y <?php echo $current_school_year_term; ?> <?php echo $current_school_year_period; ?> Semester)</h4>
             </div>
 
-            <div class='form-group mb-2'>
-                <select class='form-control' name='course_level'>
-                    <option value='11'>Grade 11</option>
-                    <option value='12'>Grade 12</option>
-                    <option value='1'>1st Year</option>
-                    <option value='2'>2nd Year</option>
-                    <option value='3'>3rd Year</option>
-                    <option value='4'>4th Year</option>
-                </select>
-            </div>
-            <div class='form-group mb-2'>
-                <input class='form-control' type='number' placeholder='Room Capacity' name='capacity'>
-            </div>
+            <div class="card-body">
+                <form method='POST'>
 
-            <div class='form-group mb-2'>
-                <input class='form-control' type='text' placeholder='Adviser Name' name='adviser_teacher_id'>
-            </div>
+                    <?php echo $trackDropdown;?>
+                    <div class='form-group mb-2'>
+                        <label class='mb-2'>Section</label>
 
-              <div class='form-group mb-2'>
-                <input class='form-control' type='number' placeholder='Room' name='room'>
-            </div>
+                        <input class='form-control' type='text' placeholder='e.g: STEM11-A, ABM11-A' name='program_section'>
+                    </div>
 
-            <button type='submit' class='btn btn-primary' name='create_section_btn'>Save</button>
-        </form>
+                    <div class='form-group mb-2'>
+                        <label class='mb-2'>Level</label>
+
+                        <select class="form-select" name="course_level" id="course_level">
+                            <option value="" selected>Auto Populate</option>
+                        </select>
+                    </div>
+
+                    <!-- <div class='form-group mb-2'>
+                        <select class='form-control' name='course_level'>
+                            <option value='11'>Grade 11</option>
+                            <option value='12'>Grade 12</option>
+                            <option value='1'>1st Year</option>
+                            <option value='2'>2nd Year</option>
+                            <option value='3'>3rd Year</option>
+                            <option value='4'>4th Year</option>
+                        </select>
+                    </div> -->
+
+                    <div class='form-group mb-2'>
+                        <label class='mb-2'>Capacity</label>
+                        <input class='form-control' value="30" type='number' placeholder='Room Capacity' name='capacity'>
+                    </div>
+
+                    <!-- <div class='form-group mb-2'>
+                        <input class='form-control' type='text' placeholder='Adviser Name' name='adviser_teacher_id'>
+                    </div> -->
+
+                    <div class='form-group mb-2'>
+                        <label class='mb-2'>Instructor</label>
+
+                        <select class="form-control" name="adviser_teacher_id" id="adviser_teacher_id">
+                            <?php
+                                $query = $con->prepare("SELECT * FROM teacher");
+                                $query->execute();
+                                
+                                echo "<option value='' disabled selected>Choose Teacher</option>";
+
+                                if ($query->rowCount() > 0) {
+                                    while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+                                        $selected = "";  
+
+                                        // Add condition to check if the option should be selected
+                                        if ($row['teacher_id'] == $selectedTeacherId) {
+                                            $selected = "selected";
+                                        }
+
+                                        echo "<option value='" . $row['teacher_id'] . "' $selected>" . $row['firstname'] . " " . $row['lastname'] . "</option>";
+                                    }
+                                }
+                            ?>
+                        </select>
+                    </div>
+
+                    <div class='form-group mb-2'>
+                        <label class='mb-2'>Room</label>
+                        <input class='form-control' type='number' placeholder='Room' name='room'>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type='submit' class='btn btn-primary' name='create_section_btn'>Save</button>
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
     </div>
+
+
+    <script>
+        $('#program_id').on('change', function() {
+
+            var program_id = parseInt($(this).val());
+            console.log(program_id)
+
+            $.ajax({
+                url: '../ajax/section/get_level_from_program.php',
+                type: 'POST',
+                data: {
+                    program_id},
+                dataType: 'json',
+
+                success: function(response) {
+
+
+                    var options = '<option value="">Choose Level</option>';
+
+                    $.each(response, function(index, value) {
+
+                        if(value.level > 5){
+                            options += '<option value="' + value.level + '">Grade ' + value.level +'</option>';
+
+                        }
+                        else if(value.level <= 4){
+                            var yearLabel;
+                            switch (value.level) {
+                                case "1":
+                                    yearLabel = "1st year";
+                                    break;
+                                case "2":
+                                    yearLabel = "2nd year";
+                                    break;
+                                case "3":
+                                    yearLabel = "3rd year";
+                                    break;
+                                case "4":
+                                    yearLabel = "4th year";
+                                    break;
+                                default:
+                                    yearLabel = value.level + "th year";
+                            }
+                            options += '<option value="' + value.level + '">' + yearLabel + '</option>';
+                        }
+                    });
+
+                    $('#course_level').html(options);
+                }
+            });
+        });
+    </script>

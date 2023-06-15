@@ -116,6 +116,10 @@ class AdminUser{
         return isset($_SESSION['teacherLoggedIn']);
     }
 
+    public static function IsStudentAuthenticated(){
+        return isset($_SESSION['username']);
+    }
+
 
     public static function IsStudentEnrolledAuthenticated(){
         return isset($_SESSION['username']) 

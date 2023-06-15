@@ -246,7 +246,6 @@
 ?>
    
     <hr>
-    
     <!-- SHS AUTO -->
     <div style="display: none;"  >
         <div class="col-lg-12">

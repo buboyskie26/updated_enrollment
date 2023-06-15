@@ -8,12 +8,17 @@
     require_once('../enrollment/classes/Pending.php');
     // require_once('../admin/classes/AdminUser.php');
     require_once('../../dcbt/admin/classes/AdminUser.php');
+    require_once('../../dcbt/admin/classes/Alert.php');
 
     $studentLoggedIn = isset($_SESSION["username"]) 
         ? $_SESSION["username"] : "";
     
     $studentUserLoggedInObj = new Student($con, $studentLoggedIn);
 
+    if(!AdminUser::IsStudentAuthenticated()){
+        header("location: /dcbt/teacher_login.php");
+        exit();
+    }
     $qwe = $con;
     // echo $teacherLoggedIn;
 

@@ -2,6 +2,7 @@
  
     include('../../enrollment/classes/StudentEnroll.php');
     include('../../enrollment/classes/Enrollment.php');
+ 
 
     include('../registrar_enrollment_header.php');
 
@@ -27,16 +28,16 @@
     $pendingEnrollment = $enrollment->PendingEnrollment();
     $ongoingEnrollment = $enrollment->OngoingEnrollment();
 
-
-    $enrollment = new Enrollment($con, null);
     $pendingEnrollment = $enrollment->PendingEnrollment();
     $waitingPaymentEnrollment = $enrollment->WaitingPaymentEnrollment($current_school_year_id);
     $waitingApprovalEnrollment = $enrollment->WaitingApprovalEnrollment($current_school_year_id);
+    $enrolledStudentsEnrollment = $enrollment->EnrolledStudentsWithinSYSemester($current_school_year_id);
 
 
     $pendingEnrollmentCount = count($pendingEnrollment);
     $waitingPaymentEnrollmentCount = count($waitingPaymentEnrollment);
     $waitingApprovalEnrollmentCount = count($waitingApprovalEnrollment);
+    $enrolledStudentsEnrollmentCount = count($enrolledStudentsEnrollment);
 
 ?>
 
@@ -62,12 +63,13 @@
                     <button class="btn btn  btn-outline-primary">Waiting Approval <span class="text-white">(<?php echo $waitingApprovalEnrollmentCount;?>)</span></button>
                 </a>
             </div>
+            
             <div class="col-md-3">
                 <a href="enrolled.php">
-                <button class="btn btn  btn-outline-primary">Enrolled</button>
-
+                <button class="btn btn  btn-outline-primary">Enrolled <span class="text-white">(<?php echo $enrolledStudentsEnrollmentCount;?>)</span></button>
                 </a>
             </div>
+
             <hr>
 
         </div>
@@ -205,8 +207,6 @@
                                         ");
 
                                     $sql->execute();
-
-
                                     if(count($ongoingEnrollment) > 0){
                                         foreach ($ongoingEnrollment as $key => $row) {
 
@@ -214,11 +214,17 @@
                                             $enrollment_date = $row['enrollment_date'];
                                             $student_id = $row['student_id'];
                                             $student_course_id = $row['course_id'];
+
+                                            $admission_status = $row['admission_status'];
+                                            $student_statusv2 = $row['student_statusv2'];
+
+                                            $username = $row['username'];
+
                                             $acronym = $row['acronym'];
                                             // $pending_enrollees_id = $row['pending_enrollees_id'];
                                             $student_unique_id = "N/A";
 
-                                            $type = "Ongoing Transferee (SHS)";
+                                            $type = "O.S $admission_status (SHS $student_statusv2)";
                                             $url = "";
                                             $status = "Evaluation";
                                             $button_output = "";
@@ -226,15 +232,41 @@
                                             // $process_url = "process_enrollment.php?step1=true&id=$pending_enrollees_id";
                                             $process_url = "";
                                             $trans_url = "transferee_process_enrollment.php?step3=true&st_id=$student_id&selected_course_id=$student_course_id";
-                                            
 
-                                            $evaluateBtn = "
-                                                <a href='$trans_url'>
-                                                    <button class='btn btn-outline-success btn-sm'>
-                                                        Evaluate
-                                                    </button>
-                                                </a>
-                                            ";
+                                            $regular_insertion_url = "../enrollees/subject_insertion.php?username=$username&id=$student_id";
+
+                                            $evaluateBtn = "";
+
+                                            if($admission_status == "Transferee" 
+                                                && $student_statusv2 == "Regular"){
+
+                                                $evaluateBtn = "
+                                                    <a href='$regular_insertion_url'>
+                                                        <button class='btn btn-success btn-sm'>
+                                                            Evaluate
+                                                        </button>
+                                                    </a>
+                                                ";
+                                            }else{
+                                                $evaluateBtn = "
+                                                    <a href='$trans_url'>
+                                                        <button class='btn btn-outline-success btn-sm'>
+                                                            Evaluate
+                                                        </button>
+                                                    </a>
+                                                ";
+                                            }
+
+                                            // $evaluateBtn = "
+                                            //         <a href='$trans_url'>
+                                            //             <button class='btn btn-outline-success btn-sm'>
+                                            //                 Evaluate
+                                            //             </button>
+                                            //         </a>
+                                            //     ";
+
+
+
                                             echo "
                                                 <tr class='text-center'>
                                                     <td>$fullname</td>

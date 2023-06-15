@@ -224,7 +224,7 @@
 
         $section_name = $section->GetSectionName();
 
-        $subject = new Subject($con, $registrarLoggedIn);
+        $subject = new Subject($con, $registrarLoggedIn, null);
         $pending = new Pending($con);
 
 
@@ -716,7 +716,7 @@
 
         $section_name = $section->GetSectionName();
 
-        $subject = new Subject($con, $registrarLoggedIn);
+        $subject = new Subject($con, $registrarLoggedIn, null);
         $pending = new Pending($con);
 
 
@@ -1818,7 +1818,7 @@
 
             $section_name = $section->GetSectionName();
 
-            $subject = new Subject($con, $registrarLoggedIn);
+            $subject = new Subject($con, $registrarLoggedIn, null);
             $pending = new Pending($con);
 
 
@@ -2385,12 +2385,12 @@
     //     document.getElementById('select-all-checkbox').click();
     // });
               
-    document.getElementById('select-all-checkbox').addEventListener('click', function() {
-        var checkboxes = document.getElementsByClassName('checkbox');
+    // document.getElementById('select-all-checkbox').addEventListener('click', function() {
+    //     var checkboxes = document.getElementsByClassName('checkbox');
 
-        for (var i = 0; i < checkboxes.length; i++) {
-            checkboxes[i].checked = this.checked;
-        }
-    });
+    //     for (var i = 0; i < checkboxes.length; i++) {
+    //         checkboxes[i].checked = this.checked;
+    //     }
+    // });
 
 </script>

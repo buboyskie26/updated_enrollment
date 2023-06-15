@@ -3,7 +3,9 @@
     require_once("../../../includes/config.php");
 
     require_once("../../../enrollment/classes/StudentEnroll.php");
+    require_once("../../../enrollment/classes/StudentEnroll.php");
     require_once("../../../enrollment/classes/Section.php");
+    require_once("../../../admin/classes/Subject.php");
 
     // echo "yehey";
 
@@ -14,6 +16,7 @@
 
         $section = new Section($con, $course_id);
         $enroll = new StudentEnroll($con);
+        $subject = new Subject($con, null, null);
 
         $school_year_obj = $enroll->GetActiveSchoolYearAndSemester();
         $current_school_year_id = $school_year_obj['school_year_id'];
@@ -83,8 +86,6 @@
             
             $sql->execute();
 
-
-
             if($sql->rowCount() > 0){
 
                 // echo $sql->rowCount();
@@ -131,7 +132,9 @@
                         t1.subject_program_id as t1_subject_program_id,
                         t1.subject_code as t1_subject_code
 
-                        FROM subject as t1 
+                        FROM subject as t1
+
+                        
 
                         WHERE t1.subject_program_id=:subject_program_id
                         AND t1.course_id=:course_id
@@ -146,14 +149,19 @@
 
                     $t1_subject_program_id = null;
                     $t1_subject_code = null;
-
+                    $get_enrolled_students_in_subject = 0;
                     if($subject_real->rowCount() > 0){
 
                         $row = $subject_real->fetch(PDO::FETCH_ASSOC);
 
                         $t1_subject_title = $row['t1_subject_title'];
                         $t1_subject_code = $row['t1_subject_code'];
+
                         $t1_subject_id = $row['t1_subject_id'];
+                        
+
+                        $get_enrolled_students_in_subject = $subject->GetEnrolledStudentInSubjects($t1_subject_id);
+                        
                         $t1_subject_program_id = $row['t1_subject_program_id'];
 
                     }
@@ -163,21 +171,12 @@
                             <i class='fas fa-check'></i>
                         ";
                     }
+
                     else{
                         $statuss = "
                             <button class='btn btn-sm btn-primary'>Populate</button>
                         ";
                     }
-
-                    // $statuss = "";
-                    // if($t1_subject_program_id != null && $t1_subject_program_id == $subject_program_id){
-                    //     $statuss = "true";
-                    // }
-                    // else{
-                    //     $statuss = "false";
-
-                    // }
-
 
                     $data[] = array(
                         'subject_id' => $t1_subject_id,
@@ -188,6 +187,7 @@
                         'pre_requisite' => $pre_requisite,
                         'subject_type' => $subject_type,
                         'statuss' => $statuss,
+                        'enrolled_students' => $get_enrolled_students_in_subject,
                     );
 
                     // echo $t1_subject_program_id;

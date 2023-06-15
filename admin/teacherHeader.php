@@ -5,11 +5,15 @@
     require_once('../admin/classes/TeacherNavigationMenu.php');
     require_once('../admin/classes/ButtonProvider.php');
     require_once('../admin/classes/AdminUser.php');
+    require_once('../admin/classes/Alert.php');
    
-    $adminLoggedIn = isset($_SESSION["teacherLoggedIn"]) 
+    $teacherLoggedIn = isset($_SESSION["teacherLoggedIn"]) 
         ? $_SESSION["teacherLoggedIn"] : "";
-    
-    $adminLoggedInObj = new AdminUser($con, $adminLoggedIn);
+
+    // $registrarLoggedIn = isset($_SESSION["adminLoggedIn"]) 
+    //     ? $_SESSION["adminLoggedIn"] : "";
+        
+    $teacherLoggedInObj = new AdminUser($con, $teacherLoggedIn);
 
     # Some pages of registrar were accessbile by admin
     // if (!isset($_SESSION['registrarLoggedIn']) || $_SESSION['registrarLoggedIn'] == '') {
@@ -91,7 +95,7 @@
 
         <div id="sideNavContainer" style="display: block;">
             <?php
-                $nav = new TeacherNavigationMenu($con, $adminLoggedInObj);
+                $nav = new TeacherNavigationMenu($con, $teacherLoggedInObj);
                 echo $nav->create();
             ?>
         </div>

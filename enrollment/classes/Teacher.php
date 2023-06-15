@@ -16,6 +16,21 @@
             $query->execute();
 
             $this->sqlData = $query->fetch(PDO::FETCH_ASSOC);
+
+            if($this->sqlData == null){
+
+                $query = $this->con->prepare("SELECT * FROM teacher
+                 WHERE username=:username");
+
+                $query->bindValue(":username", $teacher_id);
+                $query->execute();
+
+                $this->sqlData = $query->fetch(PDO::FETCH_ASSOC);
+            }
+        }
+
+        public function GetTeacherId() {
+            return isset($this->sqlData['teacher_id']) ? $this->sqlData["teacher_id"] : "qwe"; 
         }
 
         public function GetTeacherFirstName() {

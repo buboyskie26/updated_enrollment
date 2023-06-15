@@ -145,9 +145,11 @@
             if($query->rowCount() > 0){
 
                 $html = "<div class='form-group mb-2'>
+                    <label class='mb-2'>Program</label>
+
                     <select id='program_id' class='form-control' name='program_id'>";
 
-                $html .= "<option value='Course-Section' disabled selected>Select-Subject</option>";
+                $html .= "<option value='Course-Section' disabled selected>Select-Program</option>";
 
                 while($row = $query->fetch(PDO::FETCH_ASSOC)){
                     $html .= "

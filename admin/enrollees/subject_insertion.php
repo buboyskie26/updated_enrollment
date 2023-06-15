@@ -211,12 +211,17 @@
         $student = new Student($con, $username);
 
         $student_new_enrollee = $student->GetStudentNewEnrollee();
+        $student_admission_status = $student->GetStudentAdmissionStatus();
+        
         $student_status = "";
 
         if($student_new_enrollee == 1){
             $student_status = "New";
-        }else if($student_new_enrollee == 0){
-            $student_status = "Ongoing";
+        }else if($student_new_enrollee == 0 && $student_admission_status == "Standard"){
+            $student_status = "Ongoing Regular";
+        }
+        else if($student_new_enrollee == 0 && $student_admission_status == "Transferee"){
+            $student_status = "Ongoing Transferee";
         }
 
         $pending_form_submission = $pending->GetSubmittedOn($student_firstname);
@@ -871,13 +876,20 @@
         $student = new Student($con, $username);
 
         $student_new_enrollee = $student->GetStudentNewEnrollee();
+
+        $student_admission_status = $student->GetStudentAdmissionStatus();
+        
         $student_status = "";
 
         if($student_new_enrollee == 1){
             $student_status = "New";
-        }else if($student_new_enrollee == 0){
-            $student_status = "Ongoing";
+        }else if($student_new_enrollee == 0 && $student_admission_status == "Standard"){
+            $student_status = "Ongoing Regular";
         }
+        else if($student_new_enrollee == 0 && $student_admission_status == "Transferee"){
+            $student_status = "Ongoing Transferee";
+        }
+ 
 
         $pending_form_submission = $pending->GetSubmittedOn($student_firstname);
 
@@ -1238,7 +1250,7 @@
 
                     <div class="form-header">
                         <div class="header-content">
-                            <h2>Enrollment formx</h2>
+                            <h2>Enrollment form</h2>
                         </div>
 
                         <div class="student-table">
@@ -1420,7 +1432,7 @@
                                             ?>
                                                 <button type="submit" name="subject_load_btn" 
                                                     class="btn btn-success btn-sm"
-                                                    onclick="return confirm('Are you sure you want to insert & enroll??')"
+                                                    onclick="return confirm('I Agree to Approve the enrollment?')"
                                                 >
                                                     Approve Enrollment
                                                 </button>

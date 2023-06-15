@@ -34,9 +34,9 @@
                 crossorigin="anonymous"
                 />
             <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-            />
+                rel="stylesheet"
+                href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+                />
             <style>
 
                 .process-status{
@@ -406,6 +406,7 @@
                                 <th class="checkDetails" id="icon-1">
                                 <i class="bi bi-clipboard-check"></i>
                                 </th>
+
                                 <th id="line-1">___________________________</th>
                                 <th class="findSection" id="icon-2">
                                 <i class="bi bi-building"></i>
@@ -414,12 +415,14 @@
                                 <th class="subConfirm" id="icon-3">
                                 <i class="bi bi-journal"></i>
                                 </th>
+                               
                             </tr>
                             <tr>
                                 <td class="checkDetails" id="process-1">Check details</td>
                                 <td></td>
                                 <td class="findSection" id="process-2">Find section</td>
                                 <td></td>
+
                                 <td class="subConfirm" id="process-3">Subject Confirmation</td>
                             </tr>
                         </table>
@@ -559,7 +562,11 @@
                     // echo $_SESSION['enrollment_id'];
 
                     # reef
+
                     header("Location: transferee_process_enrollment.php?step3=true&id=$pending_enrollees_id&selected_course_id=$student_course_id");
+                    // header("Location: transferee_process_enrollment.php?step4=true&id=$pending_enrollees_id&selected_course_id=$student_course_id");
+                    // header("Location: transferee_process_enrollment.php?step4=true&id=$pending_enrollees_id&selected_course_id=$student_course_id");
+
                     // header("Location: transferee_process_enrollment.php?step3=true&st_id=$student_id&selected_course_id=$student_course_id");
                     exit();
                 }
@@ -610,8 +617,6 @@
 
                 // else if(false){
                 else if($student_course_id == 0){
-
-                    // echo "add";
 
                     $generateStudentUniqueId = $studentEnroll->GenerateUniqueStudentNumber();
                     $username = strtolower($lastname) . '.' . $generateStudentUniqueId . '@dcbt.ph';
@@ -709,7 +714,6 @@
                                 $stmt_insert->bindParam(':admission_status', $admission_status);
                                 $stmt_insert->bindValue(':is_tertiary', 1);
                             }
-
 
                             if($stmt_insert->execute()){
 
@@ -850,6 +854,7 @@
                             <th  class="findSection" id="icon-2">
                             <i style="color: #FFFF;" class="bi bi-building"></i>
                             </th>
+
                             <th   id="line-2">___________________________</th>
                             <th class="subConfirm" id="icon-3">
                             <i class="bi bi-journal"></i>
@@ -860,6 +865,7 @@
                             <td></td>
                             <td style="color: #FFFF;" class="findSection" id="process-2">Find section</td>
                             <td></td>
+       
                             <td class="subConfirm" id="process-3">Subject Confirmation</td>
                         </tr>
                     </table>
@@ -1269,9 +1275,12 @@
                             <a href="transferee_process_enrollment.php?step1=true&id=<?php echo $pending_enrollees_id; ?>">
                                 <button type="button" class="btn btn-outline-primary">Return</button>
                             </a>
+ 
 
-                            <button type="submit"name="transferee_pending_choose_section"class="btn btn-primary">
-                                Proceed
+                            <button type="submit" 
+                                name="transferee_pending_choose_section"
+                                class="btn btn-primary">
+                                Proceede
                             </button>
 
                         </form>
@@ -1474,7 +1483,7 @@
             <?php
         }   
 
-        
+
         # FOR EVALUATED (ONGOING) TRANSFEREE. STEP 2
         if(isset($_GET['st_id']) && isset($_GET['step2'])){
 
@@ -1632,6 +1641,9 @@
 
                         # reef
                         // header("Location: transferee_process_enrollment.php?step3=true&id=$pending_enrollees_id&selected_course_id=$student_course_id");
+
+                        // header("Location: transferee_process_enrollment.php?step3=true&st_id=$student_id&selected_course_id=$student_course_idv2");
+
                         header("Location: transferee_process_enrollment.php?step3=true&st_id=$student_id&selected_course_id=$student_course_idv2");
                         exit();
                     }
@@ -2033,7 +2045,8 @@
             <?php
         }   
 
-        # FOR EVALUATED (ONGOING) TRANSFEREE. STEP 3
+
+        # FOR EVALUATED (ONGOING) TRANSFEREE. STEP 3 TRUE
         if(isset($_GET['st_id']) 
             && isset($_GET['step3']) && $_GET['step3'] == "true"
              && isset($_GET['selected_course_id'])
@@ -2080,7 +2093,7 @@
             
            
             $section = new Section($con, $selected_course_id);
-            $subject = new Subject($con, $registrarLoggedIn);
+            $subject = new Subject($con, $registrarLoggedIn, null);
 
             $section_name = $section->GetSectionName();
 
@@ -2161,7 +2174,7 @@
                     
                     if($check == false){
                         $wasInserted = $studentSubject->InsertStudentSubject($student_id, $subject_id,
-                            $enrollment_id, $get_course_level, $getSubjectProgramId, $current_school_year_id, "no");
+                            $enrollment_id, $get_course_level, $getSubjectProgramId, $current_school_year_id, "no", false);
                             
                         if($wasInserted == true){
                             $isInserted = true;
@@ -2254,6 +2267,8 @@
                                 <td></td>
                                 <td style="color: #FFFF;" class="findSection" id="process-2">Find section</td>
                                 <td></td>
+
+
                                 <td style="color: #FFFF;" class="subConfirm" id="process-3">Subject Confirmation</td>
                             </tr>
                         </table>
@@ -2618,8 +2633,7 @@
                 </script>
             <?php
         }
-        
-        # FOR NON EVALUATED (NEW TRANSFEREE) STEP 3
+        # FOR NON EVALUATED (NEW TRANSFEREE) STEP 3 TRUE
         ##
         if(isset($_GET['id']) && isset($_GET['step3']) 
             && $_GET['step3'] == "true"
@@ -2628,11 +2642,11 @@
             if(isset($_SESSION['selected_course_id'])){
                 unset($_SESSION['selected_course_id']);
             }
-            
+            #
             $selected_course_id = $_GET['selected_course_id'];
            
             $section = new Section($con, $selected_course_id);
-            $subject = new Subject($con, $registrarLoggedIn);
+            $subject = new Subject($con, $registrarLoggedIn, null);
 
             $section_name = $section->GetSectionName();
 
@@ -2666,7 +2680,7 @@
                     if($checkSubjectExists == false){
 
                         $wasInserted = $studentSubject->InsertStudentSubject($student_id, $subject_id,
-                            $enrollment_id, $get_course_level, $getSubjectProgramId, $current_school_year_id, "no");
+                            $enrollment_id, $get_course_level, $getSubjectProgramId, $current_school_year_id, "no", false);
                             
                         if($wasInserted == true){
                             $isInserted = true;
@@ -2697,6 +2711,9 @@
                 }
                 
             }
+
+            $credited_subject_array = [];
+
 
             ?>
                 <div class="row col-md-12">
@@ -2747,6 +2764,7 @@
                                 <th  class="findSection" id="icon-2">
                                 <i style="color: #FFFF;" class="bi bi-building"></i>
                                 </th>
+
                                 <th  style="color: #FFFF;"  id="line-2">___________________________</th>
                                 <th class="subConfirm" id="icon-3">
                                 <i style="color: #FFFF;" class="bi bi-journal"></i>
@@ -2757,26 +2775,27 @@
                                 <td></td>
                                 <td style="color: #FFFF;" class="findSection" id="process-2">Find section</td>
                                 <td></td>
+
                                 <td style="color: #FFFF;" class="subConfirm" id="process-3">Subject Confirmation</td>
                             </tr>
                         </table>
                     </div>
 
-                    <div class="container mt-4 mb-2">
-                        <h3 class="mb-3 text-center text-muted">S.Y <?php echo $current_school_year_term;?> <?php echo $current_school_year_period;?> Semester</h3>
-                        <h4 class="mb-3 text-center text-muted">Selected Section: <?php echo $section_name;?> Subjects </h4>
 
+
+                    <div class="container mt-4 mb-2">
+                        <h4 class="mb-3 text-start text-muted">Choose Credited Subject(s)</h4>
                         <form method="POST">
 
-                                <table class="table table-bordered table-hover "  style="font-size:15px" cellspacing="0"> 
-                                    <thead>
+                                <table id="credit_section_table" class="table table-bordered table-hover "  style="font-size:15px" cellspacing="0"> 
+                                    <thead class="bg-dark">
                                         <tr class="text-center"">
-                                            <th>Id</th>
                                             <th>Code</th>
                                             <th>Description</th>
                                             <th>Unit</th>
                                             <th>Pre-Requisite</th>
-                                            <th>Type</th>
+                                            <th>Level</th>
+                                            <th>Semester</th>
                                             <th>
                                                 Action
                                             </th>
@@ -2785,12 +2804,422 @@
 
                                     <tbody>
                                         <?php 
+
+                                            $student_program_id = $studentEnroll->GetStudentProgramId($selected_course_id);
+
                                         
+                                            # Depends on the PROGRAM CURRICULUM.
+                                            
+                                            $sql = $con->prepare("SELECT * FROM subject_program
+                                            
+                                            
+                                                WHERE program_id=:program_id
+                                                -- AND semester=:semester
+                                                -- AND course_level=:course_level
+                                                AND active='yes'
+                                                ");
+
+                                            $sql->bindValue(":program_id", $student_program_id);
+                                            // $sql->bindValue(":semester", $current_school_year_period);
+                                            // $sql->bindValue(":course_level", $student_course_level);
+                                            $sql->execute();
+
+                                            // $sql = $con->prepare("SELECT t2.* FROM course as t1
+
+                                            //     INNER JOIN subject as t2 ON t2.course_id = t1.course_id
+
+                                            //     WHERE t1.course_id=:course_id
+                                            //     -- AND t1.course_level=:course_level
+                                            //     -- AND t2.semester=:semester
+                                            //     AND t1.active='yes'");
+
+                                            // $sql->bindValue(":course_id", $selected_course_id);
+                                            // // $sql->bindValue(":course_level", $student_course_level);
+                                            // // $sql->bindValue(":semester", $current_school_year_period);
+                                            // $sql->execute();
+
+                                            if($sql->rowCount() > 0){
+
+                                                while($row = $sql->fetch(PDO::FETCH_ASSOC)){
+
+                                                    // $subject_id = $row['subject_id'];
+                                                    $subject_code = $row['subject_code'];
+                                                    $subject_title = $row['subject_title'];
+                                                    // $pre_requisite = $row['pre_requisite'];
+                                                    $pre_requisite = $row['pre_req_subject_title'];
+                                                    $subject_type = $row['subject_type'];
+                                                    $unit = $row['unit'];
+                                                    $semester = $row['semester'];
+                                                    $course_level = $row['course_level'];
+
+                                                    $student_student_subject_id = 0;
+
+                                                    // $hasAlreadyMarked = $studentSubject->
+                                                    //     GetStudentTransfereeSubject($student_id, $subject_id);
+                                                   
+                                                    // $student_student_subject_id = 0;
+                                                    
+                                                //    <input name='credited_selected_subject[]' 
+                                                //                     value='$subject_id'
+                                                //                     type='checkbox'> 
+
+
+                                                //   <input name='credited_selected_subject[]' 
+                                                //                     value='" . $subject_id . "'
+                                                //                     type='checkbox'" . ($hasAlreadyMarked ? " checked" : "") . ($hasAlreadyMarked ? " disabled" : "") . ">
+
+                                                    // $creditBtn = "creditSubject($subject_id,
+                                                    //     $student_id, \"$subject_title\", $enrollment_id)";
+
+                                                    // $unCreditBtn = "unCreditSubject($subject_id,
+                                                    //     $student_id, \"$subject_title\", $enrollment_id)";
+
+                                                    $creditBtn = "creditSubject($student_id,
+                                                        \"$subject_title\", $enrollment_id)";
+                                                     
+                                                    $unCreditBtn = "unCreditSubject($student_id,
+                                                        \"$subject_title\", $enrollment_id)";
+
+                                                    $btn = "";
+
+                                                    $checkCreditedSubjectExists = $studentSubject->CheckAlreadyCreditedSubject(
+                                                            $student_id, $subject_title);
+
+                                                    if($checkCreditedSubjectExists){
+
+                                                        $credited_subject_titles =  $subject_title;
+
+                                                        $credited_subject_id = $studentSubject->GetSubjectIdFromCreditedSubjectTitle($subject_title,
+                                                            $student_program_id, $selected_course_id);
+
+                                                        // array_push($credited_subject_array, $credited_subject_titles);
+                                                        array_push($credited_subject_array, $credited_subject_id);
+                                                        
+                                                        // echo $credited_subject_id;
+                                                        // echo "<br>";
+
+                                                        $btn = "
+                                                            <button type='button' onclick='$unCreditBtn' class='btn btn-sm btn-danger'>
+                                                                <i class='fas fa-undo'></i>
+                                                            </button>
+                                                        ";
+                                                    }else if($checkCreditedSubjectExists == false){
+
+                                                        $btn = "
+                                                            <button type='button' onclick='$creditBtn' class='btn btn-sm btn-primary'>
+                                                               <i class='fas fa-plus-circle'></i>
+                                                            </button>
+                                                        ";
+                                                    }
+
+                                                    echo "
+                                                        <tr class='text-center'>
+                                                            <td>$subject_code</td>
+                                                            <td>$subject_title</td>
+                                                            <td>$unit</td>
+                                                            <td>$pre_requisite</td>
+                                                            <td>$course_level</td>
+                                                            <td>$semester</td>
+                                                            <td>
+                                                                $btn
+                                                            </td>
+                                                        </tr>
+                                                    ";
+                                                }
+
+                                            }
+                                        ?>
+                                    </tbody>
+
+                                    <script>
+
+                                        function creditSubject(
+                                            // subject_id, 
+                                            student_id,
+                                            subject_title, enrollment_id){
+
+
+                                            console.log(subject_title)
+
+                                            Swal.fire({
+                                                icon: 'question',
+                                                title: `Credit ${subject_title}`,
+                                                showCancelButton: true,
+                                                confirmButtonText: 'Yes',
+                                                cancelButtonText: 'Cancel'
+
+                                            }).then((result) => {
+
+                                                if (result.isConfirmed) {
+
+                                                    $.ajax({
+                                                        url: '../ajax/subject/creditSubject.php',
+                                                        type: 'POST',
+                                                        data: {
+                                                            // subject_id, 
+                                                            student_id,
+                                                            subject_title, enrollment_id
+                                                        },
+                                                        success: function(response) {
+
+                                                            console.log(response)
+
+                                                            if(response == "success_credit"){
+
+                                                                Swal.fire({
+                                                                    icon: 'success',
+                                                                    title: `Successfully Credited`,
+                                                                    showConfirmButton: false,
+                                                                    timer: 800, // Adjust the duration of the toast message in milliseconds (e.g., 3000 = 3 seconds)
+                                                                    toast: true,
+                                                                    position: 'top-end',
+                                                                    showClass: {
+                                                                    popup: 'swal2-noanimation',
+                                                                    backdrop: 'swal2-noanimation'
+                                                                    },
+                                                                    hideClass: {
+                                                                    popup: '',
+                                                                    backdrop: ''
+                                                                    }
+                                                                }).then((result) => {
+                                                                    // location.reload();
+                                                                    
+                                                                    $('#selected_table').load(
+                                                                        location.href + ' #selected_table'
+                                                                    );
+
+                                                                    $('#credit_section_table').load(
+                                                                        location.href + ' #credit_section_table'
+                                                                    );
+                                                                });
+                                                            }
+
+                                                            if(response == "subject_exists"){
+                                                                Swal.fire({
+                                                                    icon: 'error',
+                                                                    title: `Already Exists`,
+                                                                    showConfirmButton: false,
+                                                                    timer: 1200, // Adjust the duration of the toast message in milliseconds (e.g., 3000 = 3 seconds)
+                                                                    toast: true,
+                                                                    position: 'top-end',
+                                                                    showClass: {
+                                                                    popup: 'swal2-noanimation',
+                                                                    backdrop: 'swal2-noanimation'
+                                                                    },
+                                                                    hideClass: {
+                                                                    popup: '',
+                                                                    backdrop: ''
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+
+                                        function unCreditSubject(
+                                            // subject_id, 
+                                            student_id,
+                                            subject_title, enrollment_id){
+
+
+                                            // console.log(subject_id)
+
+                                            Swal.fire({
+                                                icon: 'question',
+                                                title: `Undo Credit ${subject_title}`,
+                                                showCancelButton: true,
+                                                confirmButtonText: 'Yes',
+                                                cancelButtonText: 'Cancel'
+
+                                            }).then((result) => {
+
+                                                if (result.isConfirmed) {
+
+                                                    $.ajax({
+                                                        url: '../ajax/subject/unCreditSubject.php',
+                                                        type: 'POST',
+                                                        data: {
+                                                            // subject_id,
+                                                            student_id,
+                                                            subject_title, enrollment_id
+                                                        },
+
+                                                        success: function(response) {
+                                                            console.log(response);
+
+                                                            if(response == "success_undo_credit"){
+                                                            
+                                                                Swal.fire({
+                                                                icon: 'success',
+                                                                title: `Successfully Undo the Credit Subject`,
+                                                                showConfirmButton: false,
+                                                                timer: 800, // Adjust the duration of the toast message in milliseconds (e.g., 3000 = 3 seconds)
+                                                                toast: true,
+                                                                position: 'top-end',
+                                                                showClass: {
+                                                                popup: 'swal2-noanimation',
+                                                                backdrop: 'swal2-noanimation'
+                                                                },
+                                                                hideClass: {
+                                                                popup: '',
+                                                                backdrop: ''
+                                                                }
+                                                            }).then((result) => {
+                                                                // location.reload();
+
+                                                                // var tableContent = $(response).find('#credit_section_table').html();
+                                                                // $('#credit_section_table').html(tableContent);
+
+                                                                $('#selected_table').load(
+                                                                    location.href + ' #selected_table'
+                                                                );
+
+                                                                $('#credit_section_table').load(
+                                                                    location.href + ' #credit_section_table'
+                                                                );
+                                                            });
+
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    </script>
+                                </table>
+
+
+                                <!-- <button type="button" class="btn btn-sm btn-outline-primary" onclick="showDiv()">Add Subject</button> -->
+                                <div  class="credited_subjects" 
+                                    id="subjectDiv" style="display: none;">
+                                    <h3 class="mb-3 text-primary text-center">Select Credit Subjects</h3>
+                                    <table id="creditedSubjectsTable" class="table table-bordered table-hover "  style="font-size:15px" cellspacing="0"> 
+                                        <thead>
+                                            <tr class="text-center"">
+                                                <th>Id</th>
+                                                <th>Section</th>
+                                                <th>Code</th>
+                                                <th>Description</th>
+                                                <th>Unit</th>
+                                                <th>Pre-Requisite</th>
+                                                <th>Type</th>
+                                                <th>
+                                                    Action
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <!-- <tbody>
+                                            <?php 
+                                            
+                                                $sql = $con->prepare("SELECT 
+                                                    t1.program_section,
+                                                    t2.* 
+                                                    
+                                                    FROM course as t1
+
+                                                    INNER JOIN subject as t2 ON t2.course_id = t1.course_id
+
+                                                    WHERE t1.course_id !=:course_id
+                                                    AND t1.active='yes'
+                                                    AND t1.course_level=:course_level
+                                                    AND t2.semester=:semester
+                                                    ");
+
+                                                $sql->bindValue(":course_id", $selected_course_id);
+                                                $sql->bindValue(":course_level", $student_course_level);
+                                                $sql->bindValue(":semester", $current_school_year_period);
+                                                $sql->execute();
+
+                                                if($sql->rowCount() > 0){
+
+                                                    while($row = $sql->fetch(PDO::FETCH_ASSOC)){
+
+                                                        $subject_id = $row['subject_id'];
+                                                        $subject_code = $row['subject_code'];
+                                                        $subject_title = $row['subject_title'];
+                                                        $pre_requisite = $row['pre_requisite'];
+                                                        $subject_type = $row['subject_type'];
+                                                        $unit = $row['unit'];
+                                                        $course_level = $row['course_level'];
+                                                        $program_section = $row['program_section'];
+                                                        
+                                                        $student_student_subject_id = 0;
+
+                                                        $get_student_subject = $studentSubject->
+                                                            GetNonFinalizedStudentSubject($student_id, $subject_id,
+                                                            $enrollment_id, $current_school_year_id);
+
+                                                        
+                                                        if(count($get_student_subject) > 0){
+                                                            $student_student_subject_id = $get_student_subject['subject_id'];
+                                                            // echo $student_student_subject_id;
+                                                        }
+
+
+
+                                                        echo "
+                                                            <tr class='text-center'>
+                                                                <td>$subject_id</td>
+                                                                <td>$program_section</td>
+                                                                <td>$subject_code</td>
+                                                                <td>$subject_title</td>
+                                                                <td>$unit</td>
+                                                                <td>$pre_requisite</td>
+                                                                <td>$subject_type</td>
+                                                                <td>
+                                                                    <input name='normal_selected_subject[]' 
+                                                                        value='" . $subject_id . "'
+                                                                        type='checkbox'" . ($student_student_subject_id == $subject_id ? " checked" : "") . ">
+                                                                </td>
+                                                            </tr>
+                                                        ";
+                                                    }
+
+                                                }
+                                            ?>
+                                        </tbody> -->
+                                    </table>
+                                </div>
+                        </form>
+                    </div> 
+
+                    <div class="container mt-4 mb-2">
+                        <h4 class="mb-3 text-center text-muted">Seelected Section: <?php echo $section_name;?> Subjects </h4>
+                        <form method="POST">
+
+                                <table id="selected_table" class="table table-hover table-responsive"  style="font-size:15px" cellspacing="0"> 
+                                    <thead class="bg-dark">
+                                        <tr class="text-center"">
+                                            <th>Id</th>
+                                            <th>Code</th>
+                                            <th>Description</th>
+                                            <th>Unit</th>
+                                            <th>Pre-Requisite</th>
+                                            <th>Type</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <?php 
+
+                                            $creditedSubjectIds = implode(',', $credited_subject_array);
+
+                                            // echo $creditedSubjectIds;
+
+                                            if($creditedSubjectIds == null){
+                                                $creditedSubjectIds = 0;
+                                            }
+
                                             $sql = $con->prepare("SELECT t2.* FROM course as t1
 
                                                 INNER JOIN subject as t2 ON t2.course_id = t1.course_id
 
-                                                WHERE t1.course_id=:course_id
+                                                WHERE t2.subject_id NOT IN ($creditedSubjectIds)
+                                                AND t1.course_id=:course_id
                                                 AND t1.course_level=:course_level
                                                 AND t2.semester=:semester
                                                 AND t1.active='yes'");
@@ -2824,6 +3253,26 @@
                                                     }
                                                     // $student_student_subject_id = 0;
                                                     
+                                                    $hasAlreadyMarked = $studentSubject->
+                                                        GetStudentTransfereeSubject($student_id, $subject_id);
+                                                   
+                                                    // $student_student_subject_id = 0;
+                                                    
+                                                //    <input name='credited_selected_subject[]' 
+                                                //                     value='$subject_id'
+                                                //                     type='checkbox'> 
+
+
+                                                // <input name='normal_selected_subject[]' 
+                                                //                     value='" . $subject_id . "'
+                                                //                     type='checkbox'" . ($student_student_subject_id == $subject_id ? " checked" : "") . ">
+
+                                                
+                                                    $selectInput = "selectInput($subject_id, 
+                                                        $enrollment_id, $student_id, $current_school_year_id)";
+
+                                                    // <input onclick='$selectInput' name='select_selected_subject' 
+                                                    //     type='checkbox'>
 
                                                     echo "
                                                         <tr class='text-center'>
@@ -2835,8 +3284,11 @@
                                                             <td>$subject_type</td>
                                                             <td>
                                                                 <input name='normal_selected_subject[]' 
-                                                                    value='" . $subject_id . "'
-                                                                    type='checkbox'" . ($student_student_subject_id == $subject_id ? " checked" : "") . ">
+                                                                     value='" . $subject_id . "'
+                                                                     type='checkbox'" . ($student_student_subject_id == $subject_id ? " checked" : "") . ">
+
+                                                                
+                                                                
                                                             </td>
                                                         </tr>
                                                     ";
@@ -2844,6 +3296,44 @@
 
                                             }
                                         ?>
+
+                                        <script>
+                                            function selectInput(subject_id, 
+                                                    enrollment_id, student_id, current_school_year_id){
+
+                                                // var transferee_student_status = radio.value;
+
+                                                console.log(subject_id)
+
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: `Successfully Mark `,
+                                                    showConfirmButton: false,
+                                                    timer: 2000, // Adjust the duration of the toast message in milliseconds (e.g., 3000 = 3 seconds)
+                                                    toast: true,
+                                                    position: 'top-end',
+                                                    showClass: {
+                                                    popup: 'swal2-noanimation',
+                                                    backdrop: 'swal2-noanimation'
+                                                    },
+                                                    hideClass: {
+                                                    popup: '',
+                                                    backdrop: ''
+                                                    }
+                                                });
+
+                                                // Swal.fire({
+                                                //     icon: 'question',
+                                                //     title: `Chech`,
+                                                //     showCancelButton: true,
+                                                //     confirmButtonText: 'Yes',
+                                                //     cancelButtonText: 'Cancel'
+                                                // }).then((result) => {
+
+                                                // });
+                                            
+                                            }
+                                        </script>
 
                                     </tbody>
 
@@ -2968,7 +3458,7 @@
                                         <?php 
                                     }
                                 ?>
-                            <a href="transferee_process_enrollment.php?step2=true&id=<?php echo $pending_enrollees_id;?>">
+                            <a href="transferee_process_enrollment.php?step2=true&id=<?php echo $pending_enrollees_id;?>&selected_course_id=<?php echo $selected_course_id;?>">
                                 <button type="button" class="btn-secondary btn">
                                     Go back
                                 </button>
@@ -3125,79 +3615,665 @@
                 </script>
             <?php
         }
-        
 
-        ##
-        ##
-        if(isset($_GET['id']) 
-            && isset($_GET['step3x'])
-             && isset($_GET['selected_course_id'])
-            ){
+        # For Crediting Section *STEP 3 NON EVALUATED.
+        if(isset($_GET['id']) && isset($_GET['step5']) 
+            && $_GET['step5'] == "true"
+            && isset($_GET['selected_course_id'])){
 
+            if(isset($_SESSION['selected_course_id'])){
+                unset($_SESSION['selected_course_id']);
+            }
+
+            #
             $selected_course_id = $_GET['selected_course_id'];
            
+            $studentEnroll = new StudentEnroll($con);
+
+            $student_program_id = $studentEnroll->GetStudentProgramId($selected_course_id);
+
             $section = new Section($con, $selected_course_id);
+            $subject = new Subject($con, $registrarLoggedIn, null);
 
             $section_name = $section->GetSectionName();
 
             // echo $section_name . " step 3";
             
+            if(isset($_POST['selected_btn']) 
+                && $_POST['normal_selected_subject']){
+
+                $subjects = $_POST['normal_selected_subject'];
+
+                // $course_level = $_POST['course_level'];
+
+                // echo $course_level;
+                $isInserted = false;
+
+                foreach ($subjects as $key => $value) {
+                 
+
+                    $subject_id = $value;
+                    // echo $subject_id;
+                    // echo "<br>";
+
+                    $get_course_level = $subject->GetSubjectCourseLevel($subject_id);
+
+                    # Check if inserted.
+
+                    $getSubjectProgramId = $subject->GetSubjectProgramId($subject_id);
+
+                    $checkSubjectExists = $studentSubject->CheckStudentSubject($student_id, $subject_id,
+                        $enrollment_id, $current_school_year_id);
+                    
+                    if($checkSubjectExists == false){
+
+                        $wasInserted = $studentSubject->InsertStudentSubject($student_id, $subject_id,
+                            $enrollment_id, $get_course_level, $getSubjectProgramId, $current_school_year_id, "no", false);
+                            
+                        if($wasInserted == true){
+                            
+                            $isInserted = true;
+                        }
+                    }
+
+                }
+
+                if($isInserted == false){
+                    $url = "../enrollees/view_student_transferee_enrollment_review.php?inserted=true&id=$student_id&p_id=$pending_enrollees_id&e_id=$enrollment_id";
+
+                    // AdminUser::success("Successfully added subjects",
+                    //     "transferee_process_enrollment.php?step3=true&id=$pending_enrollees_id&selected_course_id=$selected_course_id");
+
+                    AdminUser::success("Successfully added subjects",
+                        "$url");
+
+                    $_SESSION['selected_course_id'] = $selected_course_id;
+                    exit();
+
+                }
+            }
+
+            if(isset($_POST['credited_selected_btn']) 
+                && $_POST['credited_selected_subject']){
+
+
+                $credited_subjects = $_POST['credited_selected_subject'];
+
+                // var_dump($credited_subjects);
+                $isCredited = false;
+
+                $is_transferee = true;
+
+                $alreadySelected = false;
+
+                $is_final = "no";
+
+                foreach ($credited_subjects as $key => $value) {
+
+                    // $subject_title = $value;
+                    $subject_id = $value;
+
+                    // echo $subject_id;
+                    // echo "<br>";
+
+                    $get_course_level = $subject->GetSubjectCourseLevel($subject_id);
+                    $subject_title = $subject->GetSubjectTitle($subject_id);
+
+                    $getSubjectProgramId = $subject->GetSubjectProgramId($subject_id);
+
+                    $checkSubjectExists = $studentSubject->CheckStudentSubject($student_id, $subject_id,
+                        $enrollment_id, $current_school_year_id);
+
+                    if($checkSubjectExists == false){
+
+                        $wasInserted = $studentSubject->InsertStudentSubject($student_id, $subject_id,
+                            $enrollment_id, $get_course_level, $getSubjectProgramId,
+                                $current_school_year_id, $is_final, $is_transferee);
+                            
+                        if($wasInserted == true){
+
+                            $student_subject_id = $con->lastInsertId();
+
+                            // echo "$subject_title is credited";
+                            // echo "<br>";
+
+                            # Credit the subject.
+
+                            $checkCreditedSubjectExists = $studentSubject->CheckAlreadyCreditedSubject(
+                                $student_id, $subject_title);
+                            
+                            if(!$checkCreditedSubjectExists){
+
+                                $wasCredited = $studentSubject->InsertStudentCreditedSubject($student_id,
+                                    $subject_title, $student_subject_id, $subject_id);
+
+                                if($wasCredited)
+                                    $isCredited = true;
+
+                            }else{
+                                // Alert::error("Subject $subject_title is already credited", "");
+                            }
+                        }
+                    }else{
+
+                        $alreadySelected = true;
+                        
+                        // Alert::error("Subject $subject_title is already inserted",
+                        //     "");
+
+                            
+                    }
+                }
+
+                // if($alreadySelected == true && $isCredited == false){
+                //     header("Location: transferee_process_enrollment.php?step4=true&id=$pending_enrollees_id&selected_course_id=$selected_course_id");
+                // }
+
+                if($isCredited == true){
+
+                    $url = "transferee_process_enrollment.php?step4=true&id=$pending_enrollees_id&selected_course_id=$student_course_id";
+
+                    AdminUser::success("Successfully credited subjects",
+                        "$url");
+
+                    $_SESSION['selected_course_id'] = $selected_course_id;
+
+                    exit();
+                }
+
+
+
+            }
+
             ?>
                 <div class="row col-md-12">
-                    <div class="container mt-4 mb-2">
-                        <h4 class="mb-3 text-center text-muted">Selected Section: <?php echo $section_name;?> Subjects </h4>
-                        <h4 class="mb-3 text-center text-success">Enrollment Subjects Subjects </h4>
-                        <h5 class="mb-3 text-center text-muted">S.Y <?php echo $current_school_year_term;?> <?php echo $current_school_year_period;?> Semester</h5>
 
-                        <table id="transferee_selection_table" class="table table-bordered table-hover "  style="font-size:15px" cellspacing="0"> 
-                            <thead>
-                                <tr>
-                                    <th>Id</th>
-                                    <th>Code</th>
-                                    <th>Description</th>
-                                    <th>Unit</th>
-                                    <th>Type</th>
-                                    <th>Semester</th>
-                                    <th>Non-Credit</th>
-                                    <th>Credit</th>
-                                </tr>
-                            </thead>
+                    <div class="content">
+
+                        <div class="form-header">
+                            <div class="header-content">
+                                <h2>Enrollment form</h2>
+                            </div>
+
+                            <div class="student-table">
+                                <table>
+                                    <tr>
+                                    <th>Form ID</th>
+                                    <th>Admission type</th>
+                                    <th>Student no</th>
+                                    <th>Status</th>
+                                    <th>Submitted on:</th>
+                                    </tr>
+                                    <tr>
+                                    <td><?php echo $enrollment_form_id;?></td>
+                                    <td>Transferee</td>
+                                    <td>N/A</td>
+                                    <td>Evaluation</td>
+
+                                    <td><?php
+                                        $date = new DateTime($date_creation);
+                                        $formattedDate = $date->format('m/d/Y H:i');
+
+                                        echo $formattedDate;
+                                    ?></td>
+                                    
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="process-status">
+                        <table class="selection">
+                            <tr>
+                                <th class="checkDetails" id="icon-1">
+                                <i  style="color: #FFFF;" class="bi bi-clipboard-check"></i>
+                                </th>
+
+                                <th style="color: #FFFF;" id="line-1">___________________________</th>
+                                <th  class="findSection" id="icon-2">
+                                <i style="color: #FFFF;" class="bi bi-building"></i>
+                                </th>
+
+                                <th  style="color: #FFFF;"  id="line-2">___________________________</th>
+                                <th class="subConfirm" id="icon-3">
+                                <i style="color: #FFFF;" class="bi bi-journal"></i>
+                                </th>
+
+                                <th  style=""  id="line-2">___________________________</th>
+                                <th class="subConfirm" id="icon-3">
+                                <i style="color: #FFFF;" class="bi bi-journal"></i>
+                                </th>
+
+                            </tr>
+                            <tr>
+                                <td style="color: #FFFF;" class="checkDetails" id="process-1">Check details</td>
+                                <td></td>
+                                <td style="color: #FFFF;" class="findSection" id="process-2">Find section</td>
+                                <td></td>
+                                <td style="color: #FFFF;" class="subConfirm" id="process-3">Crediting Section</td>
+
+                                <td></td>
+                                <td style="" class="subConfirm" id="process-3">Subject Confirmation</td>
+                            </tr>
                         </table>
-                        <?php
-                            if($student_id != null){
+                    </div>
 
-                                // echo $_SESSION['enrollment_id'];
-                                ?>
-                                    <!-- <button type="submit" name="shs_irreg_subject_load_btn"
-                                        id="shs_irreg_subject_load_btn"
-                                        class="btn btn-success btn">Insert & Enroll
-                                    </button> -->
+                    <div class="container mt-4 mb-2">
+                        <span class="text-dark">Crediting Sectionx</span>
+                        <h3 class="mb-3 text-center text-muted">S.Y <?php echo $current_school_year_term;?> <?php echo $current_school_year_period;?> Semester</h3>
+                        <h4 class="mb-3 text-center text-muted">Crediting Sectionx: <?php echo $section_name;?> Subjects </h4>
 
-                                    <a href="../enrollees/view_student_transferee_enrollment_review.php?inserted=true&id=<?php echo $student_id?>&p_id=<?php echo $pending_enrollees_id?>&e_id=<?php echo $enrollment_id;?>">
-                                        <button type="button" 
-                                            class="btn btn-primary btn">Review Insertion
-                                        </button>
-                                    </a>
+                        <form method="POST">
+
+                                <table id="credit_section_table" class="table table-bordered table-hover "  style="font-size:15px" cellspacing="0"> 
+                                    <thead>
+                                        <tr class="text-center"">
+                                            <th>Level</th>
+                                            <th>Code</th>
+                                            <th>Description</th>
+                                            <th>Unit</th>
+                                            <th>Pre-Requisite</th>
+                                            <th>Type</th>
+                                            <th>Semester</th>
+                                            <th>
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <?php 
+                                        
+                                            # Depends on the PROGRAM CURRICULUM.
+                                            
+                                            // $sql = $con->prepare("SELECT * FROM subject_program
+                                            
+                                            
+                                            //     WHERE program_id=:program_id
+                                            //     AND semester=:semester
+                                            //     AND course_level=:course_level
+                                            //     AND active='yes'
+                                            //     ");
+
+                                            // $sql->bindValue(":program_id", $student_program_id);
+                                            // $sql->bindValue(":semester", $current_school_year_period);
+                                            // $sql->bindValue(":course_level", $student_course_level);
+                                            // $sql->execute();
+
+                                            $sql = $con->prepare("SELECT t2.* FROM course as t1
+
+                                                INNER JOIN subject as t2 ON t2.course_id = t1.course_id
+
+                                                WHERE t1.course_id=:course_id
+                                                AND t1.course_level=:course_level
+                                                AND t2.semester=:semester
+                                                AND t1.active='yes'");
+
+                                            $sql->bindValue(":course_id", $selected_course_id);
+                                            $sql->bindValue(":course_level", $student_course_level);
+                                            $sql->bindValue(":semester", $current_school_year_period);
+                                            $sql->execute();
+
+                                            if($sql->rowCount() > 0){
+
+                                                while($row = $sql->fetch(PDO::FETCH_ASSOC)){
+
+                                                    $subject_id = $row['subject_id'];
+                                                    $subject_code = $row['subject_code'];
+                                                    $subject_title = $row['subject_title'];
+                                                    $pre_requisite = $row['pre_requisite'];
+                                                    // $pre_requisite = $row['pre_req_subject_title'];
+                                                    $subject_type = $row['subject_type'];
+                                                    $unit = $row['unit'];
+                                                    $semester = $row['semester'];
+                                                    $course_level = $row['course_level'];
+
+                                                    $student_student_subject_id = 0;
+
+
+
+                                                    $hasAlreadyMarked = $studentSubject->
+                                                        GetStudentTransfereeSubject($student_id, $subject_id);
+                                                   
+                                                    // $student_student_subject_id = 0;
+                                                    
+                                                //    <input name='credited_selected_subject[]' 
+                                                //                     value='$subject_id'
+                                                //                     type='checkbox'> 
+
+
+                                                //   <input name='credited_selected_subject[]' 
+                                                //                     value='" . $subject_id . "'
+                                                //                     type='checkbox'" . ($hasAlreadyMarked ? " checked" : "") . ($hasAlreadyMarked ? " disabled" : "") . ">
+
+                                                    $creditBtn = "creditSubject($subject_id,
+                                                        $student_id, \"$subject_title\", $enrollment_id)";
+
+                                                    $unCreditBtn = "unCreditSubject($subject_id,
+                                                        $student_id, \"$subject_title\", $enrollment_id)";
+
+                                                    $btn = "";
+
+                                                    if($hasAlreadyMarked){
+                                                        
+                                                        $btn = "
+                                                            <button type='button' onclick='$unCreditBtn' class='btn btn-sm btn-danger'>
+                                                                <i class='fas fa-times'></i>
+                                                            </button>
+                                                        ";
+                                                    }else{
+                                                        $btn = "
+                                                            <button type='button' onclick='$creditBtn' class='btn btn-sm btn-primary'>
+                                                                    <i class='fas fa-plus-circle'></i>
+                                                            </button>
+                                                        ";
+                                                    }
+
+                                                    echo "
+                                                        <tr class='text-center'>
+                                                            <td>$course_level</td>
+                                                            <td>$subject_code</td>
+                                                            <td>$subject_title</td>
+                                                            <td>$unit</td>
+                                                            <td>$pre_requisite</td>
+                                                            <td></td>
+                                                            <td>$semester</td>
+                                                            <td>
+                                                                <input name='credited_selected_subject[]' 
+                                                                    value='" . $subject_id . "'
+                                                                    type='checkbox'" . ($hasAlreadyMarked ? " checked" : "") . ">
+                                                                $btn
+                                                            </td>
+                                                        </tr>
+                                                    ";
+                                                }
+
+                                            }
+                                        ?>
+                                    </tbody>
+
+                                    <script>
+
+                                        function creditSubject(subject_id, student_id,
+                                            subject_title, enrollment_id){
+
+                                            // console.log(subject_id)
+
+                                            Swal.fire({
+                                                icon: 'question',
+                                                title: `Credit ${subject_title}`,
+                                                showCancelButton: true,
+                                                confirmButtonText: 'Yes',
+                                                cancelButtonText: 'Cancel'
+
+                                            }).then((result) => {
+
+                                                if (result.isConfirmed) {
+
+                                                    $.ajax({
+                                                        url: '../ajax/subject/creditSubject.php',
+                                                        type: 'POST',
+                                                        data: {
+                                                            subject_id, student_id,
+                                                            subject_title, enrollment_id
+                                                        },
+                                                        success: function(response) {
+
+                                                            console.log(response)
+
+                                                            if(response == "success"){
+
+                                                            Swal.fire({
+                                                                icon: 'success',
+                                                                title: `Successfully Credited`,
+                                                                showConfirmButton: false,
+                                                                timer: 800, // Adjust the duration of the toast message in milliseconds (e.g., 3000 = 3 seconds)
+                                                                toast: true,
+                                                                position: 'top-end',
+                                                                showClass: {
+                                                                popup: 'swal2-noanimation',
+                                                                backdrop: 'swal2-noanimation'
+                                                                },
+                                                                hideClass: {
+                                                                popup: '',
+                                                                backdrop: ''
+                                                                }
+                                                            }).then((result) => {
+                                                                location.reload();
+                                                                $('#credit_section_table').load(
+                                                                    location.href + ' #credit_section_table'
+                                                                );
+                                                            });
+                                                        }
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+
+                                        function unCreditSubject(subject_id, student_id,
+                                            subject_title, enrollment_id){
+
+
+                                            console.log(subject_id)
+
+                                            Swal.fire({
+                                                icon: 'question',
+                                                title: `UnCredit ${subject_title}`,
+                                                showCancelButton: true,
+                                                confirmButtonText: 'Yes',
+                                                cancelButtonText: 'Cancel'
+                                            }).then((result) => {
+
+                                                if (result.isConfirmed) {
+
+                                                    $.ajax({
+                                                        url: '../ajax/subject/unCreditSubject.php',
+                                                        type: 'POST',
+                                                        data: {
+                                                            subject_id, student_id,
+                                                            subject_title, enrollment_id
+                                                        },
+
+                                                        success: function(response) {
+                                                            // console.log(response)
+
+                                                            if(response == "success_deleted"){
+                                                            
+                                                            //     Swal.fire({
+                                                            //     icon: 'success',
+                                                            //     title: `Successfully Uncredited`,
+                                                            //     showConfirmButton: false,
+                                                            //     timer: 800, // Adjust the duration of the toast message in milliseconds (e.g., 3000 = 3 seconds)
+                                                            //     toast: true,
+                                                            //     position: 'top-end',
+                                                            //     showClass: {
+                                                            //     popup: 'swal2-noanimation',
+                                                            //     backdrop: 'swal2-noanimation'
+                                                            //     },
+                                                            //     hideClass: {
+                                                            //     popup: '',
+                                                            //     backdrop: ''
+                                                            //     }
+                                                            // }).then((result) => {
+                                                            //     // location.reload();
+
+                                                            //     // var tableContent = $(response).find('#credit_section_table').html();
+                                                            //     // $('#credit_section_table').html(tableContent);
+
+                                                            //     $('#credit_section_table').load(
+                                                            //         location.href + ' #credit_section_table'
+                                                            //     );
+                                                            // });
+
+                                                            Swal.fire({
+                                                                icon: 'error',
+                                                                title: 'Undo',
+                                                                text: 'Successfully Un-credited'
+                                                            }).then((result) => {
+                                                                if (result.isConfirmed) {
+                                                                    $('#credit_section_table').load(
+                                                                        location.href + ' #credit_section_table'
+                                                                    );
+                                                                }
+                                                            });
+
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    </script>
+                                </table>
+
+
+                                <!-- <button type="button" class="btn btn-sm btn-outline-primary" onclick="showDiv()">Add Subject</button> -->
+                                <div  class="credited_subjects" 
+                                    id="subjectDiv" style="display: none;">
+                                    <h3 class="mb-3 text-primary text-center">Select Credit Subjects</h3>
+                                    <table id="creditedSubjectsTable" class="table table-bordered table-hover "  style="font-size:15px" cellspacing="0"> 
+                                        <thead>
+                                            <tr class="text-center"">
+                                                <th>Id</th>
+                                                <th>Section</th>
+                                                <th>Code</th>
+                                                <th>Description</th>
+                                                <th>Unit</th>
+                                                <th>Pre-Requisite</th>
+                                                <th>Type</th>
+                                                <th>
+                                                    Action
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <!-- <tbody>
+                                            <?php 
+                                            
+                                                $sql = $con->prepare("SELECT 
+                                                    t1.program_section,
+                                                    t2.* 
+                                                    
+                                                    FROM course as t1
+
+                                                    INNER JOIN subject as t2 ON t2.course_id = t1.course_id
+
+                                                    WHERE t1.course_id !=:course_id
+                                                    AND t1.active='yes'
+                                                    AND t1.course_level=:course_level
+                                                    AND t2.semester=:semester
+                                                    ");
+
+                                                $sql->bindValue(":course_id", $selected_course_id);
+                                                $sql->bindValue(":course_level", $student_course_level);
+                                                $sql->bindValue(":semester", $current_school_year_period);
+                                                $sql->execute();
+
+                                                if($sql->rowCount() > 0){
+
+                                                    while($row = $sql->fetch(PDO::FETCH_ASSOC)){
+
+                                                        $subject_id = $row['subject_id'];
+                                                        $subject_code = $row['subject_code'];
+                                                        $subject_title = $row['subject_title'];
+                                                        $pre_requisite = $row['pre_requisite'];
+                                                        $subject_type = $row['subject_type'];
+                                                        $unit = $row['unit'];
+                                                        $course_level = $row['course_level'];
+                                                        $program_section = $row['program_section'];
+                                                        
+                                                        $student_student_subject_id = 0;
+
+                                                        $get_student_subject = $studentSubject->
+                                                            GetNonFinalizedStudentSubject($student_id, $subject_id,
+                                                            $enrollment_id, $current_school_year_id);
+
+                                                        
+                                                        if(count($get_student_subject) > 0){
+                                                            $student_student_subject_id = $get_student_subject['subject_id'];
+                                                            // echo $student_student_subject_id;
+                                                        }
+
+
+
+                                                        echo "
+                                                            <tr class='text-center'>
+                                                                <td>$subject_id</td>
+                                                                <td>$program_section</td>
+                                                                <td>$subject_code</td>
+                                                                <td>$subject_title</td>
+                                                                <td>$unit</td>
+                                                                <td>$pre_requisite</td>
+                                                                <td>$subject_type</td>
+                                                                <td>
+                                                                    <input name='normal_selected_subject[]' 
+                                                                        value='" . $subject_id . "'
+                                                                        type='checkbox'" . ($student_student_subject_id == $subject_id ? " checked" : "") . ">
+                                                                </td>
+                                                            </tr>
+                                                        ";
+                                                    }
+
+                                                }
+                                            ?>
+                                        </tbody> -->
+                                    </table>
+                                </div>
 
                                 <?php
-                            }else{
-                                ?>
-                                    <button type="submit" disabled
-                                        class="btn btn-outline-success btn">Select Section First
-                                    </button>
-                                <?php 
-                            }
-                        ?>
+                                    if($student_id != null){
 
-                        <a href="transferee_process_enrollment.php?step2=true&id=<?php echo $pending_enrollees_id;?>">
-                            <button class="btn-secondary btn">
-                                Go back
-                            </button>
-                        </a>
+                                        $_SESSION['selected_course_id'] = $selected_course_id;
+
+                                        ?>
+                                            <button style="display: none;" name="credited_selected_btn" type="submit" 
+                                                class="btn btn-primary btn">Add to Credit
+                                            </button>
+
+                                        <?php
+                                    }else{
+                                        ?>
+                                            <button type="button" disabled
+                                                class="btn btn-outline-success btn">Select Section First
+                                            </button>
+                                        <?php 
+                                    }
+                                ?>
+
+                                <a href="transferee_process_enrollment.php?step4=true&id=<?php echo $pending_enrollees_id;?>&selected_course_id=<?php echo $selected_course_id;?>">
+                                    <button type="button" class="btn-primary btn">
+                                        Proceed
+                                    </button>
+                                </a>
+
+                                <a href="transferee_process_enrollment.php?step4=true&id=<?php echo $pending_enrollees_id;?>&selected_course_id=<?php echo $student_course_id;?>">
+                                    <button type="button" class="btn-success btn">
+                                        Skip
+                                    </button>
+                                </a>
+
+                                <a href="transferee_process_enrollment.php?step2=true&id=<?php echo $pending_enrollees_id;?>">
+                                    <button type="button" class="btn-secondary btn">
+                                        Go back
+                                    </button>
+                                </a>
+                        </form>
+
                     </div> 
                 </div>
 
                 <script>
+
+                    function showDiv() {
+                        var subjectDiv = document.getElementById("subjectDiv");
+                            if (subjectDiv.style.display === "none") {
+                                subjectDiv.style.display = "block";
+                            } else {
+                                subjectDiv.style.display = "none";
+                            }
+                    }
 
                     function add_non_transferee(student_id, subject_id,
                         course_level, school_year_id,
@@ -3282,7 +4358,35 @@
 
                        
                     }
+
                     $(document).ready(function(){
+
+                        var course_id = `<?php echo $selected_course_id;?>`;
+                        var course_level = `<?php echo $student_course_level;?>`;
+                        var semester = `<?php echo $current_school_year_period;?>`;
+                        var student_id = `<?php echo $student_id;?>`;
+                        var enrollment_id = `<?php echo $enrollment_id;?>`;
+                        
+                        var addedSubjectTable = $('#creditedSubjectsTable').DataTable({
+                            'processing': true,
+                            'serverSide': true,
+                            'serverMethod': 'POST',
+                            'ajax': {
+                                'url':`creditedSubjectDataTable.php?id=${course_id}&level=${course_level}&semester=${semester}&st_id=${student_id}&e_id=${enrollment_id}`
+                            },
+                            'lengthChange': false, // Disable the length change
+
+                            'columns': [
+                                { data: 'subject_id' },
+                                { data: 'program_section' },
+                                { data: 'subject_code' },
+                                { data: 'subject_title' },
+                                { data: 'unit' },
+                                { data: 'pre_requisite' },
+                                { data: 'subject_type' },
+                                { data: 'actions1' }
+                            ]
+                        });
 
                         var id = '<?php echo $student_id; ?>';  
                     

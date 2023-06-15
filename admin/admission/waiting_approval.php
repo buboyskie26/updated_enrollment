@@ -32,11 +32,13 @@
     $pendingEnrollment = $enrollment->PendingEnrollment();
     $waitingPaymentEnrollment = $enrollment->WaitingPaymentEnrollment($current_school_year_id);
     $waitingApprovalEnrollment = $enrollment->WaitingApprovalEnrollment($current_school_year_id);
+    $enrolledStudentsEnrollment = $enrollment->EnrolledStudentsWithinSYSemester($current_school_year_id);
 
 
     $pendingEnrollmentCount = count($pendingEnrollment);
     $waitingPaymentEnrollmentCount = count($waitingPaymentEnrollment);
     $waitingApprovalEnrollmentCount = count($waitingApprovalEnrollment);
+    $enrolledStudentsEnrollmentCount = count($enrolledStudentsEnrollment);
     
 ?>
 
@@ -64,8 +66,7 @@
             </div>
             <div class="col-md-3">
                 <a href="enrolled.php">
-                <button class="btn btn  btn-outline-primary">Enrolled</button>
-
+                    <button class="btn btn  btn-outline-primary">Enrolled <span class="text-white">(<?php echo $enrolledStudentsEnrollmentCount;?>)</span></button>
                 </a>
             </div>
             <hr>
@@ -79,7 +80,7 @@
         if(count($waitingApprovalEnrollment) > 0){
         ?>
             <div class="row col-md-12">
-                <h3 class="mb-2 text-center text-success">Evaluated</h3>
+                <h3 class="mb-2 text-center text-success">Waiting Enrollment Approval</h3>
                 <div class="table-responsive">			
                     <table id="dash-table" class="table table-striped table-bordered table-hover table-responsive" style="font-size:12px" cellspacing="0">
                         <thead>
@@ -111,6 +112,10 @@
                                     $new_enrollee = $row['new_enrollee'];
                                     $is_tertiary = $row['is_tertiary'];
                                     $is_transferee = $row['is_transferee'];
+                                    
+                                    $admission_status = $row['admission_status'];
+                                    $student_statusv2 = $row['student_statusv2'];
+
 
                                     // $program_section_default = "";
                                     if($program_section === ""){
@@ -168,8 +173,23 @@
                                         if($student_status == "Transferee"){
 
                                                 // if($new_enrollee == 0 || $new_enrollee == 1){
-                                            if($new_enrollee == 1 && $is_tertiary == 0 && $is_transferee == 1){
-                                                $student_type_status = "New Transferee (SHS)";
+                                            // if($new_enrollee == 1 && $is_tertiary == 0 && $is_transferee == 1){
+
+                                            //     $student_type_status = "New Transferee (SHS)";
+
+                                            //     $evaluateBtn = "
+                                            //         <a href='$transferee_insertion_url'>
+                                            //             <button class='btn btn-outline-success btn-sm'>
+                                            //                 Evaluate
+                                            //             </button>
+                                            //         </a>
+                                            //     ";
+
+                                            // }
+                                            if($admission_status == "Standard" 
+                                                && $student_statusv2 == "Regular"){
+
+                                                $student_type_status = "Standard Regular";
 
                                                 $evaluateBtn = "
                                                     <a href='$transferee_insertion_url'>
@@ -179,28 +199,21 @@
                                                     </a>
                                                 ";
 
-                                            }else if($new_enrollee == 0 && $is_tertiary == 0 && $is_transferee == 0){
+                                            }
+                                            else if($admission_status == "Transferee" 
+                                                && $student_statusv2 == "Regular"){
 
-                                                $student_type_status = "On Going Transferee (SHS)";
+                                                // $student_type_status = "On Going Transferee (SHS)";
+                                                
+                                                $student_type_status = "O.S $admission_status (SHS $student_statusv2)";
 
-                                                // $evaluateBtn = "
-                                                //     <a href='cashier_process_enrollment.php?id=$student_id'>
-
-                                                //         <button class='btn btn-outline-primary btn-sm'>
-                                                //             Evaluate
-                                                //         </button>
-                                                //     </a>
-                                                // ";
-
-                                                // $asd = $course_id;
-
-                                                // $trans_url = "transferee_process_enrollment.php?step3=true&id=$student_id&selected_course_id=$course_id";
-
+                                               
                                                 # PREVIOUS URL
                                                 $trans_url = "transferee_process_enrollment.php?step3=true&st_id=$student_id&selected_course_id=$course_id";
+                                                $regular_insertion_url = "../enrollees/subject_insertion.php?username=$username&id=$student_id";
 
                                                 $evaluateBtn = "
-                                                    <a href='$transferee_insertion_url'>
+                                                    <a href='$regular_insertion_url'>
                                                         <button class='btn btn-outline-success btn-sm'>
                                                             Evaluate
                                                         </button>

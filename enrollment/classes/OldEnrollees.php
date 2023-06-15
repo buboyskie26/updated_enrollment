@@ -851,6 +851,7 @@
         }
     }
 
+
     public function CheckGrade12AlignedSections($student_id){
 
         $student_username = $this->studentEnroll->GetStudentUsername($student_id);
@@ -885,6 +886,33 @@
         return $result;
     }
 
+
+    public function CheckIfAlignedSection($student_course_id,
+        $student_course_level){
+
+
+        $check_course = $this->con->prepare("SELECT course_level FROM course
+            WHERE course_id=:course_id");
+            
+        $check_course->bindValue(":course_id", $student_course_id);
+        $check_course->execute();
+
+        if($check_course->rowCount() > 0){
+
+            $course_course_level = $check_course->fetchColumn();
+
+            // echo $course_course_level;
+            if($course_course_level == $student_course_level){
+                // echo "aligned";
+                $result =  true;
+            }else {
+                // echo "not aligned";
+                $result = false;
+            }
+        }
+
+        return $result;
+    }
     public function CheckInActiveStudentEligibleForSemester($student_id, $course_id){
 
         $school_year_obj = $this->studentEnroll->GetActiveSchoolYearAndSemester();
@@ -1081,6 +1109,7 @@
         $my_passed_enrolled_subjects = [];
         
         $isEmpty = false;
+        
         if($query->rowCount() > 0){
 
             $row = $query->fetch(PDO::FETCH_ASSOC);
@@ -1149,24 +1178,6 @@
           
 
         }
-        // $query = $this->con->prepare("SELECT * FROM student_subject as t1
-        
-        //     -- INNER JOIN 
-        // ");
-
-        // $query->bindValue("student_id", $student_id); 
-        // $query->bindValue("period", $selected_semester); 
-        // $query->bindValue("enrollment_status", "enrolled"); 
-        // $query->bindValue("course_level", $selected_course_level); 
-        // $query->execute(); 
-
-        // if($query->rowCount() > 0){
-
-
-        // }
-
-        # Compare all those subject in the subject_grade
-        # Check if all remarked as passed.
         
     }
 
@@ -1180,6 +1191,7 @@
 
         $student_subject = [];
         $subject_remarked = [];
+
         $query = $this->con->prepare("SELECT 
 
             t1.enrollment_id, t2.student_subject_id
@@ -1209,7 +1221,10 @@
 
                 array_push($student_subject, $student_subject_id);
 
-                $get_marked = $this->con->prepare("SELECT student_subject_id FROM student_subject_grade
+                $get_marked = $this->con->prepare("SELECT student_subject_id 
+                
+                    FROM student_subject_grade
+
                     WHERE student_subject_id=:student_subject_id
                     AND remarks='Passed'");
 
@@ -1226,6 +1241,7 @@
             }
 
             // print_r($student_subject);
+
             // print_r($subject_remarked);
 
             if(count($student_subject) == count($subject_remarked)
@@ -1235,49 +1251,9 @@
                     // echo "true";
                 return true;
             }
-
         }
+
         return false;
-
-
-            // $query = $this->con->prepare(" SELECT 
-
-            //     t1.enrollment_id, t2.student_subject_id
-
-            //     FROM enrollment AS t1
-
-            //     INNER JOIN student_subject AS t2 ON t2.enrollment_id = t1.enrollment_id
-
-            //     WHERE t1.course_id = :course_id
-            //     AND t1.school_year_id = :school_year_id
-            //     AND t1.enrollment_status = :enrollment_status
-            //     AND t2.is_final = 1
-            //     AND t1.student_id = :student_id
-
-            //     AND EXISTS (
-            //         SELECT 1
-            //         FROM student_subject_grade
-            //         WHERE student_subject_id = t2.student_subject_id
-            //         AND remarks = 'Passed'
-            //     )
-            // ");
-
-            // $query->execute([
-            //     "course_id" => $student_course_id,
-            //     "school_year_id" => $school_year_id,
-            //     "enrollment_status" => "enrolled",
-            //     "student_id" => $student_id
-            // ]);
-
-            // if ($query->rowCount() > 0) {
-            //     while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
-            //         $student_subject_id = $row['student_subject_id'];
-            //         // Do something with the result
-            //         echo $student_subject_id;
-            //     }
-            // }
-
-
     }
 
 

@@ -83,7 +83,8 @@
             }
 
             if($isSubjectCreated == true){
-                echo "Successfully populated subjects in course_id $course_id";
+
+                AdminUser::success("All section`s subjects has been populated within the semester.", "");
             }
         }else{
             echo "program id not matched";
@@ -278,7 +279,7 @@
                                             </a>
                                         ";
 
-                                        $url = "strand_showv3.php?id=$course_id";
+                                        $url = "section_show.php?id=$course_id";
                                         echo "
                                             <tr class='text-center'>
                                                 <td>$course_id</td>

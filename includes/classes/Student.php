@@ -61,6 +61,10 @@ class Student{
         return -1;
     }
 
+    public function GetStudentCourseLevel() {
+        return isset($this->sqlData['course_level']) ? $this->sqlData["course_level"] : ""; 
+    }
+
     public function GetLastName() {
         return isset($this->sqlData['lastname']) ? $this->sqlData["lastname"] : ""; 
     }
@@ -71,6 +75,8 @@ class Student{
     public function GetMiddleName() {
         return isset($this->sqlData['middle_name']) ? $this->sqlData["middle_name"] : ""; 
     }
+
+    
 
     public function GetStudentAddress() {
         return isset($this->sqlData['address']) ? $this->sqlData["address"] : "N/A"; 
@@ -236,6 +242,20 @@ class Student{
         return $sql->execute();
     }
 
+    public function UpdateStudentSection($student_id, $course_id){
+
+
+        $sql = $this->con->prepare("UPDATE student 
+                    SET course_id = :update_course_id
+                    WHERE student_id = :student_id
+                    ");
+
+        $sql->bindValue(":update_course_id", $course_id);
+        $sql->bindValue(":student_id", $student_id);
+
+        return $sql->execute();
+    }
+
     public function MarkAsGraduate($student_id){
 
         $is_graduated = 1;
@@ -292,7 +312,7 @@ class Student{
 
         $current_enrollment = $this->con->prepare("SELECT 
         
-            t1.student_id
+            t1.*
             -- t1.is_tertiary,
             -- t1.admission_status
             FROM enrollment as t1
@@ -308,6 +328,7 @@ class Student{
 
         $prev_enrollment = $this->con->prepare("SELECT 
                 t1.student_id,
+                t2.username,
                 t2.is_tertiary,
                 t1.enrollment_id,
                 t2.admission_status
@@ -361,7 +382,8 @@ class Student{
 
                         $get_student = $this->con->prepare("SELECT 
                         
-                            student_id, admission_status
+                            student_id, admission_status,
+                            is_tertiary,username
 
                             FROM student
                             WHERE student_id=:student_id
@@ -453,6 +475,7 @@ class Student{
     public function CheckShsStudentGraduateCandidate($student_id, $program_id){
        
         $studentCurriculumSubject = [];
+        
         $subjects = $this->GetStudentWholeCurriculumStrandBased($program_id);
 
         foreach ($subjects as $key => $value) {
@@ -460,11 +483,144 @@ class Student{
             array_push($studentCurriculumSubject, $value['subject_program_id']);
         }
 
+
         $sql = $this->con->prepare("SELECT t1.subject_program_id
     
             FROM student_subject as t1
             INNER JOIN student_subject_grade as t2 ON t2.student_subject_id = t1.student_subject_id
             AND t2.remarks = 'Passed'
+            AND t1.student_id =:student_id
+        ");
+
+        $sql->bindValue(":student_id", $student_id);
+        $sql->execute();
+
+        $studentCurrentSubject = [];
+
+        $studentWholePassedSubject = $this->GetWholeStudentPassedSubjectGrade($program_id,
+            $student_id);
+
+  
+        if($sql->rowCount() > 0){
+
+            $subjects = $sql->fetchAll(PDO::FETCH_ASSOC);
+            // var_dump($subjects);
+
+            foreach ($subjects as $key => $value) {
+                # code...
+                // array_push($studentCurrentSubject, $value);
+                array_push($studentCurrentSubject, $value['subject_program_id']);
+            }
+        }
+
+ 
+        // echo count($studentCurrentSubject);
+        // echo count($studentCurriculumSubject);
+ 
+        $difference = array_diff($studentCurriculumSubject, $studentCurrentSubject);
+
+        if(count($studentCurriculumSubject) == count($studentCurrentSubject)
+            && empty($difference)
+            ){
+            // echo "uu";
+            return true;
+        }else{
+            // echo "nut";
+
+            return false;
+        }
+
+        return false;
+
+    }
+
+    public function CheckShsStudentGraduateCandidatev2($student_id, $program_id){
+       
+        $studentCurriculumSubject = [];
+        
+        $subjects = $this->GetStudentWholeCurriculumStrandBased($program_id);
+
+        foreach ($subjects as $key => $value) {
+            # code...
+            array_push($studentCurriculumSubject, $value['subject_title']);
+        }
+
+
+        $sql = $this->con->prepare("SELECT t1.subject_program_id
+    
+            FROM student_subject as t1
+            INNER JOIN student_subject_grade as t2 ON t2.student_subject_id = t1.student_subject_id
+            AND t2.remarks = 'Passed'
+            AND t1.student_id =:student_id
+        ");
+
+        $sql->bindValue(":student_id", $student_id);
+        $sql->execute();
+
+        $studentCurrentSubject = [];
+
+        $studentWholePassedSubject = $this->GetWholeStudentPassedSubjectGrade($program_id,
+            $student_id);
+
+        foreach ($studentWholePassedSubject as $key => $value) {
+            # code...
+            array_push($studentCurrentSubject, $value['subject_title']);
+        }
+
+        // print_r($studentWholePassedSubject);
+
+  
+        // if($sql->rowCount() > 0){
+
+        //     $subjects = $sql->fetchAll(PDO::FETCH_ASSOC);
+        //     // var_dump($subjects);
+
+        //     foreach ($subjects as $key => $value) {
+        //         # code...
+        //         // array_push($studentCurrentSubject, $value);
+        //         array_push($studentCurrentSubject, $value['subject_program_id']);
+        //     }
+        // }
+
+ 
+        // echo count($studentCurrentSubject);
+        // echo count($studentCurriculumSubject);
+ 
+        $difference = array_diff($studentCurriculumSubject, $studentCurrentSubject);
+
+        if(count($studentCurriculumSubject) == count($studentCurrentSubject)
+            && empty($difference)
+            ){
+            // echo "uu";
+            return true;
+        }else{
+            // echo "nut";
+
+            return false;
+        }
+
+        return false;
+
+    }
+
+    public function CheckShsStudentGraduateCandidateTitleBased($student_id,
+        $program_id){
+       
+        $studentCurriculumSubject = [];
+        
+        $subjects = $this->GetStudentWholeCurriculumStrandBased($program_id);
+
+        foreach ($subjects as $key => $value) {
+            # code...
+            array_push($studentCurriculumSubject, $value['subject_title']);
+        }
+
+        // print_r($studentCurriculumSubject);
+
+        $sql = $this->con->prepare("SELECT t1.subject_title
+    
+            FROM student_subject_grade as t1
+            WHERE t1.remarks = 'Passed'
             AND t1.student_id =:student_id
         ");
 
@@ -481,18 +637,21 @@ class Student{
             foreach ($subjects as $key => $value) {
                 # code...
                 // array_push($studentCurrentSubject, $value);
-                array_push($studentCurrentSubject, $value['subject_program_id']);
+                array_push($studentCurrentSubject, $value['subject_title']);
             }
         }
- 
- 
-        $difference = array_diff($studentCurriculumSubject, $studentCurrentSubject);
+        
+      
+        $difference = array_diff($studentCurriculumSubject,
+            $studentCurrentSubject);
 
-        if(count($studentCurriculumSubject) == count($studentCurrentSubject)
+        if(count($studentCurrentSubject) == count($studentCurriculumSubject)
             && empty($difference)
             ){
+                // echo "same";
             return true;
         }else{
+            // echo "not";
             return false;
         }
 
@@ -500,9 +659,125 @@ class Student{
 
     }
 
+    public function CheckShsEligibleForMoveUp($student_id,
+        $program_id){
+       
+        $studentCurriculumSubject = [];
+        
+        $subjects = $this->GetGrade11FirstAndSecondSemCurriculum($program_id);
+
+        // print_r($subjects);
+
+        foreach ($subjects as $key => $value) {
+            # code...
+            array_push($studentCurriculumSubject, $value['subject_title']);
+        }
+
+        // print_r($studentCurriculumSubject);
+
+        $sql = $this->con->prepare("SELECT t1.subject_title
+    
+            FROM student_subject_grade as t1
+            WHERE t1.remarks = 'Passed'
+            AND t1.student_id =:student_id
+        ");
+
+        $sql->bindValue(":student_id", $student_id);
+        $sql->execute();
+
+        $studentCurrentSubject = [];
+  
+        if($sql->rowCount() > 0){
+
+            $subjects = $sql->fetchAll(PDO::FETCH_ASSOC);
+            // var_dump($subjects);
+
+            foreach ($subjects as $key => $value) {
+                # code...
+                // array_push($studentCurrentSubject, $value);
+                array_push($studentCurrentSubject, $value['subject_title']);
+            }
+        }
+        
+        // print_r($studentCurrentSubject);
+        
+        $difference = array_diff($studentCurriculumSubject,
+            $studentCurrentSubject);
+
+        if(empty($difference)){
+            // echo "true";
+            return true;
+        }else{
+            // echo "false";
+            return false;
+
+        }
+
+        return false;
+    }
+
+    
+    public function CheckTertiaryEligibleForMoveUp($student_id,
+        $program_id, $course_level){
+       
+        $courseLevelCurriculumSubject = [];
+        
+        $subjects = $this->GetTertiarySemesterBasedOnYearLevel($program_id,
+            $course_level);
+
+        // print_r($subjects);
+
+        foreach ($subjects as $key => $value) {
+            # code...
+            array_push($courseLevelCurriculumSubject, $value['subject_title']);
+        }
+
+        // print_r($courseLevelCurriculumSubject);
+
+        $sql = $this->con->prepare("SELECT t1.subject_title
+    
+            FROM student_subject_grade as t1
+            WHERE t1.remarks = 'Passed'
+            AND t1.student_id =:student_id
+        ");
+
+        $sql->bindValue(":student_id", $student_id);
+        $sql->execute();
+
+        $studentCurrentSubject = [];
+  
+        if($sql->rowCount() > 0){
+
+            $subjects = $sql->fetchAll(PDO::FETCH_ASSOC);
+            // var_dump($subjects);
+
+            foreach ($subjects as $key => $value) {
+                # code...
+                // array_push($studentCurrentSubject, $value);
+                array_push($studentCurrentSubject, $value['subject_title']);
+            }
+        }
+        
+        // print_r($studentCurrentSubject);
+        
+        $difference = array_diff($courseLevelCurriculumSubject,
+            $studentCurrentSubject);
+
+        if(empty($difference)){
+            // echo "true";
+            return true;
+        }else{
+            // echo "false";
+            return false;
+
+        }
+        return false;
+
+    }
+
     public function GetStudentWholeCurriculumStrandBased($program_id){
 
-        $subject_query = $this->con->prepare("SELECT subject_program_id
+        $subject_query = $this->con->prepare("SELECT subject_program_id, subject_title
 
             FROM subject_program
             WHERE program_id=:program_id
@@ -514,6 +789,84 @@ class Student{
         if($subject_query->rowCount() > 0){
 
             $row_sub = $subject_query->fetchAll(PDO::FETCH_ASSOC);
+            return $row_sub;
+        }
+        return [];
+    }
+
+    public function GetGrade11FirstAndSecondSemCurriculum($program_id){
+
+        $course_level = 11;
+
+        $subject_query = $this->con->prepare("SELECT subject_program_id, subject_title
+
+            FROM subject_program
+            WHERE program_id=:program_id
+            AND course_level=:course_level
+            ");
+
+        $subject_query->bindValue(":program_id", $program_id); 
+        $subject_query->bindValue(":course_level", $course_level); 
+        $subject_query->execute();
+
+        if($subject_query->rowCount() > 0){
+
+            $row_sub = $subject_query->fetchAll(PDO::FETCH_ASSOC);
+
+            // print_r($row_sub);
+            return $row_sub;
+        }
+
+        return [];
+    }
+
+    public function GetTertiarySemesterBasedOnYearLevel($program_id,
+        $course_level){
+
+        // $course_level = 11;
+
+        $subject_query = $this->con->prepare("SELECT subject_program_id, subject_title
+
+            FROM subject_program
+            WHERE program_id=:program_id
+            AND course_level=:course_level
+            ");
+
+        $subject_query->bindValue(":program_id", $program_id); 
+        $subject_query->bindValue(":course_level", $course_level); 
+        $subject_query->execute();
+
+        if($subject_query->rowCount() > 0){
+
+            $row_sub = $subject_query->fetchAll(PDO::FETCH_ASSOC);
+
+            // print_r($row_sub);
+            return $row_sub;
+        }
+
+        return [];
+    }
+
+    public function GetWholeStudentPassedSubjectGrade($program_id, $student_id){
+
+        // $course_level = 11;
+
+        $subject_query = $this->con->prepare("SELECT subject_title
+
+            FROM student_subject_grade
+            -- WHERE program_id=:program_id
+            WHERE student_id=:student_id
+            AND remarks='Passed'
+            ");
+
+        // $subject_query->bindValue(":program_id", $program_id); 
+        $subject_query->bindValue(":student_id", $student_id); 
+        $subject_query->execute();
+
+        if($subject_query->rowCount() > 0){
+
+            $row_sub = $subject_query->fetchAll(PDO::FETCH_ASSOC);
+            // print_r($row_sub);
             return $row_sub;
         }
 

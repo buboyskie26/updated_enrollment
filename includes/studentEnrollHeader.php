@@ -5,6 +5,8 @@
     // require_once('includes/classes/StudentNavigationMenu.php');
     // require_once('admin/classes/ButtonProvider.php');
     // require_once('../includes/classes/Student.php');
+    require_once('../admin/classes/Alert.php');
+    require_once('../../dcbt/admin/classes/Alert.php');
     
 
     $studentLoggedIn = isset($_SESSION["username"]) 

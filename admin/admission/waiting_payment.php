@@ -28,15 +28,16 @@
     $waitingPaymentEnrollment = $enrollment->WaitingPaymentEnrollment($current_school_year_id);
 
 
-    $enrollment = new Enrollment($con, null);
     $pendingEnrollment = $enrollment->PendingEnrollment();
     $waitingPaymentEnrollment = $enrollment->WaitingPaymentEnrollment($current_school_year_id);
     $waitingApprovalEnrollment = $enrollment->WaitingApprovalEnrollment($current_school_year_id);
+    $enrolledStudentsEnrollment = $enrollment->EnrolledStudentsWithinSYSemester($current_school_year_id);
 
 
     $pendingEnrollmentCount = count($pendingEnrollment);
     $waitingPaymentEnrollmentCount = count($waitingPaymentEnrollment);
     $waitingApprovalEnrollmentCount = count($waitingApprovalEnrollment);
+    $enrolledStudentsEnrollmentCount = count($enrolledStudentsEnrollment);
     
 ?>
 
@@ -64,8 +65,7 @@
             </div>
             <div class="col-md-3">
                 <a href="enrolled.php">
-                <button class="btn btn  btn-outline-primary">Enrolled</button>
-
+                   <button class="btn btn  btn-outline-primary">Enrolled <span class="text-white">(<?php echo $enrolledStudentsEnrollmentCount;?>)</span></button>
                 </a>
             </div>
             <hr>

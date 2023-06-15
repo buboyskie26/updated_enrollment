@@ -76,6 +76,7 @@
                                         $course_level = $row['course_level'];
                                         $course_id = $row['course_id'];
                                         $status = $row['student_status'];
+                                        $admission_status = $row['admission_status'];
                                         $program_section = $row['program_section'];
 
                                         $view_url = directoryPath . "view_details.php?profile=show&id=$student_id";
@@ -85,24 +86,28 @@
 
                                         // $view_url = directoryPath . "view_details.php?profile=show&id=$student_id";
 
-                                        $trans_url = directoryPath . "shs_view_transferee_details.php?profile=show&id=$student_id";
 
                                         $section_url = "http://localhost/dcbt/admin/section/strand_show.php?id=$course_id";
 
 
-                                        $view_btn = "
-                                            <a href='$view_url'>
-                                                <button class='btn btn-secondary btn-sm'>
-                                                    View Details
-                                                </button>
-                                            </a>
-                                        ";
+                                        $view_btn = "";
 
-                                        if($status == "Transferee"){
+                                        $trans_url = directoryPath . "shs_view_transferee_details.php?profile=show&id=$student_id";
+
+                                        if($admission_status == "Transferee"){
 
                                             $view_btn = "
                                                 <a href='$trans_url'>
                                                     <button class='btn btn-outline-secondary btn-sm'>
+                                                        View Details
+                                                    </button>
+                                                </a>
+                                            ";
+                                        }else{
+
+                                            $view_btn = "
+                                                <a href='$view_url'>
+                                                    <button class='btn btn-secondary btn-sm'>
                                                         View Details
                                                     </button>
                                                 </a>
@@ -190,11 +195,37 @@
                                         $course_id = $row['course_id'];
                                         $status = $row['student_status'];
                                         $program_section = "";
+                                        $admission_status = $row['admission_status'];
 
                                         
                                         $gradeUrl = "http://localhost/dcbt/admin/enrollees/tertiary_student_grade_report.php?id=$student_id";
                                         $section_url = "http://localhost/dcbt/admin/section/strand_show.php?id=$course_id";
-                                        $view_url = directoryPath . "view_details.php?profile=show&id=$student_id";
+
+
+                                        $view_url = directoryPath . 
+                                            "view_details.php?profile=show&id=$student_id";
+
+                                        $trans_url = directoryPath . "shs_view_transferee_details.php?profile=show&id=$student_id";
+
+                                        echo $admission_status;
+                                        if($admission_status == "Transferee"){
+
+                                            $view_btn = "
+                                                <a href='$trans_url'>
+                                                    <button class='btn btn-secondary btn-sm'>
+                                                        View Details
+                                                    </button>
+                                                </a>
+                                            ";
+                                        }else{
+                                            $view_btn = "
+                                                <a href='$view_url'>
+                                                    <button class='btn btn-outline-secondary btn-sm'>
+                                                        View Details
+                                                    </button>
+                                                </a>
+                                            ";
+                                        }
 
                                         echo '<tr class="text-center">'; 
                                                 echo '<td>'.$student_id.'</td>';

@@ -23,7 +23,7 @@
             $enrollment_url = $base_url . '/enrollment/index.php';
 
             $school_year_url = $base_url . '/school_year/indexv2.php';
-            $admission_url = $base_url . '/admission/index.php';
+            $admission_url = $base_url . '/admission/evaluation.php';
             $account_url = $base_url . '/account/index.php';
             // $courses_url = $base_url . '/subject/index.php';
             $courses_url = $base_url . '/courses/registrar_course_list.php';
