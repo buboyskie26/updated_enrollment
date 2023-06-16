@@ -1,0 +1,70 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
+}
+
+ul{
+    list-style-type: none;
+    width: 15%;
+    background-color: #1A0000;
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+}
+
+/* ====Account-Information====*/
+.image-text{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+
+.image-text .image img{
+    width: 57px;
+    height: 57px;
+    padding-left: 5px;
+    padding-top: 10px;
+    left: 20px;
+    top: 14px;
+    border-radius: 50px;
+
+}
+
+.image-text .header-text span{
+    display: flex;
+    align-items: center;
+}
+
+.image-text .header-text .name{
+    font-weight: 700;
+    color: white;
+}
+
+.image-text .header-text .email{
+    color: gray;
+    font-size: small;
+}
+
+.image-text .header-text .role{
+    color: gray;
+    font-size: small;
+}
+
+/*====Nav-items====*/
+li a{
+    display: block;
+    color: gray;
+    padding: 8px 16px;
+    align-items: center;
+}
+
+li .active{
+    color: white;
+}
+
+li a:hover{
+    color: white;
+    text-decoration: none;
+}

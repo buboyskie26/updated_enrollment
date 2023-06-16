@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, inital-scale=1, shrink-to-fit=no"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,700&family=Lato:wght@100;300;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/DCBT-2/admission-registrar/admission-enrollment.css"
+    />
+
+    <title>Daehan College of Business and Technology</title>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="top">
+        <div class="logo">
+          <span>DCBT</span>
+        </div>
+        <i class="bi bi-list" id="tab-btn"></i>
+      </div>
+      <div class="user">
+        <img src="/DCBT-2/img/DCBT-Logo.jpg" />
+        <div>
+          <p class="bold">User</p>
+          <p>user@dcbt</p>
+          <p>Registrar</p>
+        </div>
+      </div>
+      <ul>
+        <li>
+          <a href="#">
+            <i class="bi bi-clipboard-data"></i>
+            <span class="nav-item">Dashboard</span>
+          </a>
+          <span class="tooltip">Dashboard</span>
+        </li>
+        <li>
+          <a href="/DCBT-2/admission-registrar/Admission.html" class="active">
+            <i class="bi bi-calendar4"></i>
+            <span class="nav-item">Admission</span>
+          </a>
+          <span class="tooltip">Admission</span>
+        </li>
+        <li>
+          <a href="#">
+            <i class="bi bi-person"></i>
+            <span class="nav-item">Students</span>
+          </a>
+          <span class="tooltip">Students</span>
+        </li>
+        <li>
+          <a href="#">
+            <i class="bi bi-person-plus-fill"></i>
+            <span class="nav-item">Section</span>
+          </a>
+          <span class="tooltip">Section</span>
+        </li>
+        <li>
+          <a href="#">
+            <i class="bi bi-box-arrow-right"></i>
+            <span class="nav-item">Log-out</span>
+          </a>
+          <span class="tooltip">Log-out</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="content">
+      <div class="back-menu">
+        <button type="button" class="admission-btn" onclick="admission()">
+          <i class="bi bi-arrow-left-circle"></i> Admission
+        </button>
+      </div>
+
+      <div class="head">
+        <div class="header-content">
+          <h3>Enrollment form</h3>
+
+          <div class="dropdown">
+            <div class="dropdown-toggle" onclick="toggleDropdown()">
+              <i class="bi bi-three-dots-vertical"></i>
+            </div>
+            <ul class="dropdown-menu">
+              <li>
+                <button type="button" class="action" onclick="edit_calendar()">
+                  <i class="bi bi-file-x"></i>Delete form
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="student-table">
+          <table>
+            <tr>
+              <th>Form ID</th>
+              <th>Admission type</th>
+              <th>Student no</th>
+              <th>Status</th>
+              <th>Submitted on</th>
+            </tr>
+            <tr>
+              <td>021</td>
+              <td>Conflict</td>
+              <td>N/A</td>
+              <td>For evaluation</td>
+              <td>04/27/2023</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="steps">
+          <div class="step active">Check form details</div>
+          <div class="step">Find section</div>
+          <div class="step">Subject confirmation</div>
+        </div>
+      </div>
+
+      <div class="bg-content">
+        <div class="step-content active">
+          <div class="content-box">
+            <h3>Student form details</h3>
+            <p>
+              Assure every students information in this section. This will
+              UPDATE existing student data.
+            </p>
+
+            <div class="student-info">
+              <h4>Update student information</h4>
+
+              <form action="" class="info-box">
+                <div class="info-1">
+                  <label for="name"> Name </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    id="lastName"
+                    value=""
+                    placeholder="Last name"
+                  />
+                  <input
+                    type="text"
+                    name="firstName"
+                    id="firstName"
+                    value=""
+                    placeholder="First name"
+                  />
+                  <input
+                    type="text"
+                    name="middleName"
+                    id="middleName"
+                    value=""
+                    placeholder="Middle name"
+                  />
+                  <input
+                    type="text"
+                    name="suffixName"
+                    id="suffixName"
+                    value=""
+                    placeholder="Suffix name"
+                  />
+                </div>
+                <div class="info-4">
+                  <label for="address"> Address </label>
+                  <input type="text" name="address" id="address" value="" />
+                </div>
+                <div class="info-5">
+                  <label for="phoneNo"> Phone no. </label>
+                  <input type="text" name="phoneNo" id="phoneNo" value="" />
+                  <label for="email"> Email </label>
+                  <input type="text" name="email" id="email" value="" />
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="btn-placing">
+            <button class="next-btn">Proceed</button>
+          </div>
+        </div>
+
+        <div class="step-content">
+          <div class="content-box">
+            <h3>Enrollment details</h3>
+
+            <div class="enrollment-details">
+              <form action="" class="info-box">
+                <div class="info-1">
+                  <label for="sy"> S.Y. </label>
+                  <span id="currentSY">2023-2024</span>
+                  <label for="track"> Track </label>
+                  <div class="selection-box-1">
+                    <select name="track" id="track">
+                      <option value="Academic Track">Academic Track</option>
+                      <option value="TVL">TVL</option>
+                      <option value="Arts & Design Track">
+                        Arts & Design Track
+                      </option>
+                    </select>
+                  </div>
+                  <label for="strand">Strand</label>
+                  <div class="selection-box-1">
+                    <select name="strand" id="strand">
+                      <option value="ABM">ABM</option>
+                      <option value="HUMSS">HUMSS</option>
+                      <option value="GAS">GAS</option>
+                      <option value="ICT">ICT</option>
+                      <option value="IA">IA</option>
+                      <option value="HE">HE</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="info-2">
+                  <label for="year">Year</label>
+                  <div class="selection-box-1">
+                    <select name="year" id="year" disabled="disabled">
+                      <option value="1">1</option>
+                    </select>
+                  </div>
+                  <label for="semester">Semester</label>
+                  <div class="selection-box-1">
+                    <select name="semester" id="semester" disabled="disabled">
+                      <option value="1">1</option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="content-box">
+            <h3>Available sections</h3>
+
+            <table>
+              <tr>
+                <th>Section ID</th>
+                <th>Section name</th>
+                <th>Year</th>
+                <th>Semester</th>
+                <th>Students</th>
+                <th></th>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><input type="radio" name="action" id="action" /></td>
+              </tr>
+            </table>
+          </div>
+          <div class="btn-placing">
+            <button class="prev-btn">Return</button>
+            <button class="next-btn">Proceed</button>
+          </div>
+        </div>
+        <div class="step-content">
+          <div class="content-box">
+            <h3>ICT-112 subjects</h3>
+
+            <table>
+              <tr>
+                <th>Subject ID</th>
+                <th>Subject code</th>
+                <th>Prerequisite</th>
+                <th>Type</th>
+                <th>Total units</th>
+                <th>Action</th>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><input type="checkbox" name="action" id="action" /></td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="content-box">
+            <h3>Added subjects</h3>
+
+            <table>
+              <tr>
+                <th>Section</th>
+                <th>Subject ID</th>
+                <th>Subject code</th>
+                <th>Prerequisite</th>
+                <th>Type</th>
+                <th>Total units</th>
+                <th>Action</th>
+              </tr>
+            </table>
+          </div>
+          <div class="btn-placing">
+            <button class="prev-btn">Return</button>
+            <button class="add-btn">Add subjects</button>
+            <button class="confirm-btn">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleDropdown() {
+        var dropdownMenu = document.querySelector(".dropdown-menu");
+        dropdownMenu.style.display =
+          dropdownMenu.style.display === "block" ? "none" : "block";
+      }
+    </script>
+    <script>
+      const steps = document.querySelectorAll(".step");
+      const stepContents = document.querySelectorAll(".step-content");
+      const nextBtns = document.querySelectorAll(".next-btn");
+      const prevBtns = document.querySelectorAll(".prev-btn");
+      const confirmBtn = document.querySelectorAll(".confirm-btn");
+
+      let currentStep = 0;
+
+      function updateProgressBar() {
+        steps.forEach((step, index) => {
+          if (index <= currentStep) {
+            step.classList.add("active");
+          } else {
+            step.classList.remove("active");
+          }
+        });
+      }
+
+      function updateStepContent() {
+        stepContents.forEach((content, index) => {
+          if (index === currentStep) {
+            content.classList.add("active");
+          } else {
+            content.classList.remove("active");
+          }
+        });
+      }
+
+      function handleNext() {
+        if (currentStep < steps.length - 1) {
+          currentStep++;
+          updateProgressBar();
+          updateStepContent();
+        }
+      }
+
+      function handlePrev() {
+        if (currentStep > 0) {
+          currentStep--;
+          updateProgressBar();
+          updateStepContent();
+        }
+      }
+
+      nextBtns.forEach((btn) => {
+        btn.addEventListener("click", handleNext);
+      });
+
+      prevBtns.forEach((btn) => {
+        btn.addEventListener("click", handlePrev);
+      });
+
+      confirmBtn.forEach((btn) => {
+        btn.addEventListener("click", handleNext);
+      });
+    </script>
+    <script src="/DCBT-2/sidebar.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, inital-scale=1, shrink-to-fit=no"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,700&family=Lato:wght@100;300;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/DCBT-2/admission-registrar/admission-enrollment.css"
+    />
+
+    <title>Daehan College of Business and Technology</title>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="top">
+        <div class="logo">
+          <span>DCBT</span>
+        </div>
+        <i class="bi bi-list" id="tab-btn"></i>
+      </div>
+      <div class="user">
+        <img src="/DCBT-2/img/DCBT-Logo.jpg" />
+        <div>
+          <p class="bold">User</p>
+          <p>user@dcbt</p>
+          <p>Registrar</p>
+        </div>
+      </div>
+      <ul>
+        <li>
+          <a href="#">
+            <i class="bi bi-clipboard-data"></i>
+            <span class="nav-item">Dashboard</span>
+          </a>
+          <span class="tooltip">Dashboard</span>
+        </li>
+        <li>
+          <a href="/DCBT-2/admission-registrar/Admission.html" class="active">
+            <i class="bi bi-calendar4"></i>
+            <span class="nav-item">Admission</span>
+          </a>
+          <span class="tooltip">Admission</span>
+        </li>
+        <li>
+          <a href="#">
+            <i class="bi bi-person"></i>
+            <span class="nav-item">Students</span>
+          </a>
+          <span class="tooltip">Students</span>
+        </li>
+        <li>
+          <a href="#">
+            <i class="bi bi-person-plus-fill"></i>
+            <span class="nav-item">Section</span>
+          </a>
+          <span class="tooltip">Section</span>
+        </li>
+        <li>
+          <a href="#">
+            <i class="bi bi-box-arrow-right"></i>
+            <span class="nav-item">Log-out</span>
+          </a>
+          <span class="tooltip">Log-out</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="content">
+      <div class="back-menu">
+        <button type="button" class="admission-btn" onclick="find_form()">
+          <i class="bi bi-arrow-left-circle"></i> Find form
+        </button>
+      </div>
+
+      <div class="head">
+        <div class="header-content">
+          <h3>Enrollment form</h3>
+
+          <div class="dropdown">
+            <div class="dropdown-toggle" onclick="toggleDropdown()">
+              <i class="bi bi-three-dots-vertical"></i>
+            </div>
+            <ul class="dropdown-menu">
+              <li>
+                <button type="button" class="action" onclick="edit_calendar()">
+                  <i class="bi bi-file-x"></i>Delete form
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="student-table">
+          <table>
+            <tr>
+              <th>Form ID</th>
+              <th>Admission type</th>
+              <th>Student no</th>
+              <th>Status</th>
+              <th>Processed by system on:</th>
+            </tr>
+            <tr>
+              <td>021</td>
+              <td>Old</td>
+              <td>N/A</td>
+              <td>Waiting payment</td>
+              <td>04/27/2023</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="choices">
+        <div class="student-details">
+          <button
+            type="button"
+            class="selection-btn"
+            id="student-details"
+            onclick="student_details()"
+          >
+            <i class="bi bi-clipboard-check"></i>Student details
+          </button>
+        </div>
+        <div class="enrolled-subjects">
+          <button
+            type="button"
+            class="selection-btn"
+            id="enrolled-subjects"
+            onclick="enrolled_subjects()"
+          >
+            <i class="bi bi-collection"></i>Enrolled subjects
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-content">
+        <!--student-detials-->
+        <div class="form-details" id="student-form">
+          <h3>Student details</h3>
+
+          <table>
+            <tbody>
+              <tr>
+                <th>Name</th>
+                <td colspan="2">Rhandyl</td>
+                <td colspan="2">Tapuroc</td>
+                <td colspan="2">Alvarez</td>
+              </tr>
+              <tr>
+                <th>Birthdate</th>
+                <td>07/16/2001</td>
+                <th>Gender</th>
+                <td>Male</td>
+                <th>Contact no.</th>
+                <td>09123456789</td>
+              </tr>
+              <tr>
+                <th>Address</th>
+                <td colspan="5">Lot 68 Arenda Taytay Rizal</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="form-details" id="enrollment-form">
+          <h3>Enrollment details</h3>
+
+          <table>
+            <tbody>
+              <tr>
+                <th>S.Y.</th>
+                <td>2023-2024</td>
+                <th>Track</th>
+                <td colspan="2">TVL</td>
+                <th>Strand</th>
+                <td colspan="2">ICT</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="form-details" id="subjects-details">
+          <h3>ICT-211 subjects</h3>
+
+          <table class="table">
+            <tr>
+              <th>Subject ID</th>
+              <th>Subject code</th>
+              <th>Prerequisite</th>
+              <th>Type</th>
+              <th>Total units</th>
+            </tr>
+            <tr>
+              <td>678</td>
+              <td>MMW101</td>
+              <td>None</td>
+              <td>Core</td>
+              <td>1</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleDropdown() {
+        var dropdownMenu = document.querySelector(".dropdown-menu");
+        dropdownMenu.style.display =
+          dropdownMenu.style.display === "block" ? "none" : "block";
+      }
+
+      function find_form() {
+        window.location.href =
+          "/DCBT-2/admission-registrar/find-form/Find-form.html";
+      }
+
+      var studentDetails = document.getElementById("student-details");
+      var enrolledSubjects = document.getElementById("enrolled-subjects");
+
+      var studentForm = document.getElementById("student-form");
+      var enrollmentForm = document.getElementById("enrollment-form");
+      var subjectsDetails = document.getElementById("subjects-details");
+
+      function student_details() {
+        studentDetails.style.background = "#EFEFEF";
+        studentDetails.style.color = "black";
+        enrolledSubjects.style.background = "none";
+        enrolledSubjects.style.color = "white";
+
+        studentForm.style.display = "flex";
+        enrollmentForm.style.display = "none";
+        subjectsDetails.style.display = "none";
+      }
+
+      function enrolled_subjects() {
+        studentDetails.style.background = "none";
+        studentDetails.style.color = "white";
+        enrolledSubjects.style.background = "#EFEFEF";
+        enrolledSubjects.style.color = "black";
+
+        studentForm.style.display = "none";
+        enrollmentForm.style.display = "flex";
+        subjectsDetails.style.display = "flex";
+      }
+    </script>
+    <script src="/DCBT-2/sidebar.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"
+      integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"
+      integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

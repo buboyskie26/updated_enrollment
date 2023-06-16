@@ -1,0 +1,228 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
+}
+
+ul{
+    list-style-type: none;
+    width: 15%;
+    background-color: #1A0000;
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+}
+
+/* ====Account-Information====*/
+.image-text{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+
+.image-text .image img{
+    width: 57px;
+    height: 57px;
+    padding-left: 5px;
+    padding-top: 10px;
+    left: 20px;
+    top: 14px;
+    border-radius: 50px;
+
+}
+
+.image-text .header-text span{
+    display: flex;
+    align-items: center;
+}
+
+.image-text .header-text .name{
+    font-weight: 700;
+    color: white;
+}
+
+.image-text .header-text .email{
+    color: gray;
+    font-size: small;
+}
+
+.image-text .header-text .role{
+    color: gray;
+    font-size: small;
+}
+
+/*====Nav-items====*/
+li a{
+    display: block;
+    color: gray;
+    padding: 8px 16px;
+    align-items: center;
+}
+
+li .active{
+    color: white;
+}
+
+li a:hover{
+    color: white;
+    text-decoration: none;
+}
+
+/*====subjects-style====*/
+.dashboard{
+    margin: 30px;
+    width: 95%;
+    position: relative;
+}
+
+.inside{
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 6px 25px -5px rgb(214, 201, 201);
+    border-radius: 10px;
+}
+
+.dashboard a{
+    text-decoration: none;
+    color: black;
+}
+
+.dashboard h3, a{
+    display: inline-block;
+}
+
+.dashboard h3{
+    padding-right: 10px;
+}
+
+.inside h1{
+    line-height: 43.2px;
+    font-weight: 700;
+    font-size: 36px;
+    color: #bb4444;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    padding-left: 20px;
+}
+
+.dashboard a:not(:nth-child(2))::before{
+    content: "|";
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.subjects{
+    margin: 20px;
+    display: flex;
+    color: white;
+    flex-direction: row;
+}
+
+.subjects p{
+    margin-bottom: 0;
+    padding-left: 15px;
+}
+
+.subjects h2{
+    margin: 0;
+    text-align: center;
+    font-size: 64px;
+    font-weight: 600;
+}
+
+.TotalSubjects{
+    margin-right: 10px;
+    flex-grow: 1;
+    background-color: #76BDFF;
+}
+
+.NoAppliedSub{
+    margin-right: 10px;
+    flex-grow: 1;
+    background-color: #FF7676;
+}
+
+.menu{
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 6px 25px -5px rgb(214, 201, 201);
+    border-radius: 10px;
+    padding: 32px 26px;
+}
+
+.menu h1{
+    line-height: 43.2px;
+    font-weight: 700;
+    font-size: 36px;
+    color: #bb4444;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    padding-left: 20px;
+}
+
+
+table td{
+    border-collapse: collapse;
+    align-items: center;
+    padding: 5px 80px;
+    word-wrap: break-word;
+}
+
+.options{
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 6px 25px -5px rgb(214, 201, 201);
+    border-radius: 10px;
+    padding: 32px 26px;
+    margin: 30px;
+    width: 95%;
+    position: relative;
+}
+
+.options h1{
+    line-height: 43.2px;
+    font-weight: 700;
+    font-size: 36px;
+    color: #bb4444;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    padding-left: 20px;
+}
+
+.options .populate{
+    display: flex;
+    flex-direction: row;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    color: #f4f4f4;
+    border: none;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 10px;
+    width: 146px;
+    height: 24px;
+    background: #8C98FF;
+}
+
+#shs{
+    font-weight: 800;
+}
+
+#shs-auto-population{
+    margin-left: 10px;
+}
+
+#College-sub{
+    display: none;
+}
+
+#college-menu{
+    display: none;
+}
+
+#college-options{
+    display: none;
+}
