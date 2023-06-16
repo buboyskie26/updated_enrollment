@@ -83,13 +83,15 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">			
-                                <table id="dash-table" class="table table-striped table-bordered table-hover table-responsive" style="font-size:12px" cellspacing="0">
+                                <table id="dash-table" 
+                                    class="table table-striped table-bordered table-hover table-responsive"
+                                    style="font-size:14px" cellspacing="0">
                                     <thead>
                                         <tr class="text-center">
                                             <th>Id</th>
                                             <th>Name</th>
                                             <th>Standing</th>
-                                            <th>Course/Section</th>
+                                            <th>Program-Section</th>
                                             <th>Type</th>
                                             <th style="width: 150px;;" class="text-center">Action</th>
                                         </tr>	
@@ -115,10 +117,15 @@
                                                     $cashier_evaluated = $row['cashier_evaluated'];
                                                     $registrar_evaluated = $row['registrar_evaluated'];
                                                     $course_level = $row['course_level'];
-                                                    $student_status = $row['student_status'];
+
+                                                    $student_status = $row['student_statusv2'];
+                                                    $admission_status = $row['admission_status'];
+
+                                                    
+
                                                     $new_enrollee = $row['new_enrollee'];
                                                     $is_tertiary = $row['is_tertiary'];
-                                                    $is_transferee = $row['is_transferee'];
+                                                    // $is_transferee = $row['is_transferee'];
 
                                                     // $program_section_default = "";
                                                     if($program_section === ""){
@@ -148,10 +155,12 @@
                                                     $evaluateBtn = "";
                     
                                                     $student_type_status = "";
+
                                                     if($cashier_evaluated == "no"
                                                         && $registrar_evaluated == "yes"){
 
-                                                        if($student_status == "Regular"){
+                                                        if($admission_status == "Standard"){
+
                                                             $evaluateBtn = "
                                                                 <a href='$regular_insertion_url'>
                                                                     <button class='btn btn-outline-success btn-sm'>
@@ -164,15 +173,22 @@
                                                                 $student_type_status = "New Regular (SHS)";
 
                                                             }else if($new_enrollee == 0 && $is_tertiary == 0){
-                                                                $student_type_status = "On Going (SHS)";
+                                                                $student_type_status = "On Going Standard (SHS)";
+                                                            }
+                                                            else if($new_enrollee == 0 && $is_tertiary == 1){
+                                                                $student_type_status = "On Going Standard (Tertiary)";
                                                             }
                                                         }
 
                                                         # if Transferee
-                                                        if($student_status == "Transferee"){
+                                                        if($admission_status == "Transferee"){
+
+                                                            // echo $admission_status;
 
                                                                 // if($new_enrollee == 0 || $new_enrollee == 1){
-                                                            if($new_enrollee == 1 && $is_tertiary == 0 && $is_transferee == 1){
+                                                            if($new_enrollee == 1 && $is_tertiary == 0 
+                                                                ){
+
                                                                 $student_type_status = "New Transferee (SHS)";
 
                                                                 $evaluateBtn = "
@@ -183,7 +199,8 @@
                                                                     </a>
                                                                 ";
 
-                                                            }else if($new_enrollee == 0 && $is_tertiary == 0 && $is_transferee == 0){
+                                                            }else if($new_enrollee == 0 && $is_tertiary == 0 
+                                                                ){
 
                                                                 $student_type_status = "On Going Transferee (SHS)";
 
@@ -202,6 +219,18 @@
 
                                                                 # PREVIOUS URL
                                                                 $trans_url = "transferee_process_enrollment.php?step3=true&st_id=$student_id&selected_course_id=$course_id";
+
+                                                                $evaluateBtn = "
+                                                                    <a href='$transferee_insertion_url'>
+                                                                        <button class='btn btn-outline-success btn-sm'>
+                                                                            Evaluate
+                                                                        </button>
+                                                                    </a>
+                                                                ";
+                                                            }
+                                                            else if($new_enrollee == 0 && $is_tertiary == 1
+                                                                ){
+                                                                $student_type_status = "On Going Transferee (Tertiary)";
 
                                                                 $evaluateBtn = "
                                                                     <a href='$transferee_insertion_url'>

@@ -85,7 +85,8 @@
             <div class="column">
                 <div class="header">
                     <!-- <img src="assets/images/icons/VideoTubeLogo.png" title="logo" alt="Site logo"> -->
-                    <h3 class="text-center">Pending Registration</h3>
+                    <h3 class="text-center text-muted">Student Register</h3>
+                    <span>To create an applicant account, provide your basic information first which ill be used to verify your email address.</span>
                 </div>
              
                 <div class="loginForm">

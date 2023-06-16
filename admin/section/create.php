@@ -89,9 +89,17 @@
             $insert->bindValue(":is_tertiary", $is_tertiary, PDO::PARAM_INT);
 
             if($insert->execute()){
+
             // if(false){
 
+
+
+
                 $recently_created_course_id = $con->lastInsertId();
+
+                $sectionObj = new Section($con, $recently_created_course_id);
+                
+                $created_program_section = $sectionObj->GetSectionName();
 
                 $get_program_section = $section->GetSectionNameByCourseId($recently_created_course_id);
 
@@ -158,21 +166,20 @@
 
                         if($isSubjectCreated == true){
 
-
                             if(isset($_SESSION['process_enrollment'])
                                 && $_SESSION['process_enrollment'] == 'transferee'){
 
-                                    AdminUser::success("New section has been created.", "../admission/transferee_process_enrollment.php?step2=true&id=$pending_enrollees_id");
+                                    AdminUser::success("New section: $created_program_section has been created.", "../admission/transferee_process_enrollment.php?step2=true&id=$pending_enrollees_id");
                                     exit();
 
                             }else if(isset($_SESSION['process_enrollment'])
                                 && $_SESSION['process_enrollment'] == 'non_transferee'){
 
-                                    AdminUser::success("New section has been created.", "../admission/process_enrollment.php?step2=true&id=$pending_enrollees_id");
+                                    AdminUser::success("New section: $created_program_section has been created.", "../admission/process_enrollment.php?step2=true&id=$pending_enrollees_id");
                                     exit();
                             }
                             else{
-                                AdminUser::success("New section has been created.", "index.php");
+                                AdminUser::success("New section: $created_program_section has been created.", "index.php");
 
                             }
                         }
@@ -241,17 +248,17 @@
                             if(isset($_SESSION['process_enrollment'])
                                 && $_SESSION['process_enrollment'] == 'transferee'){
 
-                                    AdminUser::success("New section has been created.", "../admission/transferee_process_enrollment.php?step2=true&id=$pending_enrollees_id");
+                                    AdminUser::success("New section: $created_program_section has been created.", "../admission/transferee_process_enrollment.php?step2=true&id=$pending_enrollees_id");
                                     exit();
 
                             }else if(isset($_SESSION['process_enrollment'])
                                 && $_SESSION['process_enrollment'] == 'non_transferee'){
 
-                                    AdminUser::success("New section has been created.", "../admission/process_enrollment.php?step2=true&id=$pending_enrollees_id");
+                                    AdminUser::success("New section: $created_program_section has been created.", "../admission/process_enrollment.php?step2=true&id=$pending_enrollees_id");
                                     exit();
                             }
                             else{
-                                AdminUser::success("New section has been created.", "index.php");
+                                AdminUser::success("New section: $created_program_section has been created.", "index.php");
                             }
                         }
                     }
@@ -319,17 +326,17 @@
                             if(isset($_SESSION['process_enrollment'])
                                 && $_SESSION['process_enrollment'] == 'transferee'){
 
-                                    AdminUser::success("New section has been created.", "../admission/transferee_process_enrollment.php?step2=true&id=$pending_enrollees_id");
+                                    AdminUser::success("New section: $created_program_section has been created.", "../admission/transferee_process_enrollment.php?step2=true&id=$pending_enrollees_id");
                                     exit();
 
                             }else if(isset($_SESSION['process_enrollment'])
                                 && $_SESSION['process_enrollment'] == 'non_transferee'){
 
-                                    AdminUser::success("New section has been created.", "../admission/process_enrollment.php?step2=true&id=$pending_enrollees_id");
+                                    AdminUser::success("New section: $created_program_section has been created.", "../admission/process_enrollment.php?step2=true&id=$pending_enrollees_id");
                                     exit();
                             }
                             else{
-                                AdminUser::success("New section has been created.", "index.php");
+                                AdminUser::success("New section: $created_program_section has been created.", "index.php");
 
                             }
                         }
@@ -402,17 +409,17 @@
                             if(isset($_SESSION['process_enrollment'])
                                 && $_SESSION['process_enrollment'] == 'transferee'){
 
-                                    AdminUser::success("New section has been created.", "../admission/transferee_process_enrollment.php?step2=true&id=$pending_enrollees_id");
+                                    AdminUser::success("New section: $created_program_section has been created.", "../admission/transferee_process_enrollment.php?step2=true&id=$pending_enrollees_id");
                                     exit();
 
                             }else if(isset($_SESSION['process_enrollment'])
                                 && $_SESSION['process_enrollment'] == 'non_transferee'){
 
-                                    AdminUser::success("New section has been created.", "../admission/process_enrollment.php?step2=true&id=$pending_enrollees_id");
+                                    AdminUser::success("New section: $created_program_section has been created.", "../admission/process_enrollment.php?step2=true&id=$pending_enrollees_id");
                                     exit();
                             }
                             else{
-                                AdminUser::success("New section has been created.", "index.php");
+                                AdminUser::success("New section: $created_program_section has been created.", "index.php");
 
                             }
                         }
@@ -562,7 +569,6 @@
                                         if ($row['teacher_id'] == $selectedTeacherId) {
                                             $selected = "selected";
                                         }
-
                                         echo "<option value='" . $row['teacher_id'] . "' $selected>" . $row['firstname'] . " " . $row['lastname'] . "</option>";
                                     }
                                 }

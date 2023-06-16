@@ -8,7 +8,7 @@
     define('DB_USERNAME', 'root');
     define('DB_PASSWORD', '');
     define('DB_DATABASE', 'dcbt');
-
+    
     try {
 
         // string that specifies the details of the database connection, including the database driver

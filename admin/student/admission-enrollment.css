@@ -1,0 +1,120 @@
+ 
+
+.info-1,
+.info-2,
+.info-3,
+.info-4,
+.info-5,
+.info-6,
+.info-7 {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 10px;
+    gap: 10px;
+    width: 100%;
+    height: auto;
+}
+
+.info-1 input,
+.info-2 input,
+.info-3 input,
+.info-4 input,
+.info-5 input,
+.info-6 input,
+.info-7 input {
+    width: 100%;
+    text-align: center;
+    border: 1px solid #D9D9D9;
+    border-radius: 5px;
+}
+
+.selection-box-1 select {
+    width: 180px;
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.btn-placing {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    width: 100%;
+    height: auto;
+}
+
+.btn-placing .next-btn,
+.btn-placing .prev-btn,
+.btn-placing .add-btn {
+    width: 113px;
+    height: 40px;
+    background: #4D4BA5;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    border: none;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    color: #FFF;
+}
+
+.btn-placing .confirm-btn {
+    width: 113px;
+    height: 40px;
+    background: #4DA54E;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    border: none;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    color: #FFF;
+}
+
+.confirm-btn:hover {
+    background: rgb(64, 122, 58);
+}
+
+.btn-placing .prev-btn,
+.btn-placing {
+    margin-right: 20px;
+}
+
+.next-btn:hover,
+.prev-btn:hover,
+.return-home:hover {
+    background: #34337c;
+}
+
+.step-content span {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    width: 40%;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.addSubject {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 18px;
+    gap: 5px;
+    width: 165px;
+    height: 39px;
+    background: #4D4BA5;
+    border-radius: 10px;
+    border: none;
+    color: #FFF;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+}
+
+.addSubject:hover {
+    background: #34337c;
+}

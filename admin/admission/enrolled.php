@@ -78,12 +78,12 @@
         <div class="container mb-4">
             <span>S.Y <?php echo $current_school_year_term;?> <?php echo $current_school_year_period;?> Semester Period</span>
             <h2 class="text-center text-success">Enrolled Student</h2>
-            <a href="<?php echo $createUrl?>">
+            <!-- <a href="<?php echo $createUrl?>">
                 <button class="btn btn-sm btn-outline-success">Add Student</button>
             </a>
             <a href="<?php echo $manualCreateUrl?>">
                 <button class="btn btn-sm btn-success">Add Student</button>
-            </a>  
+            </a>   -->
         </div>
         <table  class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
             <thead>
@@ -215,7 +215,7 @@
                             if($status == "Transferee"){
 
                                 $view_btn = "
-                                    <a href='$trans_url'>
+                                    <a href='$view_url'>
                                         <button class='btn btn-outline-secondary btn-sm'>
                                             View Details
                                         </button>

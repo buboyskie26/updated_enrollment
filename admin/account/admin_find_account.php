@@ -116,7 +116,6 @@
 
         <hr>
         <hr>
-    
         <table id="accountTable"
                 class="table table-bordered table-hover " 
                 style="font-size:15px" cellspacing="0"> 
@@ -134,7 +133,6 @@
     </div>
 </div>
 
-
 <script>
 
     $(document).ready(function(){
@@ -150,6 +148,7 @@
                 { data: 'student_id' },
                 { data: 'student_name' },
                 { data: 'course_level' },
+                { data: 'section' },
                 { data: 'actions' }
                 // { data: 'section' }
             ]

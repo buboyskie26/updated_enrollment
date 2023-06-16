@@ -26,28 +26,8 @@
 <body>
     <div class="row">
         <div class="col-lg-10 offset-md-1">
-            <ul class="nav nav-tabs" role="tablist">
-                
-                <li class="nav-item">
-                    <a class="nav-link active" id="pending-regular-new-tab" 
-                        data-bs-toggle="tab" 
-                        href="#pending-regular-new" role="tab"
-                        aria-controls="pending-regular-new" aria-selected="true">
-                        Regular (New)
-                    </a>
-                </li>
-            </ul>
-
-            <div class='tab-content channelContent' id='myTabContent'>
-                <div class="tab-pane fade show active" id="pending-regular-new"
-                    role="tabpanel" aria-labelledby="pending-regular-tab">
-                    <?php include "pending_new.php"; ?> 
-                </div>
-            </div>
-            
-            <!-- <div>
                 <?php include "login_enrollment.php"; ?> 
-            </div> -->
-        </div>
+        <div>
     </div>
 </body>
+ 

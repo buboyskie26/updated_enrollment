@@ -2,6 +2,7 @@
 
     include('../registrar_enrollment_header.php');
     include('../../enrollment/classes/StudentEnroll.php');
+    include('../../enrollment/classes/Enrollment.php');
     include('../../enrollment/classes/OldEnrollees.php');
 
     $createUrl = base_url . "/create.php";
@@ -9,364 +10,142 @@
 
     $enroll = new StudentEnroll($con);
     $old_enrollee = new OldEnrollees($con, $enroll);
+    $enrollment = new Enrollment($con, $enroll);
     
     // echo "im in subject enroll";
 
-    if(!AdminUser::IsRegistrarAuthenticated()){
+    $school_year_obj = $enroll->GetActiveSchoolYearAndSemester();
 
-        header("Location: /dcbt/adminLogin.php");
-        exit();
-    }
+    $current_school_year_id = $school_year_obj['school_year_id'];
+    $current_school_year_term = $school_year_obj['term'];
+    $current_school_year_period = $school_year_obj['period'];
+
+    $enrolledStudentsEnrollment = $enrollment->EnrolledStudentsWithinSYSemester($current_school_year_id);
 ?>
 
     <div class="row col-md-12">
-        <div class="col-md-12">
-
-            <div class="container mb-4">
-                <h2 class="text-center text-success">SHS Student List</h2>
-                <a href="<?php echo $createUrl?>">
-                    <button class="btn btn-sm btn-outline-success">Add Student</button>
-                </a>
-                <a href="<?php echo $manualCreateUrl?>">
-                    <button class="btn btn-sm btn-success">Add Student</button>
-                </a>  
-            </div>
 
 
-            <div class="col-md-12">
-                <div class=" ">
-                    <table  class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
-                        <thead>
-                            <tr class="text-center"> 
-                                <th rowspan="2">Id</th>
-                                <th rowspan="2">Name</th>
-                                <th rowspan="2">Status</th>
-                                <th rowspan="2">Grade Level</th>
-                                <th rowspan="2">Section</th>
-                                <th rowspan="2"></th>
-                            </tr>	
-                        </thead> 	 
-                        <tbody>
-                            <?php 
-                                $active = 1;
+    <div class="card">
+        <div class="card-header">
+            <h6 class="text-end">S.Y <?php echo $current_school_year_term;?> <?php echo $current_school_year_period;?> Semester Period</h6>
+            <h2 class="text-start text-muted">Form Details</h2>
+        </div>
 
-                                $sql = $con->prepare("SELECT 
-                                    t1.*, t2.program_section, t2.course_id
+        <div class="card-body">
+            <table  class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
+                <thead>
+                    <tr class="text-center"> 
+                        <th rowspan="2">Id</th>
+                        <th rowspan="2">Name</th>
+                        <th rowspan="2">Status</th>
+                        <th rowspan="2">Grade Level</th>
+                        <th rowspan="2">Section</th>
+                        <th rowspan="2">Action</th>
+                    </tr>	
+                </thead> 	 
+                <tbody>
+                    <?php 
+                        $active = 1;
 
-                                FROM student as t1
+                        if(count($enrolledStudentsEnrollment) > 0){
 
-                                LEFT JOIN course as t2 ON t2.course_id = t1.course_id
-
-                                WHERE t1.active =:active
-                                AND t1.is_tertiary !=:is_tertiary
-                                ORDER BY t1.course_level DESC
-                                ");
-
-                                $sql->bindValue(":active", $active);
-                                $sql->bindValue(":is_tertiary", 1);
-                                $sql->execute();
-
-                                if($sql->rowCount() > 0){
-
+                            foreach ($enrolledStudentsEnrollment as $key => $row) {
                                 
-                                    while($row = $sql->fetch(PDO::FETCH_ASSOC)){
+                                $fullName = $row['firstname']." ". $row['lastname']; 
+                                $student_id = $row['student_id'];
+                                $student_unique_id = $row['student_unique_id'];
+                                $course_level = $row['course_level'];
+                                $course_id = $row['course_id'];
+                                $status = $row['student_status'];
+                                $program_section = $row['program_section'];
 
-                                        $fullName = $row['firstname']." ". $row['lastname']; 
-                                        $student_id = $row['student_id'];
-                                        $course_level = $row['course_level'];
-                                        $course_id = $row['course_id'];
-                                        $status = $row['student_status'];
-                                        $admission_status = $row['admission_status'];
-                                        $program_section = $row['program_section'];
+                                $gradeUrl = "http://localhost/dcbt/admin/enrollees/student_grade_report.php?id=$student_id";
 
-                                        $view_url = directoryPath . "view_details.php?profile=show&id=$student_id";
+                                $view_url = directoryPath . "../student/view_details.php?profile=show&id=$student_id";
 
-                                        # RF
-                                        $gradeUrl = "http://localhost/dcbt/admin/enrollees/student_grade_report.php?id=$student_id";
+                                $trans_url = directoryPath . "../student/shs_view_transferee_details.php?profile=show&id=$student_id";
 
-                                        // $view_url = directoryPath . "view_details.php?profile=show&id=$student_id";
+                                // $section_url = "http://localhost/dcbt/admin/section/strand_show.php?id=$course_id";
+                                $section_url = "../section/section_show.php?id=$course_id";
 
+                                $view_btn = "
+                                    <a href='$view_url'>
+                                        <button class='btn btn-secondary btn-sm'>
+                                            View
+                                        </button>
+                                    </a>
+                                ";
 
-                                        $section_url = "http://localhost/dcbt/admin/section/strand_show.php?id=$course_id";
+                                if($status == "Transferee"){
 
-
-                                        $view_btn = "";
-
-                                        $trans_url = directoryPath . "shs_view_transferee_details.php?profile=show&id=$student_id";
-
-                                        if($admission_status == "Transferee"){
-
-                                            $view_btn = "
-                                                <a href='$trans_url'>
-                                                    <button class='btn btn-outline-secondary btn-sm'>
-                                                        View Details
-                                                    </button>
-                                                </a>
-                                            ";
-                                        }else{
-
-                                            $view_btn = "
-                                                <a href='$view_url'>
-                                                    <button class='btn btn-secondary btn-sm'>
-                                                        View Details
-                                                    </button>
-                                                </a>
-                                            ";
-                                        }
-
-                                        echo '<tr class="text-center">'; 
-                                                echo '<td>'.$student_id.'</td>';
-                                                echo '<td>
-                                                    <a style= "color: whitesmoke;" href="edit.php?id='.$student_id.'">
-                                                        '.$fullName.'
-                                                    </a>
-                                                </td>';
-                                                echo '<td>'.$status.'</td>';
-                                                echo '<td>'.$course_level.'</td>';
-                                                echo '<td>
-                                                    <a href="'.$section_url.'">
-                                                        '.$program_section.'</td>
-                                                    </a>
-                                                ';
-                                                echo '
-                                                    <td> 
-                                                        <a href="'.$gradeUrl.'">
-                                                            <button class="btn btn-primary btn-sm">Check Grade</button>
-                                                        </a>
-                                                        '.$view_btn.'
-                                                    </td>
-                                                ';
-                                        echo '</tr>';
-                                    }
+                                    $view_btn = "
+                                        <a href='$view_url'>
+                                            <button class='btn btn-outline-secondary btn-sm'>
+                                                View
+                                            </button>
+                                        </a>
+                                    ";
                                 }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
-            <hr>
-            <hr>
-
-            <div class="container mb-4">
-                <h2 class="text-center text-success">Tertiary Student List</h2>
-                <a href="<?php echo $createUrl?>">
-                    <button class="btn btn-sm btn-success">Add Student</button>
-                </a>    
-            </div>
-            <div class="col-md-12">
-                <div class=" ">
-                    <table  class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
-                        <thead>
-                            <tr class="text-center"> 
-                                <th rowspan="2">Id</th>
-                                <th rowspan="2">Name</th>
-                                <th rowspan="2">Status</th>
-                                <th rowspan="2">Year Level</th>
-                                <th rowspan="2">Section</th>
-                                <th rowspan="2"></th>
-                            </tr>	
-                        </thead> 	 
-                        <tbody>
-                            <?php 
-                                $active = 1;
-
-                                $sql = $con->prepare("SELECT 
-                                    t1.*
-
-                                FROM student as t1
-
-                                WHERE t1.active =:active
-                                AND t1.is_tertiary =:is_tertiary
-                                ORDER BY t1.course_level DESC
-                                ");
-
-                                $sql->bindValue(":active", $active);
-                                $sql->bindValue(":is_tertiary", 1);
-                                $sql->execute();
-
-                                if($sql->rowCount() > 0){
-
-                                    while($row = $sql->fetch(PDO::FETCH_ASSOC)){
-
-                                        $fullName = $row['firstname']." ". $row['lastname']; 
-                                        $student_id = $row['student_id'];
-                                        $course_level = $row['course_level'];
-                                        $course_id = $row['course_id'];
-                                        $status = $row['student_status'];
-                                        $program_section = "";
-                                        $admission_status = $row['admission_status'];
-
-                                        
-                                        $gradeUrl = "http://localhost/dcbt/admin/enrollees/tertiary_student_grade_report.php?id=$student_id";
-                                        $section_url = "http://localhost/dcbt/admin/section/strand_show.php?id=$course_id";
-
-
-                                        $view_url = directoryPath . 
-                                            "view_details.php?profile=show&id=$student_id";
-
-                                        $trans_url = directoryPath . "shs_view_transferee_details.php?profile=show&id=$student_id";
-
-                                        echo $admission_status;
-                                        if($admission_status == "Transferee"){
-
-                                            $view_btn = "
-                                                <a href='$trans_url'>
-                                                    <button class='btn btn-secondary btn-sm'>
-                                                        View Details
-                                                    </button>
-                                                </a>
-                                            ";
-                                        }else{
-                                            $view_btn = "
-                                                <a href='$view_url'>
-                                                    <button class='btn btn-outline-secondary btn-sm'>
-                                                        View Details
-                                                    </button>
-                                                </a>
-                                            ";
-                                        }
-
-                                        echo '<tr class="text-center">'; 
-                                                echo '<td>'.$student_id.'</td>';
-                                                echo '<td>
-                                                    <a style= "color: whitesmoke;" href="edit.php?id='.$student_id.'">
-                                                        '.$fullName.'
-                                                    </a>
-                                                </td>';
-                                                echo '<td>'.$status.'</td>';
-                                                echo '<td>'.$course_level.'</td>';
-
-                                                echo '<td>
-                                                    <a href="'.$section_url.'">
-                                                        '.$program_section.'</td>
-                                                    </a>
-                                                ';
-                                                echo 
-                                                '<td> 
-                                                    <a href="'.$view_url.'">
-                                                        <button class="btn btn-secondary btn-sm">View Details</button>
-                                                    </a>
-                                                </td>';
-                                        echo '</tr>';
-                                    }
-                                }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <hr>
-            <div style="display: none;" class="col-md-12">
-                <h3 class="text-center mb-3">In-active Students</h3>
-
-                <div class=" ">
-                    <table  class="table table-striped table-bordered table-hover "  style="font-size:13px" cellspacing="0"  > 
-                        <thead>
-                            <tr class="text-center"> 
-                                <th rowspan="2">Id</th>
-                                <th rowspan="2">Name</th>
-                                <th rowspan="2">Status</th>
-                                <th rowspan="2">Grade Level</th>
-                                <th rowspan="2">Prev Section</th>
-                                <th rowspan="2"></th>
-                            </tr>	
-                        </thead> 	 
-                        <tbody>
-                            <?php 
-                                $drop_status = "Drop";
-
-                                $sql = $con->prepare("SELECT * FROM student
-                                    -- WHERE student_status =:student_status
-
-                                    LEFT JOIN course ON course.course_id = student.course_id
-                                    WHERE student.active =:active
-                                    ORDER BY student.course_level DESC
-                                    ");
-
-                                // $sql->bindValue(":student_status", $drop_status);
-                                $sql->bindValue(":active", 0);
-                                $sql->execute();
-
-                                if($sql->rowCount() > 0){
-
-                                    while($row = $sql->fetch(PDO::FETCH_ASSOC)){
-
-                                        $fullName = $row['firstname']." ". $row['lastname']; 
-                                        $username = $row['username'];
-                                        $student_id = $row['student_id'];
-                                        $course_level = $row['course_level'];
-                                        
-                                        $course_id = $row['course_id'];
-                                        $status = $row['student_status'];
-                                        $program_section = $row['program_section'];
-                                        $gradeUrl = "http://localhost/dcbt/admin/enrollees/student_grade_report.php?id=$student_id";
-
-                                        
-                                        // Check if in-active student is eligible for todays semester period.
-                                        $eligible = $old_enrollee->CheckInActiveStudentEligibleForSemester($student_id, $course_id);
-
-                                        $returnBtn = '
-                                            <button class="btn btn-sm btn-danger">Not Eligible</button>
+                                echo '<tr class="text-center">'; 
+                                        echo '<td>'.$student_unique_id.'</td>';
+                                        echo '<td>
+                                            <a style= "color: whitesmoke;" href="edit.php?id='.$student_id.'">
+                                                '.$fullName.'
+                                            </a>
+                                        </td>';
+                                        echo '<td>'.$status.'</td>';
+                                        echo '<td>'.$course_level.'</td>';
+                                        echo '<td>
+                                            <a href="'.$section_url.'">
+                                                '.$program_section.'</td>
+                                            </a>
                                         ';
-                                        $update_return_url = "return_update.php?id=$student_id";
-                                        if($eligible == true){
-                                            $returnBtn = '
-                                                <a href="'.$update_return_url.'">
-                                                    <button onclick="confirmAsReturneeBtn(\''.$username.'\')" class="btn btn-sm btn-success">Mark Return</button>;
-                                                </a>
-                                            ';
-                                        }
+                                        echo '
+                                            <td> 
+                                                '.$view_btn.'
+                                            </td>
+                                        ';
+                                echo '</tr>';
+                            }
+                        }else{
+                            echo "
+                                <div class='col-md-12'>
+                                    <h4 class='text-info'>No Enrolled in this Semester.</h4>
+                                </div>
+                            ";
+                        }
 
-                                        echo '<tr class="text-center">'; 
-                                                echo '<td>'.$student_id.'</td>';
-                                                echo '<td>
-                                                    <a style= "color: whitesmoke;" href="info.php?id='.$student_id.'">
-                                                        '.$fullName.'
-                                                    </a>
-                                                </td>';
-                                                echo '<td>'.$status.'</td>';
-                                                echo '<td>'.$course_level.'</td>';
-                                                echo '<td>'.$program_section.'</td>';
-
-                                                echo 
-                                                '<td> 
-                                                    <a href="'.$gradeUrl.'">
-                                                        <button class="btn btn-primary btn-sm">Check Grade</button>
-                                                    </a>
-                                                    
-                                                    '.$returnBtn.'
-                                                </td>';
-                                        echo '</tr>';
-                                    }
-                                }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
+                    ?>
+                </tbody>
+            </table>
         </div>
     </div>
-<script>
 
-   function confirmAsReturneeBtn(username) {
+    <hr>
+    <hr>
+ 
 
-    // $.ajax({
-    //     url: '../ajax/enrollee/markAsReturned.php', // replace with your PHP script URL
-    //     type: 'POST',
-    //     data: {
-    //         // add any data you want to send to the server here
-    //         username
-    //     },
-    //     success: function(response) {
-    //         // console.log(response);
-    //         alert(response)
-    //         location.reload();
-    //     },
-    //     error: function(xhr, status, error) {
-    //     }
-    // });
-}
-</script>
+    </div>
+
+    <script>
+        function confirmAsReturneeBtn(username) {
+            // $.ajax({
+            //     url: '../ajax/enrollee/markAsReturned.php', // replace with your PHP script URL
+            //     type: 'POST',
+            //     data: {
+            //         // add any data you want to send to the server here
+            //         username
+            //     },
+            //     success: function(response) {
+            //         // console.log(response);
+            //         alert(response)
+            //         location.reload();
+            //     },
+            //     error: function(xhr, status, error) {
+            //     }
+            // });
+        }
+
+    </script>

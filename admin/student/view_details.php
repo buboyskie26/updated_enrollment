@@ -289,6 +289,8 @@
             // $pending_enrollees_id = $row['pending_enrollees_id'];
             // $password = $row['password'];
             $civil_status = $row['civil_status'];
+            $religion = $row['religion'];
+            $citizenship = $row['citizenship'];
             $nationality = $row['nationality'];
             $age = $row['age'];
             $guardian_name = $row['guardian_name'];
@@ -367,7 +369,6 @@
                         <div class="form-header">
                             <div class="header-content">
                             <h2><?php echo $lastname?>, <?php echo $firstname;?> <?php echo $middle_name;?>,</h2>
-                             
                             </div>
 
                             <div class="student-table">
@@ -470,15 +471,12 @@
                                     <?php  
                                 }
                             ?>
-
-
-
                         </div>
                     </div>
 
+                    <hr>
 
-                    <hr>
-                    <hr>
+
                     <div class="card">
                         <div class="card-body">
                             <div class="table-responsive">
@@ -644,10 +642,6 @@
                             </div>
                         </div>
                     </div>
-
-
-                    <hr>
-                    <hr>
                     <div class="card">
                         <div class="card-body">
                             <div class="table-responsive">
@@ -702,6 +696,315 @@
                             </div>
                         </div>
                     </div>
+
+                    <head>
+                        <meta charset="utf-8" />
+                        <meta
+                            name="viewport"
+                            content="width=device-width, inital-scale=1, shrink-to-fit=no"
+                        />
+                        <link
+                            rel="stylesheet"
+                            href="./admission-enrollment.css"
+                            />
+
+                            <div class="card">
+                                <div class="card-body">
+                                <div class="bg-content">
+                                    <div class="step-content active">
+                                    <div class="content-box">
+                                    <h3 class="text-center">Student form details</h3>
+                                    <p>
+                                    Assure every student information in this section. This will be the
+                                    student data
+                                    </p>
+
+                                    <div class="student-info">
+                                    <h4>Student information</h4>
+
+                                    <form action="" class="info-box">
+                                        <div class="info-1">
+                                        <label for="name"> Name </label>
+                                        <input
+                                            type="text"
+                                            name="lastName"
+                                            id="lastName"
+                                            value="<?php echo $lastname;?>"
+                                            placeholder="Last name"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="firstName"
+                                            id="firstName"
+                                            value="<?php echo $firstname;?>"
+
+                                            placeholder="First name"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="middleName"
+                                            id="middleName"
+                                            value="<?php echo $middle_name;?>"
+                                            placeholder="Middle name"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="suffixName"
+                                            id="suffixName"
+                                            value=""
+                                            placeholder="Suffix name"
+                                        />
+                                        </div>
+                                        <div class="info-2">
+                                        <label for="status"> Status </label>
+                                        <div class="selection-box-1">
+                                            <select name="status" id="status">
+                                            <option value="Single">Single</option>
+                                            <option value="Married">Married</option>
+                                            <option value="Divorced">Divorced</option>
+                                            <option value="Widowed">Widowed</option>
+                                            </select>
+                                        </div>
+                                        <label for="citizenship"> Citizenship </label>
+                                        <input type="text" name="citizenship" id="citizenship" 
+                                        value="<?php echo $firstname;?>"
+                                        />
+                                        <label for="gender"> Gender </label>
+                                        <div class="selection-box-1">
+                                            <select name="gender" id="gender">
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            </select>
+                                        </div>
+                                        </div>
+                                        <div class="info-3">
+                                        <label for="birthdate"> Birthdate </label>
+                                        <input type="date" name="birthdate" 
+                                        id="birthdate" value="<?php echo $birthday?>" />
+                                        <label for="birthplade"> Birthplace </label>
+                                        <input
+                                            type="text"
+                                            name="birthplace"
+                                            id="birthplace"
+                                            value=""
+                                        />
+                                        <label for="religion"> Religion </label>
+                                        <input type="text" name="religion" id="religion" 
+                                        value="<?php echo $religion;?>" />
+                                        </div>
+                                        <div class="info-4">
+                                        <label for="address"> Address </label>
+                                        <input type="text" value="<?php echo $address?>" name="address" id="address" value="" />
+                                        </div>
+                                        <div class="info-5">
+                                        <label for="phoneNo"> Phone no. </label>
+                                        <input type="text" value="<?php echo $contact_number?>" name="phoneNo" id="phoneNo" value="" />
+                                        <label for="email"> Email </label>
+                                        <input type="text" value="<?php echo $email?>" name="email" id="email" value="" />
+                                        </div>
+                                    </form>
+                                    </div>
+
+                                    <div class="ParentGuardian-info">
+                                    <h4>Parent/Guardian's Information</h4>
+                                    <h5>Father's information</h5>
+
+                                    <form action="" class="info-box">
+                                        <div class="info-1">
+                                        <label for="name"> Name </label>
+                                        <input
+                                            type="text"
+                                            name="fathrLastName"
+                                            id="fatherLastName"
+                                            value=""
+                                            placeholder="Last name"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="fatherFirstName"
+                                            id="fatherFirstName"
+                                            value=""
+                                            placeholder="First name"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="fatherMiddleName"
+                                            id="fatherMiddleName"
+                                            value=""
+                                            placeholder="Middle name"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="fatherSuffixName"
+                                            id="fatherSuffixName"
+                                            value=""
+                                            placeholder="Suffix name"
+                                        />
+                                        </div>
+                                        <div class="info-2">
+                                        <label for="phoneNo"> Phone no. </label>
+                                        <input
+                                            type="text"
+                                            name="fatherPhoneNo"
+                                            id="fatherPhoneNo"
+                                            value=""
+                                        />
+                                        <label for="email"> Email </label>
+                                        <input
+                                            type="text"
+                                            name="fatherEmail"
+                                            id="fatherEmail"
+                                            value=""
+                                        />
+                                        <label for="occupation"> Occupation </label>
+                                        <input
+                                            type="text"
+                                            name="fatherOccupation"
+                                            id="fatherOccupation"
+                                        />
+                                        </div>
+                                    </form>
+                                    </div>
+
+                                    <div class="ParentGuardian-info">
+                                    <h5>Mother's information</h5>
+
+                                    <form action="" class="info-box">
+                                        <div class="info-3">
+                                        <label for="name"> Name </label>
+                                        <input
+                                            type="text"
+                                            name="motherLastName"
+                                            id="motherLastName"
+                                            value=""
+                                            placeholder="Last name"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="motherFirstName"
+                                            id="motherFirstName"
+                                            value=""
+                                            placeholder="First name"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="motherMiddleName"
+                                            id="motherMiddleName"
+                                            value=""
+                                            placeholder="Middle name"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="motherSuffixName"
+                                            id="motherSuffixName"
+                                            value=""
+                                            placeholder="Suffix name"
+                                        />
+                                        </div>
+                                        <div class="info-4">
+                                        <label for="phoneNo"> Phone no. </label>
+                                        <input
+                                            type="text"
+                                            name="motherPhoneNo"
+                                            id="motherPhoneNo"
+                                            value=""
+                                        />
+                                        <label for="email"> Email </label>
+                                        <input
+                                            type="text"
+                                            name="motherEmail"
+                                            id="motherEmail"
+                                            value=""
+                                        />
+                                        <label for="occupation"> Occupation </label>
+                                        <input
+                                            type="text"
+                                            name="motherOccupation"
+                                            id="motherOccupation"
+                                            value=""
+                                        />
+                                        </div>
+                                    </form>
+                                    </div>
+
+                                    <div class="ParentGuardian-info">
+                                    <h5>Guardian's information</h5>
+
+                                    <form action="" class="info-box">
+                                        <div class="info-5">
+                                        <label for="name"> Name </label>
+                                        <input
+                                            type="text"
+                                            name="guardianLastName"
+                                            id="guardianLastName"
+                                            value=""
+                                            placeholder="Last name"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="guardianFirstName"
+                                            id="guardianFirstName"
+                                            value=""
+                                            placeholder="First name"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="guardianMiddleName"
+                                            id="guardianMiddleName"
+                                            value=""
+                                            placeholder="Middle name"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="guardianSuffixName"
+                                            id="guardianSuffixName"
+                                            value=""
+                                            placeholder="Suffix name"
+                                        />
+                                        </div>
+                                        <div class="info-6">
+                                        <label for="phoneNo"> Phone no. </label>
+                                        <input
+                                            type="text"
+                                            name="guardianPhoneNo"
+                                            id="guardianPhoneNo"
+                                            value=""
+                                        />
+                                        <label for="email"> Email </label>
+                                        <input
+                                            type="text"
+                                            name="guardianEmail"
+                                            id="guardianEmail"
+                                            value=""
+                                        />
+                                        </div>
+                                        <div class="info-7">
+                                        <label for="relationship"> Relationship </label>
+                                        <input
+                                            type="text"
+                                            name="guardianRelationship"
+                                            id="guardianRelationship"
+                                            value=""
+                                        />
+                                        <label for="occupation"> Occupation </label>
+                                        <input
+                                            type="text"
+                                            name="guardianOccupation"
+                                            id="guardianOccupation"
+                                            value=""
+                                        />
+                                        </div>
+                                    </form>
+                                    </div>
+                                    </div>
+                                </div>
+                            
+                            
+                            </div>
+                                </div>
+                            </div>
+                    
+
 
                 </div>
             <?php
@@ -1728,6 +2031,38 @@
 
                 $studentSubject = new StudentSubject($con);
 
+
+                if(isset($_POST['passed_remark_btn'])
+                    && isset($_POST['subject_id'])
+                    && isset($_POST['course_id'])
+                    && isset($_POST['student_subject_id'])
+                    && isset($_POST['subject_title'])
+
+                ){
+
+                    $subject_id = $_POST['subject_id'];
+                    $course_id = $_POST['course_id'];
+                    $student_subject_id = $_POST['student_subject_id'];
+                    $subject_title = $_POST['subject_title'];
+
+                    $sql = $con->prepare("INSERT INTO student_subject_grade 
+                        (student_id, subject_id, remarks, student_subject_id, subject_title, course_id)
+                        VALUES(:student_id, :subject_id, :remarks, :student_subject_id, :subject_title, :course_id)");
+                        
+                        $sql->bindValue(":student_id", $student_id);
+                        $sql->bindValue(":subject_id", $subject_id);
+                        $sql->bindValue(":remarks", "Passed");
+                        $sql->bindValue(":student_subject_id", $student_subject_id);
+                        $sql->bindValue(":subject_title", $subject_title);
+                        $sql->bindValue(":course_id", $course_id);
+
+                        if($sql->execute()){
+                            // echo "success";
+                            Alert::success("Subject $subject_title remarked as Passed.",
+                                "view_details.php?subject=show&id=$student_id");
+                        }
+
+                }
                 ?>
                 <div class="row col-md-12">
 
@@ -1918,6 +2253,7 @@
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
                                                 $subject_id = $value['subject_id'];
+                                                $course_id = $value['course_id'];
                                                 $course_level = $value['course_level'];
 
                                                 $schedule_day = $value['schedule_day'];
@@ -1982,24 +2318,41 @@
 
                                                         $remarks_url = $remarks;
                                                         // echo "we";
-
                                                     }
-                                                    // else if($t1_student_subject_id != $t2_student_subject_id){
 
-                                                    //     // $remarks_url = "NULL";
-                                                    //     // echo "we";
-
-                                                    // }
                                                     else if($student_subject_subject_id == $subject_id
                                                         && $t1_student_subject_id != $t2_student_subject_id 
                                                         && $payment_status == "Enrolled"
                                                         ){
 
+                                                        // $remarks_url = "
+                                                        //     <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                        //         <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                        //     </a>
+                                                        // ";
+
+                                                                        
+                                                        // $remarks_url = "
+                                                        //     <form method='POST'>
+
+                                                        //         <input type='hidden' name='subject_id' value='$subject_id'>
+                                                        //         <input type='hidden' name='student_subject_id' value='$t1_student_subject_id'>
+                                                        //         <input type='hidden' name='course_id' value='$course_id'>
+                                                        //         <input type='hidden' name='subject_title' value='$subject_title'>
+
+                                                        //         <button name='passed_remark_btn' type='submit' class='btn btn-sm btn-primary' 
+                                                        //             onclick=\"if(confirm('Mark as Passed?')){ /* Perform your action here */ }\">Remark</button>
+                                                        //     </form>
+                                                        // ";
+
+                                                        $markAsPassed = "MarkAsPassed($subject_id,
+                                                            $student_id, \"Passed\",
+                                                            $t1_student_subject_id, $course_id, \"$subject_title\")";
+
                                                         $remarks_url = "
-                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
-                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
-                                                            </a>
+                                                            <i style='color:blue; cursor:pointer;' onclick='$markAsPassed' class='fas fa-marker'></i>
                                                         ";
+
                                                     }
                                                 }
                                                 
@@ -2025,7 +2378,7 @@
                             </table>
                         </div>
                     </div>
-
+                    
                     <!-- GRADE 11 2nd SEM -->
                     <div class="row col-md-12 table-responsive"
                         style="margin-top:5%;">
@@ -2082,11 +2435,13 @@
                                     ";
                                 }
                             ?>	
+
                             <!-- S2 -->
                             <?php 
+
                                 # ONLY FOR GRADE 11 2nd BECAUSE OF MOVING UP.
-                                // $isFinished = $old_enroll->CheckIfGradeLevelSemesterSubjectWereAllPassed(
-                                //     $student_id, $GRADE_ELEVEN, $SECOND_SEMESTER);
+                                $isFinished = $old_enroll->CheckIfGradeLevelSemesterSubjectWereAllPassed(
+                                    $student_id, $GRADE_ELEVEN, $SECOND_SEMESTER);
 
                                 $checkMoveUp = $student->CheckShsEligibleForMoveUp($student_id,
                                                     $student_program_id);
@@ -2106,7 +2461,7 @@
                                 }
                             ?>
 
-                            <table style="font-weight: 200;" class="table table-striped table-bordered table-hover "  style="font-size:12px" cellspacing="0"  > 
+                            <table id="shs_subjects_table" style="font-weight: 200;" class="table table-striped table-bordered table-hover "  style="font-size:12px" cellspacing="0"  > 
                                 <thead>
                                     <tr class="text-center"> 
                                         <th class="text-success" rowspan="2">Subject</th>
@@ -2124,6 +2479,7 @@
                                     <?php 
 
                                         // $listOfSubjects = $studentEnroll->GetStudentSubjectListWithGrades($username);
+
                                         $listOfSubjects = $studentEnroll
                                             ->GetStudentCurriculumBasedOnSemesterSubject($username,
                                         $userLoggedInId, $GRADE_ELEVEN, $SECOND_SEMESTER);
@@ -2133,7 +2489,9 @@
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
                                                 $subject_id = $value['subject_id'];
+                                                $course_id = $value['subject_id'];
                                                 $course_level = $value['course_level'];
+                                                $subject_title = $value['subject_title'];
 
                                                 $remarks_url = "";
 
@@ -2181,11 +2539,35 @@
                                                         
                                                         ){
 
+                                                        $markAsPassed = "MarkAsPassed($subject_id,
+                                                            $student_id, \"Passed\",
+                                                            $t1_student_subject_id, $course_id, \"$subject_title\")";
+
                                                         $remarks_url = "
-                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
-                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
-                                                            </a>
+                                                            <i style='color:blue; cursor:pointer;' onclick='$markAsPassed' class='fas fa-marker'></i>
+
                                                         ";
+
+                                                        // $remarks_url = "
+                                                        //     <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                        //         <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                        //     </a>
+                                                        // ";
+
+                                                        // $remarks_url = "
+                                                        //     <form method='POST'>
+
+                                                        //         <input type='hidden' name='subject_id' value='$subject_id'>
+                                                        //         <input type='hidden' name='student_subject_id' value='$t1_student_subject_id'>
+                                                        //         <input type='hidden' name='course_id' value='$course_id'>
+                                                        //         <input type='hidden' name='subject_title' value='$subject_title'>
+
+                                                        //         <button name='passed_remark_btn' type='submit' class='btn btn-sm btn-primary' 
+                                                        //             onclick=\"if(confirm('Mark as Passed?')){ /* Perform your action here */ }\">Remark</button>
+                                                        //     </form>
+                                                        // ";
+                                                                # ORIG
+                                                        
                                                     }
                                                 }
 
@@ -2293,8 +2675,11 @@
 
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
-                                            $subject_id = $value['subject_id'];
+                                                $subject_id = $value['subject_id'];
+                                                $course_id = $value['subject_id'];
+
                                                 $course_level = $value['course_level'];
+                                                $subject_title = $value['subject_title'];
 
                                                 $remarks_url = "";
 
@@ -2344,11 +2729,34 @@
                                                         
                                                         ){
 
+                                                        $markAsPassed = "MarkAsPassed($subject_id,
+                                                            $student_id, \"Passed\",
+                                                            $t1_student_subject_id, $course_id, \"$subject_title\")";
+
                                                         $remarks_url = "
-                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
-                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
-                                                            </a>
+                                                            <i style='color:blue; cursor:pointer;' onclick='$markAsPassed' class='fas fa-marker'></i>
                                                         ";
+
+                                                        // $remarks_url = "
+                                                        //     <form method='POST'>
+
+                                                        //         <input type='hidden' name='subject_id' value='$subject_id'>
+                                                        //         <input type='hidden' name='student_subject_id' value='$t1_student_subject_id'>
+                                                        //         <input type='hidden' name='course_id' value='$course_id'>
+                                                        //         <input type='hidden' name='subject_title' value='$subject_title'>
+
+                                                        //         <button name='passed_remark_btn' type='submit' class='btn btn-sm btn-primary' 
+                                                        //             onclick=\"if(confirm('Mark as Passed?')){ /* Perform your action here */ }\">Remark</button>
+                                                        //     </form>
+                                                        // ";
+
+                                                        // $remarks_url = "
+                                                        //     <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                        //         <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                        //     </a>
+                                                        // ";
+
+
                                                     }
                                                 }
 
@@ -2480,7 +2888,10 @@
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
                                                 $subject_id = $value['subject_id'];
+                                                $course_id = $value['subject_id'];
+
                                                 $course_level = $value['course_level'];
+                                                $subject_title = $value['subject_title'];
 
                                                 $remarks_url = "";
 
@@ -2530,11 +2941,32 @@
                                                         
                                                         ){
 
+
+                                                        $markAsPassed = "MarkAsPassed($subject_id,
+                                                            $student_id, \"Passed\",
+                                                            $t1_student_subject_id, $course_id, \"$subject_title\")";
+
                                                         $remarks_url = "
-                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
-                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
-                                                            </a>
+                                                            <i style='color:blue; cursor:pointer;' onclick='$markAsPassed' class='fas fa-marker'></i>
                                                         ";
+
+                                                        // $remarks_url = "
+                                                        //     <form method='POST'>
+
+                                                        //         <input type='hidden' name='subject_id' value='$subject_id'>
+                                                        //         <input type='hidden' name='student_subject_id' value='$t1_student_subject_id'>
+                                                        //         <input type='hidden' name='course_id' value='$course_id'>
+                                                        //         <input type='hidden' name='subject_title' value='$subject_title'>
+
+                                                        //         <button name='passed_remark_btn' type='submit' class='btn btn-sm btn-primary' 
+                                                        //             onclick=\"if(confirm('Mark as Passed?')){ /* Perform your action here */ }\">Remark</button>
+                                                        //     </form>
+                                                        // ";
+                                                        // $remarks_url = "
+                                                        //     <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                        //         <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                        //     </a>
+                                                        // ";
                                                     }
                                                 }
 
@@ -2573,7 +3005,6 @@
                                         else{
                                             echo "No Datax was found for Grade 11 1st Semester.";
                                         }
-                                        
                                     ?>
                                 </tbody>
                             </table>
@@ -2618,8 +3049,39 @@
                 $student_is_active = $student->CheckIfActive();
                 $checkIfTertiary = $student->CheckIfTertiary();
 
-
                 $studentSubject  = new StudentSubject($con, $username);
+
+                if(isset($_POST['passed_remark_btn'])
+                    && isset($_POST['subject_id'])
+                    && isset($_POST['course_id'])
+                    && isset($_POST['student_subject_id'])
+                    && isset($_POST['subject_title']) ){
+                    
+                    $subject_id = $_POST['subject_id'];
+
+                    $course_id = $_POST['course_id'];
+
+                    $student_subject_id = $_POST['student_subject_id'];
+
+                    $subject_title = $_POST['subject_title'];
+
+                    $sql = $con->prepare("INSERT INTO student_subject_grade 
+                        (student_id, subject_id, remarks, student_subject_id, subject_title, course_id)
+                        VALUES(:student_id, :subject_id, :remarks, :student_subject_id, :subject_title, :course_id)");
+                        
+                        $sql->bindValue(":student_id", $student_id);
+                        $sql->bindValue(":subject_id", $subject_id);
+                        $sql->bindValue(":remarks", "Passed");
+                        $sql->bindValue(":student_subject_id", $student_subject_id);
+                        $sql->bindValue(":subject_title", $subject_title);
+                        $sql->bindValue(":course_id", $course_id);
+
+                        if($sql->execute()){
+                            // echo "success";
+                            Alert::success("Subject $subject_title remarked as Passed.",
+                                "view_details.php?subject=show&tertiary=true&id=$student_id");
+                        }
+                }
 
                 ?>
                 <div class="row col-md-12">
@@ -2664,7 +3126,6 @@
                             <div class="student-details">
 
                                 <a href="view_details.php?profile=show&id=<?php echo $student_id?>">
-                                
                                     <button "
                                         type="button"
                                         class="selection-btn"
@@ -2672,7 +3133,6 @@
                                         <i class="bi bi-clipboard-check"></i>Student Details
                                     </button>
                                 </a>
-
                             </div>
 
                             <div  class="enrolled-subjects">
@@ -2785,6 +3245,8 @@
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
                                                 $subject_id = $value['subject_id'];
+                                                $course_id = $value['course_id'];
+                                                $subject_title = $value['subject_title'];
                                                 $course_level = $value['course_level'];
 
                                                 $remarks_url = "";
@@ -2829,11 +3291,33 @@
                                                         && $payment_status == "Enrolled"
                                                         ){
 
+
+                                                        $markAsPassed = "MarkAsPassed($subject_id,
+                                                            $student_id, \"Passed\",
+                                                            $t1_student_subject_id, $course_id, \"$subject_title\")";
+
                                                         $remarks_url = "
-                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
-                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
-                                                            </a>
+                                                            <i style='color:blue; cursor:pointer;' onclick='$markAsPassed' class='fas fa-marker'></i>
                                                         ";
+
+                                                        // $remarks_url = "
+                                                        //     <form method='POST'>
+
+                                                        //         <input type='hidden' name='subject_id' value='$subject_id'>
+                                                        //         <input type='hidden' name='student_subject_id' value='$t1_student_subject_id'>
+                                                        //         <input type='hidden' name='course_id' value='$course_id'>
+                                                        //         <input type='hidden' name='subject_title' value='$subject_title'>
+
+                                                        //         <button name='passed_remark_btn' type='submit' class='btn btn-sm btn-primary' 
+                                                        //             onclick=\"if(confirm('Mark as Passed?')){ /* Perform your action here */ }\">Remark</button>
+                                                        //     </form>
+                                                        // ";
+
+                                                        // $remarks_url = "
+                                                        //     <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                        //         <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                        //     </a>
+                                                        // ";
                                                     }
                                                 }
                                                
@@ -2928,7 +3412,6 @@
                                 # ONLY FOR Tertiary every 2nd Semester BECAUSE OF MOVING UP.
                                
                                 // Moving up student should be the end of Semester Period.
-
                                 $checkSemesterSubjectPassed = $old_enroll->CheckCurrentSemesterAllPassed(
                                     $userLoggedInId, $student_course_id, $current_school_year_id);
 
@@ -2978,7 +3461,10 @@
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
                                                 $subject_id = $value['subject_id'];
+                                                $course_id = $value['subject_id'];
+
                                                 $course_level = $value['course_level'];
+                                                $subject_title = $value['subject_title'];
 
                                                 $remarks_url = "";
 
@@ -3021,12 +3507,22 @@
                                                         && $t1_student_subject_id != $t2_student_subject_id 
                                                         && $payment_status == "Enrolled"
                                                         ){
+                                                            
+                                                            
+                                                        $markAsPassed = "MarkAsPassed($subject_id,
+                                                            $student_id, \"Passed\",
+                                                            $t1_student_subject_id, $course_id, \"$subject_title\")";
 
                                                         $remarks_url = "
-                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
-                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
-                                                            </a>
+                                                            <i style='color:blue; cursor:pointer;' onclick='$markAsPassed' class='fas fa-marker'></i>
+
                                                         ";
+
+                                                        // $remarks_url = "
+                                                        //     <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                        //         <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                        //     </a>
+                                                        // ";
                                                     }
                                                 }
 
@@ -3141,7 +3637,12 @@
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
                                                 $subject_id = $value['subject_id'];
+                                                $course_id = $value['subject_id'];
+
                                                 $course_level = $value['course_level'];
+                                                $subject_title = $value['subject_title'];
+
+                                                
 
                                                 $remarks_url = "";
 
@@ -3185,11 +3686,20 @@
                                                         && $payment_status == "Enrolled"
                                                         ){
 
+
+                                                        $markAsPassed = "MarkAsPassed($subject_id,
+                                                            $student_id, \"Passed\",
+                                                            $t1_student_subject_id, $course_id, \"$subject_title\")";
+
                                                         $remarks_url = "
-                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
-                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
-                                                            </a>
+                                                            <i style='color:blue; cursor:pointer;' onclick='$markAsPassed' class='fas fa-marker'></i>
                                                         ";
+
+                                                        // $remarks_url = "
+                                                        //     <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                        //         <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                        //     </a>
+                                                        // ";
                                                     }
                                                 }
 
@@ -3328,6 +3838,9 @@
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
                                                 $subject_id = $value['subject_id'];
+                                                $course_id = $value['course_id'];
+
+                                                $subject_title = $value['subject_title'];
                                                 $course_level = $value['course_level'];
 
                                                 $remarks_url = "";
@@ -3372,11 +3885,21 @@
                                                         && $payment_status == "Enrolled"
                                                         ){
 
+
+                                                        $markAsPassed = "MarkAsPassed($subject_id,
+                                                            $student_id, \"Passed\",
+                                                            $t1_student_subject_id, $course_id, \"$subject_title\")";
+
                                                         $remarks_url = "
-                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
-                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
-                                                            </a>
+                                                            <i style='color:blue; cursor:pointer;' onclick='$markAsPassed' class='fas fa-marker'></i>
                                                         ";
+
+                                                        // $remarks_url = "
+                                                        //     <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                        //         <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                        //     </a>
+                                                        // ";
+
                                                     }
                                                 }
 
@@ -3489,6 +4012,9 @@
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
                                                 $subject_id = $value['subject_id'];
+                                                $course_id = $value['course_id'];
+
+                                                $subject_title = $value['subject_title'];
                                                 $course_level = $value['course_level'];
 
                                                 $remarks_url = "";
@@ -3533,11 +4059,19 @@
                                                         && $payment_status == "Enrolled"
                                                         ){
 
+                                                        $markAsPassed = "MarkAsPassed($subject_id,
+                                                            $student_id, \"Passed\",
+                                                            $t1_student_subject_id, $course_id, \"$subject_title\")";
+
                                                         $remarks_url = "
-                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
-                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
-                                                            </a>
+                                                            <i style='color:blue; cursor:pointer;' onclick='$markAsPassed' class='fas fa-marker'></i>
                                                         ";
+
+                                                        // $remarks_url = "
+                                                        //     <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                        //         <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                        //     </a>
+                                                        // ";
                                                     }
                                                 }
 
@@ -3674,6 +4208,9 @@
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
                                                 $subject_id = $value['subject_id'];
+                                                $course_id = $value['course_id'];
+
+                                                $subject_title = $value['subject_title'];
                                                 $course_level = $value['course_level'];
 
                                                 $remarks_url = "";
@@ -3718,11 +4255,20 @@
                                                         && $payment_status == "Enrolled"
                                                         ){
 
+
+                                                        $markAsPassed = "MarkAsPassed($subject_id,
+                                                            $student_id, \"Passed\",
+                                                            $t1_student_subject_id, $course_id, \"$subject_title\")";
+
                                                         $remarks_url = "
-                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
-                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
-                                                            </a>
+                                                            <i style='color:blue; cursor:pointer;' onclick='$markAsPassed' class='fas fa-marker'></i>
                                                         ";
+
+                                                        // $remarks_url = "
+                                                        //     <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                        //         <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                        //     </a>
+                                                        // ";
                                                     }
                                                 }
 
@@ -3826,6 +4372,9 @@
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
                                                 $subject_id = $value['subject_id'];
+                                                $course_id = $value['course_id'];
+
+                                                $subject_title = $value['subject_title'];
                                                 $course_level = $value['course_level'];
 
                                                 $remarks_url = "";
@@ -3870,11 +4419,19 @@
                                                         && $payment_status == "Enrolled"
                                                         ){
 
+                                                        $markAsPassed = "MarkAsPassed($subject_id,
+                                                            $student_id, \"Passed\",
+                                                            $t1_student_subject_id, $course_id, \"$subject_title\")";
+
                                                         $remarks_url = "
-                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
-                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
-                                                            </a>
+                                                            <i style='color:blue; cursor:pointer;' onclick='$markAsPassed' class='fas fa-marker'></i>
                                                         ";
+
+                                                        // $remarks_url = "
+                                                        //     <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                        //         <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                        //     </a>
+                                                        // ";
                                                     }
                                                 }
 
@@ -4015,6 +4572,9 @@
                                             foreach ($listOfSubjects as $key => $value) {
                                                  
                                                 $subject_id = $value['subject_id'];
+                                                $course_id = $value['course_id'];
+
+                                                $subject_title = $value['subject_title'];
                                                 $course_level = $value['course_level'];
 
                                                 $remarks_url = "";
@@ -4059,15 +4619,21 @@
                                                         && $payment_status == "Enrolled"
                                                         ){
 
+                                                        $markAsPassed = "MarkAsPassed($subject_id,
+                                                            $student_id, \"Passed\",
+                                                            $t1_student_subject_id, $course_id, \"$subject_title\")";
+
                                                         $remarks_url = "
-                                                            <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
-                                                                <button type='button' class='btn btn-sm btn-primary'>Remark</button>
-                                                            </a>
+                                                            <i style='color:blue; cursor:pointer;' onclick='$markAsPassed' class='fas fa-marker'></i>
                                                         ";
+
+                                                        // $remarks_url = "
+                                                        //     <a href='shs_transferee_remarks.php?student_id=$student_id&s_id=$subject_id&page=view_details'>
+                                                        //         <button type='button' class='btn btn-sm btn-primary'>Remark</button>
+                                                        //     </a>
+                                                        // ";
                                                     }
                                                 }
-
-                                                
 
                                                 echo '<tr class="text-center">'; 
                                                         echo '<td>'.$value['subject_code'].'</td>';
@@ -4088,8 +4654,50 @@
                     </div>
                 <?php
             }
-
-
         }
     }
 ?>
+
+
+<!-- OOO -->
+
+<script>
+
+    // 
+
+    function MarkAsPassed(subject_id, student_id, remarks,
+        student_subject_id, course_id, subject_title){
+
+        // console.log('click');
+
+        $.post('../ajax/shs_transferee_grading.php', {
+            student_id,
+            subject_id,
+            remarks,
+            student_subject_id, 
+            course_id,
+            subject_title
+
+        }).done(function (data) {
+            Swal.fire({
+                icon: 'success',
+                title: `Subject: ${subject_title} remarked as Passed.`,
+                showConfirmButton: false,
+                timer: 800, // Adjust the duration of the toast message in milliseconds (e.g., 3000 = 3 seconds)
+                toast: true,
+                position: 'top-end',
+                showClass: {
+                popup: 'swal2-noanimation',
+                backdrop: 'swal2-noanimation'
+                },
+                hideClass: {
+                popup: '',
+                backdrop: ''
+                }
+            }).then((result) => {
+                location.reload();
+            });
+            
+        });
+    }
+</script>

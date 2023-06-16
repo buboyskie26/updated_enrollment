@@ -608,10 +608,10 @@
             t1.student_id, t1.cashier_evaluated,t1.registrar_evaluated,
             t1.is_transferee,
 
-            t2.firstname,t2.username,
+            t2.firstname,t2.username, t2.student_statusv2,
             t2.lastname,t2.course_level,
             t2.course_id, t2.student_id as t2_student_id,
-            t2.course_id, t2.course_level,t2.student_status,
+            t2.course_id, t2.course_level,t2.student_status, t2.admission_status,
             t2.is_tertiary, t2.new_enrollee,
             
             t3.program_section

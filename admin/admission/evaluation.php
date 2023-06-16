@@ -33,12 +33,14 @@
     $waitingApprovalEnrollment = $enrollment->WaitingApprovalEnrollment($current_school_year_id);
     $enrolledStudentsEnrollment = $enrollment->EnrolledStudentsWithinSYSemester($current_school_year_id);
 
-
     $pendingEnrollmentCount = count($pendingEnrollment);
     $waitingPaymentEnrollmentCount = count($waitingPaymentEnrollment);
     $waitingApprovalEnrollmentCount = count($waitingApprovalEnrollment);
     $enrolledStudentsEnrollmentCount = count($enrolledStudentsEnrollment);
 
+    if(isset( $_SESSION['enrollment_form_id'])){
+        unset($_SESSION['enrollment_form_id']);
+    }
 ?>
 
     <div class="row col-md-12">
@@ -73,13 +75,13 @@
             <hr>
 
         </div>
-
+    
         <?php
             if(count($pendingEnrollment) > 0){
                 ?>
                     <div class="row col-md-12">
                         
-                        <h3 class="mb-2 text-center text-primary">Non-Evaluated</h3>
+                        <h3 class="mb-2 text-center text-primary">Pending Enrollees</h3>
 
                         <table id="admission_evaluation" 
                             class="table table-striped table-bordered table-hover "

@@ -601,7 +601,7 @@
                         <div class="table-responsive" style="margin-top:5%;"> 
                             <form  method="POST">
                                 <h4 style="font-weight: bold;" class="mb-3 mt-4 text-primary text-center"><?php echo $student_program_section; ?> Subjects Curriculum</h4>
-                                <span>
+                                <span style="font-size: 13px; font-weight: bold;">
                                     Section Capacity:
                                     <?php 
                                         echo $updatedTotalStudent;
@@ -1336,7 +1336,7 @@
                             <h3><?php echo $student_program_section; ?> subjects</h3>
 
                             
-                                <span class="">
+                                <span style="font-size: 13px; font-weight: bold;" class="">
                                     Section Capacity:
                                     <?php 
                                         echo $updatedTotalStudent;
@@ -1431,7 +1431,7 @@
                                             && $checkEnrollmentEnrolled == false){
                                             ?>
                                                 <button type="submit" name="subject_load_btn" 
-                                                    class="btn btn-success btn-sm"
+                                                    class="btn btn-success "
                                                     onclick="return confirm('I Agree to Approve the enrollment?')"
                                                 >
                                                     Approve Enrollment

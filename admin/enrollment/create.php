@@ -4,6 +4,7 @@
     include('../../enrollment/classes/StudentEnroll.php');
     include('../../enrollment/classes/Enrollment.php');
     include('../../enrollment/classes/OldEnrollees.php');
+    include('../../includes/classes/Student.php');
  
     $studentEnroll = new StudentEnroll($con);
     $enrollment = new Enrollment($con, $studentEnroll);
@@ -209,6 +210,10 @@
 
         $student_id = $_POST['studentId'];
 
+        $username = $studentEnroll->GetStudentUsername($student_id);
+
+        $student = new Student($con, $username);
+
         unset($_SESSION['enrollment_form_id_manual']);
 
         # Reasons that the student should have to go through 
@@ -222,10 +227,17 @@
         # If Transferee go to Transferee
         # If Non Transferee -> Regular/Irreg go to Non Transferee Process Page.
 
+        if($student != null && $username != ""){
+            header("Location: ../admission/process_enrollment.php?student_id=$student_id&step1=true&&manual=true");
+            exit();
+        }else{
+            echo "
+                <script>
+                    alert('$student_id doesnt exists.');
+                </script>
+            ";
+        }
 
-
-        header("Location: ../admission/process_enrollment.php?student_id=$student_id&step1=true&&manual=true");
-        exit();
 
         // $update = $con->prepare("UPDATE school_year
         //     SET start_enrollment_date=:start_enrollment_date,

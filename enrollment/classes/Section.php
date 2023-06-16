@@ -755,5 +755,24 @@
         
             return $newString;
         }
+
+        public function CheckIfProgramHasSection($program_id, $school_year_term){
+
+            $sql = $this->con->prepare("SELECT * FROM course
+                WHERE program_id=:program_id
+                AND school_year_term=:school_year_term");
+
+            $sql->bindValue(":program_id", $program_id);
+            $sql->bindValue(":school_year_term", $school_year_term);
+            $sql->execute();
+      
+            
+            // if($sql->rowCount() > 0){
+            //     echo "true";
+            // }else{
+            //     echo "false";
+            // }
+            return $sql->rowCount() > 0;
+        }
     }
 ?>

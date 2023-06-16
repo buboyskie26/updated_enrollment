@@ -890,6 +890,7 @@
     public function CheckIfAlignedSection($student_course_id,
         $student_course_level){
 
+        $result = false;
 
         $check_course = $this->con->prepare("SELECT course_level FROM course
             WHERE course_id=:course_id");

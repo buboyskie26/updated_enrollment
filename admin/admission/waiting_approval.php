@@ -88,7 +88,7 @@
                                 <th>Id</th>
                                 <th>Name</th>
                                 <th>Standing</th>
-                                <th>Course/Section</th>
+                                <th>Program-Section</th>
                                 <th>Type</th>
                                 <th style="width: 150px;;" class="text-center">Action</th>
                             </tr>	
@@ -165,6 +165,10 @@
 
                                             }else if($new_enrollee == 0 && $is_tertiary == 0){
                                                 $student_type_status = "On Going (SHS)";
+
+                                            }
+                                            else if($new_enrollee == 0 && $is_tertiary == 1){
+                                                $student_type_status = "On Going (Tertiary)";
 
                                             }
                                         }

@@ -27,7 +27,6 @@
                 <h4 class="text-center page-header">Enrolled History Student List </h4>
             </div>
         </div>
-        
     </div>
 
     <div class="table-responsive" style="margin-top:2%;"> 

@@ -507,6 +507,8 @@
                    
                 }
 
+
+                // echo $program_id;
                 ?>
                 <div class="row col-md-12">
 
@@ -820,6 +822,22 @@
                             
                         <div class="card-header">
                             <h3 class="text-center text-success">Available Section</h3>
+
+
+                            <?php 
+
+                                if($section->CheckIfProgramHasSection($program_id,
+                                    $current_school_year_term) == false){
+
+                                    echo "
+                                        <a href='../section/create.php'>
+                                            <button class='btn btn-success'>Add Section</button>
+                                        </a>
+                                    ";
+                                }
+                            
+                            ?>
+                            
                         </div>
 
                         <div class="card-body">
@@ -843,11 +861,11 @@
 
                                         # Only Available now.
                                         $sql = $con->prepare("SELECT * FROM course
-                                        WHERE program_id=:program_id
-                                        AND active=:active
-                                        AND school_year_term=:school_year_term
 
-                                        ");
+                                            WHERE program_id=:program_id
+                                            AND active=:active
+                                            AND school_year_term=:school_year_term");
+
                                         $sql->bindValue(":program_id", $program_id);
                                         $sql->bindValue(":active", $active);
                                         $sql->bindValue(":school_year_term", $current_school_year_term);
@@ -891,7 +909,6 @@
 
                                                 if($totalStudent == $capacity){
 
-
                                                 }
                                                 echo "
                                                 <tr class='text-center'>
@@ -909,6 +926,12 @@
                                             ";
                                             }
                                             
+                                        }else{
+                                            echo "
+                                                <div class='col-md-12'>
+                                                    <h4 class='text-center text-muted'>No currently available section for $program_acronym</h4>
+                                                </div>
+                                            ";
                                         }
                                     ?>
                                 </tbody>
@@ -1269,11 +1292,11 @@
 
             $student_id = $_GET['student_id'];
 
-
             $studentEnroll = new StudentEnroll($con);
 
             $student_username = $studentEnroll->GetStudentUsername($student_id);
 
+            // echo $student_username;
             $student = new Student($con, $student_username);
 
             if($student != null){
@@ -1296,6 +1319,8 @@
                 $student_course_level = $student->GetStudentCourseLevel();
 
                 $student_course_id = $studentEnroll->GetStudentCourseId($student_username);
+
+                // echo $student_course_id;
                 $student_program_id = $studentEnroll->GetStudentProgramId($student_course_id);
                 $section_name = 
                 $date_creation = date("Y-m-d H:i:s");
@@ -1424,14 +1449,10 @@
                                 </div>
 
                                 <div class="mt-3">
-                                    <a style='text-align: end;' href='process_enrollment.php?student_id=468&step2=true&manual=true'>
+                                    <a style='text-align: end;' href='process_enrollment.php?student_id=<?php echo $student_id;?>&step2=true&manual=true'>
                                         <button type='button'class='btn-sm btn-primary'>Proceed</button>
                                     </a>
                                 </div>
-                                
-                                   
-                            
-
 
                             </div>
 
@@ -1449,15 +1470,13 @@
                         $selected_course_id_manual = $_POST['selected_course_id'];
                         
                         // $section_url = "process_enrollment.php?step3=true&id=$pending_enrollees_id&selected_course_id=$selected_course_id_value";
-                        $section_url = "process_enrollment.php?student_id=468&step3=true&manual=true&selected_course_id=$selected_course_id_manual";
+                        $section_url = "process_enrollment.php?student_id=$student_id&step3=true&manual=true&selected_course_id=$selected_course_id_manual";
                         header("Location: $section_url");
 
                         // echo $selected_course_id_manual;
                     }
 
-
                     // echo $student_course_id;
-
 
                     $checkAligned = $old_enrollees->CheckIfAlignedSection($student_course_id, $student_course_level);
                     $finishedGrade11Subjects = $student->CheckShsEligibleForMoveUp($student_id, $student_program_id);
@@ -1690,7 +1709,7 @@
                                                     </div>
 
                                                     <div class="col-md-4">
-                                                        <label for="inputStrand" class="form-label">Strand</label>
+                                                        <label for="inputStrand" class="form-label">Course</label>
 
                                                         <select onchange="chooseStrand(this, <?php echo $pending_enrollees_id;?>)" 
                                                             name="strand" id="strand" class="form-select">
@@ -1729,10 +1748,10 @@
                                                     
                                                         <select id="inputYear" class="form-select">
 
-                                                            <option value="1" selected>1st Year</option>
-                                                            <option value="2">2nd Year</option>
-                                                            <option value="3">3rd Year</option>
-                                                            <option value="4">4th Year</option>
+                                                            <option <?php if ($student_course_level == '1') echo 'selected'; ?>>1st Year</option>
+                                                            <option <?php if ($student_course_level == '2') echo 'selected'; ?>>2nd Year</option>
+                                                            <option <?php if ($student_course_level == '3') echo 'selected'; ?>>3rd Year</option>
+                                                            <option <?php if ($student_course_level == '4') echo 'selected'; ?>>4th Year</option>
                                                         </select>
                                                     </div>
 
@@ -1758,33 +1777,31 @@
                                 <div class="card-header">
                                     <h3 class="text-center text-success">Available Section</h3>
                                 </div>
-
                                 
                                 <?php 
+
                                 # SHS ONLY
                                 if($checkAligned == false && 
                                     $finishedGrade11Subjects == true){
                                     # Aligned the section
                                     ?>
-                                    <div style="
-                                        display: flex;
-                                        flex-direction: column;
-                                        align-items: end;
-                                        text-align: right;
-                                        " class="col-md-12">
+                                        <div style="
+                                            display: flex;
+                                            flex-direction: column;
+                                            align-items: end;
+                                            text-align: right;
+                                            " class="col-md-12">
 
-                                            <a href="student_alignment.php?id=<?php echo $student_id;?>">
-                                                <button name="aligned_section_btn" type="submit" style="margin-right: 15px;" class=" btn btn-primary btn-sm">
-                                                    Aligned Section.
-                                                </button>
-                                            </a>
-                                        
-                                    </div>
+                                                <a href="student_alignment.php?id=<?php echo $student_id;?>">
+                                                    <button name="aligned_section_btn" type="submit" style="margin-right: 15px;" class=" btn btn-primary btn-sm">
+                                                        Aligned Section.
+                                                    </button>
+                                                </a>
+                                        </div>
                                     <?php
-
                                 }
+
                                 ?>
-                                
 
                                 <div class="card-body">
 
@@ -1802,11 +1819,12 @@
                                             </thead> 	
                                             <tbody>
                                                 <?php
-                                                    $course_level = 11;
+
                                                     $active = "yes";
 
                                                     # Only Available now.
                                                     $sql = $con->prepare("SELECT * FROM course
+
                                                         WHERE program_id=:program_id
                                                         AND active=:active
                                                         AND school_year_term=:school_year_term
@@ -1817,6 +1835,8 @@
                                                     $sql->bindValue(":school_year_term", $current_school_year_term);
 
                                                     $sql->execute();
+
+                                                    // echo $current_school_year_term;
                                                 
                                                     if($sql->rowCount() > 0){
 
@@ -1871,7 +1891,7 @@
                                                             ";
                                                         }
                                                         
-                                                    }
+                                                    } 
                                                 ?>
                                             </tbody>
                                         </table>
@@ -2275,11 +2295,11 @@
 
                                     
 
-                                <button onclick="enrollment_manual(<?php echo $student_id; ?>, <?php echo $student_course_id;?>, <?php echo $current_school_year_id;?>, '<?php echo $enrollment_form_id;?>',)" 
-                                    type="button" class='btn btn-success btn-sm'>
-
+                               <button onclick="enrollment_manual('<?php echo $student_id; ?>', '<?php echo $student_course_id; ?>', '<?php echo $current_school_year_id; ?>', '<?php echo $enrollment_form_id; ?>')" 
+                                        type="button" class="btn btn-success btn-sm">
                                     Confirm Manual
                                 </button>
+
 
                                 <script>
                                     function enrollment_manual(student_id, student_course_id,
@@ -2346,7 +2366,7 @@
             
     }else {
         // Unset the enrollment form ID if the condition is not met
-        unset($_SESSION['enrollment_form_id_manual']);
+        // unset($_SESSION['enrollment_form_id_manual']);
     }
 
 ?>

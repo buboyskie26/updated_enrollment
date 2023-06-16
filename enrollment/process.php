@@ -1,3 +1,5 @@
+ 
+
 <?php 
 
     require_once('../includes/studentHeader.php');
@@ -10,9 +12,40 @@
 
     ?>
         <style>
-        .error {
-            border: 1px solid red;
-        }
+            .error {
+                border: 1px solid red;
+            }
+            .progress-bar {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 20px;
+            }
+            .steps {
+                display: flex;
+            }
+            .step.active {
+                background-color: dodgerblue;
+                color: white;
+            }
+            .step {
+                flex: 1;
+                padding: 5px;
+                text-align: center;
+                background-color: lightgray;
+                font-style: normal;
+                font-weight: 500;
+                font-size: 18px;
+            }
+            .step-content {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 1px 150px;
+                gap: 10px;
+                width: 100%;
+                height: auto;
+            }
         </style>
     <?php
     $enroll = new StudentEnroll($con);
@@ -21,6 +54,7 @@
 
     $school_year_id = $school_year_obj['school_year_id'];
     $current_semester = $school_year_obj['period'];
+    $current_term = $school_year_obj['term'];
 
 
     $school_year = new SchoolYear($con, $school_year_id);
@@ -106,8 +140,6 @@
             $birthplace = empty($row['birthplace']) ? '' : $row['birthplace'];
 
 
-
-
             if(isset($_GET['new_student']) && $_GET['new_student'] == "true"){
 
                 if(isset($_GET['step']) && $_GET['step'] == 1){
@@ -117,26 +149,6 @@
                         $admission_type = $_POST['admission_type'];
                         $student_type = $_POST['student_type'] ?? "";
                         $program_id = $_POST['STRAND'];
-
-                        // if(false){
-                        //     $fields = ['admission_type', 'student_type', 'STRAND'];
-                        //     $errors = [];
-
-                        //     foreach ($fields as $field) {
-                        //         if (empty($_POST[$field])) {
-                        //             echo "<script>Swal.fire('Error', 'Please fill in the {$field} field.', 'error');</script>";
-
-                        //             $_POST[$field . '_class'] = 'error';
-                        //         }
-                        //     }
-                        //     if (!empty($errors)) {
-                        //         foreach ($errors as $error) {
-                        //             echo "<p>{$error}</p>";
-                        //         }
-                        //     }
-                        // }
-                            
-                        # Check if all form are inputed.
 
                         $wasSuccess = $pending->UpdatePendingNewStep1($admission_type,
                                 $student_type, $program_id, $pending_enrollees_id);
@@ -163,8 +175,18 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="card-header">
+                                        <h3 class="text-center">STEP 1 ~ Prefered Course</h3>
+                                        <h5 class="mb-3">New Student Form</h5>
+                                        <span class="">S.Y <?php echo $current_term;?></span>
 
-                                        <h4 class="text-center">STEP 1 ~ Prefered Course</h4>
+                                        <div class="mt-2 progress-bar">
+                                            <div class="steps">
+                                            <div class="step active">Preferred Course/Strand</div>
+                                            <div class="step">Personal Information</div>
+                                            <div class="step">Validate Details</div>
+                                            <div class="step">Finished</div>
+                                            </div>
+                                        </div>
 
                                         <div class="container mb-4">
                                             <form method="POST">
@@ -201,7 +223,6 @@
                                                     <span>Strand</span>
                                                     <?php echo $pending->CreateRegisterStrand($program_id);?>
                                                 </div>
-
                                                
                                                 <button type="submit" name="new_step1_btn" class="mt-2 btn btn-primary">Proceed</button>
                                             </form>
@@ -212,7 +233,6 @@
                         </div>
                     <?php
                 }
-
                 if(isset($_GET['step']) && $_GET['step'] == 2){
 
                     $get_parent = $con->prepare("SELECT * FROM parent
@@ -241,9 +261,7 @@
 
                         // echo $parent_id;
                         $hasParentData = true;
-
                     }
-
 
                     if(isset($_POST['new_step2_btn'])){
 
@@ -277,8 +295,6 @@
                            
 
                         if($hasParentData == false){
-
-
 
                             
                             $guardian_form_input = $pending->CreateParentData($pending_enrollees_id, 
@@ -326,8 +342,18 @@
                                 <div class="card-body">
                                     <div class="card-header">
 
-                                        <h4 class="text-center">STEP 2 ~ Personal Info<h4>
+                                        <h4 class="text-center">STEP 2 ~ Personal Information<h4>
+                                        <h5 class="mb-3">New Student Form</h5>
+                                        <span class="">S.Y <?php echo $current_term;?></span>
 
+                                        <div class="mt-2 progress-bar">
+                                            <div class="steps">
+                                            <div class="step active">Preferred Course/Strand</div>
+                                            <div class="step active">Personal Information</div>
+                                            <div class="step">Validate Details</div>
+                                            <div class="step">Finished</div>
+                                            </div>
+                                        </div>
                                         <div class="container mb-4">
 
                                             <form method="POST">
@@ -475,8 +501,12 @@
                             
                             if($wasSuccess){
 
-                                AdminUser::success("Validate Success, Please Walk In to Daehan College Business Technology.",
-                                    "profile.php?fill_up_state=finished");
+                                // AdminUser::success("Validate Success, Please Walk In to Daehan College Business Technology.",
+                                //     "profile.php?fill_up_state=finished");
+
+                                AdminUser::success("Validation Completed.",
+                                    "process.php?new_student=true&step=4");
+
                                 exit();
                             }
                         }else{
@@ -491,7 +521,17 @@
                                     <div class="card-header">
 
                                         <h4 class="text-center">STEP 3 ~ Validating Details<h4>
+                                        <h5 class="mb-3">New Student Form</h5>
+                                        <span class="">S.Y <?php echo $current_term;?></span>
 
+                                        <div class="mt-2 progress-bar">
+                                            <div class="steps">
+                                            <div class="step active">Preferred Course/Strand</div>
+                                            <div class="step active">Personal Information</div>
+                                            <div class="step active">Validate Details</div>
+                                            <div class="step ">Finished</div>
+                                            </div>
+                                        </div>
                                         <div class="container mb-4">
 
                                             <form method="POST">
@@ -578,12 +618,47 @@
                                                 </a>
 
                                                 <button name="new_step3_btn" type="submit" class="btn btn-success">Validate</button>
+
+                                                <!-- <a href="process.php?new_student=true&step=2">
+                                                    <button name="new_step3_btn" type="submit" class="btn btn-success">Validate</button>
+                                                </a> -->
                                             </form>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    <?php
+                }
+
+                if(isset($_GET['step']) && $_GET['step'] == 4){
+
+                    ?>
+                       <div class="row col-md-12">
+                            <div class="card">
+
+                                <div class="card-header">
+                                    <h5 class="mb-3">New Student Form</h5>
+                                    <span class="">S.Y <?php echo $current_term;?></span>
+
+                                    <div class="mt-2 progress-bar">
+                                        <div class="steps">
+                                        <div class="step active">Preferred Course/Strand</div>
+                                        <div class="step active">Personal Information</div>
+                                        <div class="step active">Validate Details</div>
+                                        <div class="step active">Finished</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h3 class="text-center ">You've successfully completed your form!</h3>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="profile.php?fill_up_state=finished">
+                                    <button class="btn btn-primary">Return to Home.</button>
+
+                                </a>
+                            </div>
+                        </div> 
                     <?php
                 }
             }

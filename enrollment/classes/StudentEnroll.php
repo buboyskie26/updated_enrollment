@@ -1121,13 +1121,16 @@
 
     public function GetStudentUsername($student_id){
 
+        $username = "";
         $query = $this->con->prepare("SELECT username FROM student
             WHERE student_id=:student_id");
      
         $query->bindValue(":student_id", $student_id);
         $query->execute();
 
-        return $query->fetchColumn();
+        $username =  $query->fetchColumn();
+
+        return $username;
     }
 
     public function GetStudentFirstname($student_id){
@@ -2176,7 +2179,7 @@
         $subject_query = $this->con->prepare("SELECT 
 
             t3.subject_code as t3_subject_code,
-            t3.subject_id,
+            t3.subject_id, t3.course_id,
         
             t1.*,
 
